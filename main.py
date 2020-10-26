@@ -7,8 +7,8 @@ import logging
 from command_handler import command_handler
 from user_panel import *
 
-
-TOKEN = '1003640160:AAFK_o5il9Z9v5rxI1Uy6YAlR0LIZd0x5hM'
+with db_session:
+    TOKEN = Settings.get(key='tg_token').value
 
 bot = Bot(token=TOKEN)
 
