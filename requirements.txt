@@ -25,7 +25,6 @@ pycparser==2.20
 pydantic==1.6.1
 pyQiwiP2P==1.0a6
 python-telegram-bot==12.8
-pywin32==228
 requests==2.24.0
 SimpleQIWI==0.7
 six==1.15.0
