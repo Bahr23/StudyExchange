@@ -6,10 +6,11 @@ from pay import *
 from models import *
 from transaction import *
 
-phone = Settings.get(key='phone').value
-token = Settings.get(key='token').value
+with db_session:
+    phone = Settings.get(key='phone').value
+    token = Settings.get(key='token').value
 
-QIWI_PRIV_KEY = Settings.get(key='QIWI_PRIV_KEY').value
+    QIWI_PRIV_KEY = Settings.get(key='QIWI_PRIV_KEY').value
 
 p2p = QiwiP2P(auth_key=QIWI_PRIV_KEY)
 tr = Transaction

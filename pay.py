@@ -3,11 +3,11 @@ from models import *
 from pyqiwip2p import QiwiP2P
 from pyqiwip2p.types import QiwiCustomer, QiwiDatetime
 
+with db_session:
+    phone = Settings.get(key='phone').value
+    token = Settings.get(key='token').value
 
-phone = Settings.get(key='phone').value
-token = Settings.get(key='token').value
-
-QIWI_PRIV_KEY = Settings.get(key='QIWI_PRIV_KEY').value
+    QIWI_PRIV_KEY = Settings.get(key='QIWI_PRIV_KEY').value
 
 p2p = QiwiP2P(auth_key=QIWI_PRIV_KEY)
 
