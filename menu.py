@@ -258,7 +258,7 @@ class Menu:
                 return [InlineKeyboardMarkup(markup), self.menus[menu_name]['text']]
 
             if self.menus[menu_name]['type'] == 'reply':
-                return [ReplyKeyboardMarkup(markup), self.menus[menu_name]['text']]
+                return [ReplyKeyboardMarkup(keyboard=markup, resize_keyboard=True), self.menus[menu_name]['text']]
 
         except Exception as e:
             return e
