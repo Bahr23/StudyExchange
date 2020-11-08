@@ -38,13 +38,12 @@ class Menu:
                 'body': [
                     {
                         'buttons': [
-                            InlineKeyboardButton("/menu", callback_data="menu"),
-                            InlineKeyboardButton("/myprofile", callback_data="myprofile"),
-                            InlineKeyboardButton("/profile", callback_data="profile"),
-                            InlineKeyboardButton("/balance", callback_data="balance"),
-                            InlineKeyboardButton("/neworder", callback_data="new_order"),
-                            InlineKeyboardButton("/myorders", callback_data="my_orders"),
-                            InlineKeyboardButton("/order", callback_data="order"),
+                            InlineKeyboardButton("Меню", callback_data="/menu"),
+                            InlineKeyboardButton("Новый заказ", callback_data="new_order"),
+                            InlineKeyboardButton("Мои заказы", callback_data="my_orders"),
+                            InlineKeyboardButton("Мой профиль", callback_data="myprofile"),
+                            InlineKeyboardButton("Баланс", callback_data="balance"),
+                            InlineKeyboardButton("Поиск польз.", callback_data="profile"),
                         ],
                         'header': None,
                         'footer': None,
@@ -52,8 +51,24 @@ class Menu:
                     }
                 ]
             },
+            'chat': {
+                'text': 'Чат меню:\n/price - утвердить цену\n/done - завершить заказ\n/admin - вызвать админа',
+                'type': 'reply',
+                'body': [
+                    {
+                        'buttons': [
+                            InlineKeyboardButton("Утвердить цену", callback_data="/price"),
+                            InlineKeyboardButton("Завершить заказ", callback_data="/done"),
+                            InlineKeyboardButton("Вызвать админа", callback_data="/admin"),
+                        ],
+                        'header': None,
+                        'footer': None,
+                        'n_cols': 1
+                    }
+                ]
+            },
             'admin': {
-                'text': 'Admin меню: \n/admin - Поменять свой статус\n/channel - Отправить сообщение в '
+                'text': 'Admin меню: \n/adminpanel - Поменять свой статус\n/channel - Отправить сообщение в '
                         'каннал\n/message - '
                         'Отправить сообщение пользователю\n/setstatus - Изменить статус пользователя\n/user - '
                         'Посмотреть информацию о пользователе\n/getorder - '
@@ -86,7 +101,7 @@ class Menu:
                             InlineKeyboardButton("Предмет 3", callback_data="Предмет 3")],
                         'header': None,
                         'footer': InlineKeyboardButton("Далее", callback_data="#subject#1"),
-                        'n_cols': 4
+                        'n_cols': 1
                     },
                     {
                         'buttons': [
@@ -95,7 +110,7 @@ class Menu:
                             InlineKeyboardButton("Предмет 6", callback_data="Предмет 6")],
                         'header': InlineKeyboardButton("Назад", callback_data="#subject#0"),
                         'footer': None,
-                        'n_cols': 4
+                        'n_cols': 1
                     },
                 ]
             },
@@ -110,7 +125,7 @@ class Menu:
                             InlineKeyboardButton("Тип 3", callback_data="Тип 3")],
                         'header': None,
                         'footer': InlineKeyboardButton("Далее", callback_data="#type#1"),
-                        'n_cols': 4
+                        'n_cols': 1
                     },
                     {
                         'buttons': [
@@ -119,7 +134,7 @@ class Menu:
                             InlineKeyboardButton("Тип 6", callback_data="Тип 6")],
                         'header': InlineKeyboardButton("Назад", callback_data="#type#0"),
                         'footer': None,
-                        'n_cols': 4
+                        'n_cols': 1
                     },
                 ]
             },
@@ -133,7 +148,7 @@ class Menu:
                         ],
                         'header': None,
                         'footer': None,
-                        'n_cols': 4
+                        'n_cols': 1
                     },
                 ]
             },
@@ -147,7 +162,7 @@ class Menu:
                         ],
                         'header': None,
                         'footer': None,
-                        'n_cols': 4
+                        'n_cols': 1
                     },
                 ]
             },
@@ -161,7 +176,7 @@ class Menu:
                         ],
                         'header': None,
                         'footer': None,
-                        'n_cols': 4
+                        'n_cols':1
                     },
                 ]
             },
@@ -183,7 +198,7 @@ class Menu:
                 ]
             },
             'price': {
-                'text': 'Укажите срок',
+                'text': 'Укажите цену',
                 'type': 'inline',
                 'body': [
                     {
@@ -271,7 +286,7 @@ class Menu:
         else:
             header_buttons = None
         markup = self.build_menu(buttons=buttons, n_cols=1, header_buttons=header_buttons,
-                                   footer_buttons=InlineKeyboardButton('❌ Удалить заказ ❌', callback_data='@' + str(id) + '@del'))
+                                   footer_buttons=InlineKeyboardButton('❌ Удалить заказ ❌', callback_data='@' + str(id) + '@predel'))
         reply_markup = InlineKeyboardMarkup(markup)
         return reply_markup
 

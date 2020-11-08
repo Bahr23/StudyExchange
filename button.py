@@ -1,5 +1,6 @@
 import datetime
 import json
+import time
 
 import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, InputMediaPhoto
@@ -10,13 +11,17 @@ from core import *
 from menu import *
 from transaction import Transaction
 
-CHANNEL_ID = '-1001361464885'
-
+tr = Transaction
 
 @db_session
 def button(update, context):
     query = update.callback_query
     mymenu = Menu()
+    user = get_user(update.callback_query.from_user.id)
+    if user:
+        if user.status == 'banned':
+            context.bot.send_message(chat_id=user.id, text=BANNED_TEXT)
+            return
     transction = Transaction
     if query.message.chat.id != int(CHANNEL_ID):
         if query.data[0] == '#':
@@ -48,6 +53,73 @@ def button(update, context):
 
                         context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup)
                     else:
+                        if args[2] == 'ban':
+                            text = 'Используйте <b>/setstatus user_id banned</b> для блокировки пользователя\n' \
+                                   'Используйте <b>/setstatus user_id user</b> для разблокировки пользователя'
+                            context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
+
+                        if args[2] == 'makeworker':
+                            user = User.get(id=int(args[1]))
+                            if user:
+                                user.status = 'worker'
+                                text = 'Вы успешно изменили статус пользователя' + get_name(user) + '[' + str(user.id) + '] на worker'
+                                context.bot.send_message(chat_id=user.id, text='Ваш статус изменен на worker')
+                            else:
+                                text = 'Пользователь с id ' + args[1] + ' не найден'
+                            context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+
+                        if args[2] == 'userbalance':
+                            user = User.get(id=int(args[1]))
+                            if user:
+                                text = '<b>' + get_name(user) + '[' + str(user.id) + ']</b>\n'
+                                text += '<i>Текущий баланс</i> - ' + str(user.balance) + 'р\n\n'
+
+                                transctions = list(select(t for t in Transactions if t.user_id == user.id))
+
+                                text += '<i>История транзакций</i>:\n'
+                                if transctions:
+                                    for t in transctions[0:19]:
+                                        text += transction.get(t.id) + '\n'
+                                context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
+
+                        if args[2] == 'userorders':
+                            user = User.get(id=int(args[1]))
+                            if user:
+                                text = '<b>Незавершенные заказы пользователя ' + get_name(user) + '[' + str(user.id) + ']</b>\n' \
+                                        '<i>Используйте /getorder для получения полной инофрмации</i>\n\n'
+
+                                orders = list(select(o for o in Order if o.user_id == user.id and o.status != 'Завершен'))
+
+                                if orders:
+                                    for o in orders:
+                                        text += o.subject + '[' + str(o.id) + '] | ' + o.status + ' | ' + str(o.price) + '\n'\
+
+                                buttons = [InlineKeyboardButton('Заверешенные заказы', callback_data='@' + str(user.id) + '@userfinishedorders'),]
+
+                                markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
+                                                           footer_buttons=None)
+                                reply_markup = InlineKeyboardMarkup(markup)
+
+                                context.bot.send_message(chat_id=update.effective_chat.id, text=text,
+                                                         parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
+
+                        if args[2] == 'userfinishedorders':
+                            user = User.get(id=int(args[1]))
+                            if user:
+                                text = '<b>Завершенные заказы пользователя ' + get_name(user) + '[' + str(user.id) + ']</b>\n' \
+                                        '<i>Используйте /getorder для получения полной инофрмации</i>\n\n'
+
+                                orders = list(select(o for o in Order if o.user_id == user.id and o.status == 'Завершен'))
+
+                                if orders:
+                                    for o in orders:
+                                        text += o.subject + '[' + str(o.id) + '] | ' + o.status + ' | ' + str(o.price) + '\n'\
+
+
+                                context.bot.send_message(chat_id=update.effective_chat.id, text=text,
+                                                         parse_mode=telegram.ParseMode.HTML)
+
+
                         if args[2] == 'workers':
                             myorder = Order.get(id=int(args[1]))
                             workers = myorder.worker_id.split(',')[:-1]
@@ -78,10 +150,23 @@ def button(update, context):
                             text = 'Вы отправили заявку на роль исполнителя!'
                             context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
+                        if args[2] == 'predel':
+                            order = Order.get(id=int(args[1]))
+                            text = 'Вы уверенны, что хотите удалить заказ ' + order.subject + \
+                                   ' [' + str(order.id) + ']?'
+                            buttons = [
+                                InlineKeyboardButton('Да', callback_data='@' + str(order.id) + '@del')]
+                            markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
+                                                       footer_buttons=None)
+                            reply_markup = InlineKeyboardMarkup(markup)
+                            context.bot.send_message(chat_id=update.effective_chat.id, text=text,
+                                                     reply_markup=reply_markup)
+
                         if args[2] == 'del':
                             id = int(args[1])
                             text = delete_order(id)
                             context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+
                         if args[2] == 'push':
                             myorder = Order.get(id=int(args[1]))
                             text = get_order(int(args[1]))
@@ -95,6 +180,7 @@ def button(update, context):
 
                             context.bot.send_message(chat_id=CHANNEL_ID, text=text, reply_markup=InlineKeyboardMarkup(markup))
                             context.bot.send_message(chat_id=update.effective_chat.id, text='Заказ №' + args[1] + ' успешно одобрен!')
+                            context.bot.send_message(chat_id=int(myorder.user_id), text='Ващ заказ №' + args[1] + ' одобрен и опубликован!')
 
                         if args[2] == 'buy':
                             order = Order.get(id=int(args[1]))
@@ -128,14 +214,16 @@ def button(update, context):
                                                               parse_mode=telegram.ParseMode.HTML)
 
                                 user.balance -= int(chat.price)
+                                t = tr.new(type='PAYFORORDER', bill_id='None', amount=-int(chat.price), user_id=user.id,
+                                           date=time.strftime('%d.%M.%Y'))
                                 order.status = 'Оплачен'
                                 name = get_name(user)
                                 context.bot.send_message(chat_id=update.effective_chat.id, text='Вы оплатили заказ')
                                 text = "Пользователь " + name + ' оплатил заказ ' + order.subject + ' [' + str(order.id) + '].'
                                 context.bot.send_message(chat_id=int(chat.worker_id), text=text)
+                                context.bot.send_message(chat_id=int(chat.chat_id), text=text)
                             else:
                                 text = 'У вас не достаточно средств. На вашем счету ' + str(user.balance) + 'р.'
-                                # mymenu = Menu()
                                 buttons = [
                                     InlineKeyboardButton('Пополнить', callback_data='@' + str(user.id) + '@deposit')]
 
@@ -143,8 +231,7 @@ def button(update, context):
                                                            footer_buttons=None)
                                 reply_markup = InlineKeyboardMarkup(markup)
 
-                                context.bot.send_message(chat_id=update.effective_chat.id, text=text,
-                                                         reply_markup=reply_markup)
+                                context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup)
 
                         if args[2] == 'yes':
                             chat = Chat.get(id=int(args[1]))
@@ -170,8 +257,17 @@ def button(update, context):
                                 order.status = 'waitingforpay'
                                 text += '\n<b>Цена утверждена!</b>'
                                 reply_markup = None
-                                user_text = 'Инструкции по заказу ' + order.subject + ' [' + str(order.id) + ']'
-                                context.bot.send_message(chat_id=chat.user_id, text=user_text)
+                                user_text = 'Вы утвердили цену заказа ' + order.subject + ' [' + str(order.id) + '], для оплаты нажмите кнопку ниже.'
+
+                                buttons = [
+                                    InlineKeyboardButton('Оплатить', callback_data='@' + str(order.id) + '@buy'),
+                                ]
+
+                                markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
+                                                           footer_buttons=None)
+                                markup = InlineKeyboardMarkup(markup)
+
+                                context.bot.send_message(chat_id=chat.user_id, text=user_text, reply_markup=markup)
 
                             context.bot.edit_message_text(chat_id=chat.chat_id, message_id=message.message_id,
                                                           text=message.text + text, reply_markup=reply_markup, parse_mode=telegram.ParseMode.HTML)
@@ -208,11 +304,11 @@ def button(update, context):
                                     w.workers_orders += 1
                                     w.balance += int(chat.price)
                                     buttons = [
-                                        InlineKeyboardButton('1', callback_data='@' + str(w.id) + '@rate@1'),
-                                        InlineKeyboardButton('2', callback_data='@' + str(w.id) + '@rate@2'),
-                                        InlineKeyboardButton('3', callback_data='@' + str(w.id) + '@rate@3'),
-                                        InlineKeyboardButton('4', callback_data='@' + str(w.id) + '@rate@4'),
-                                        InlineKeyboardButton('5', callback_data='@' + str(w.id) + '@rate@5'),
+                                        InlineKeyboardButton('⭐', callback_data='@' + str(w.id) + '@rate@1'),
+                                        InlineKeyboardButton('⭐⭐', callback_data='@' + str(w.id) + '@rate@2'),
+                                        InlineKeyboardButton('⭐⭐⭐', callback_data='@' + str(w.id) + '@rate@3'),
+                                        InlineKeyboardButton('⭐⭐⭐⭐', callback_data='@' + str(w.id) + '@rate@4'),
+                                        InlineKeyboardButton('⭐⭐⭐⭐⭐', callback_data='@' + str(w.id) + '@rate@5'),
                                     ]
 
                                     markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
@@ -237,12 +333,20 @@ def button(update, context):
                                                           text=message.text,
                                                           parse_mode=telegram.ParseMode.HTML, reply_markup=None)
 
+
                             w = User.get(id=int(args[1]))
                             w.points += int(args[3])
                             if w.workers_orders > 0:
                                 w.rate = round(w.points / w.workers_orders, 1)
                             else:
                                 w.rate = 0
+
+                            text = 'Пользователь ' + get_name(user) + '[' + str(user.id) + '] оценил вас на ' + args[3] \
+                                   + '\nВаш новый рейтинг - ' + str(w.rate)
+
+                            context.bot.send_message(chat_id=w.id, text=text)
+
+                            print(w.rate)
 
                         if args[2] == 'deposit':
                             user = User.get(id=int(args[1]))

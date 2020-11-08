@@ -8,6 +8,7 @@ from pay import *
 
 CHANNEL_ID = '-1001361464885'
 MEDIA_ID = '-1001412307468'
+BANNED_TEXT = 'Ваш аккаунт был заблокирован в сервисе StudyExchange!'
 
 @db_session
 def get_user(id):
@@ -40,7 +41,7 @@ def get_profile(id):
         text = "<b>{name} [{id}]</b>\n<i>Статус</i> - {status}\n<i>Никнейм</i> - @{username}\n<i>Дата регистрации</i> " \
                "- {registration_date}\n\n<i>Образование</i> - {education}\n<i>Город</i> - {city}\n<i>Возраст</i> - " \
                "{age}\n\n<i>Кол-во завершенных заказов</i> - {orders_number}\n<i>Дата последнего заказа</i> - " \
-               "{last_order}\n<i>Рейтинг</i> - {rate}\n".format(name=name, id=user.id, status=user.status,
+               "{last_order}\n<i>Рейтинг исполнителя</i> - {rate}\n".format(name=name, id=user.id, status=user.status,
                                                                 username=user.username,
                                                                 registration_date=user.registration_date,
                                                                 education=user.education, city=user.city, age=user.age,
@@ -54,10 +55,24 @@ def get_profile(id):
 def get_order(id):
     order = Order.get(id=id)
     if order:
+        if order.faculty != 'Пропустить':
+            faculty = '\nФакультет - ' + order.faculty
+        else:
+            faculty = ''
+
+        if order.departament != 'Пропустить':
+            departament = '\nКафедра - ' + order.departament
+        else:
+            departament = ''
+
+        if order.teacher != 'Пропустить':
+            teacher = '\nПреподователь - ' + order.teacher
+        else:
+            teacher = ''
+
         text = 'Номер заказа - ' + str(order.id) + '\nСтатус - ' + order.status + '\nПредмет - ' + order.subject + '\nТип '\
                                                                                                                    '- ' +\
-               order.type + '\nФакультет - ' + order.faculty + '\nКафедра - ' + order.departament + '\nПреподователь - ' \
-               + order.teacher + '\nСроки - ' + order.deadline + '\nЦена - ' + order.price + '\nОписание - ' + \
+               order.type + faculty + departament + teacher + '\nСроки - ' + order.deadline + '\nЦена - ' + order.price + '\nОписание - ' + \
                order.description
         return text
     else:
@@ -153,10 +168,15 @@ def finish_queue(name, answers, update=None, context=None):
                       departament=departament, teacher=teacher, description=description,
                       deadline=deadline, price=price, worker_id='', docs=url)
 
+        # Оповещение пользователя
+        text = 'Ваш заказ добавлен в обработку и в скором времени будет опубликован'
+        context.bot.send_message(chat_id=user.id, text=text)
+
         # Оповещение админов
         orders = select(o for o in Order)
         id = int(list(orders)[-1].id)
-        text = get_order(id)
+        text = '<b>Пользователь ' + get_name(user) + '[' + str(user.id) + ']' + ' создал заказ №' + str(id) + '</b>\n'
+        text += get_order(id)
         mymenu = Menu()
         buttons = [InlineKeyboardButton('Одобрить', callback_data='@' + str(id) + '@push'),
                    InlineKeyboardButton('Удалить', callback_data='@' + str(id) + '@del')]
@@ -170,7 +190,7 @@ def finish_queue(name, answers, update=None, context=None):
             text += '\nВложения:\n' + order.docs
 
         for admin in admins:
-            context.bot.send_message(chat_id=admin.id, text=text, reply_markup=reply_markup)
+            context.bot.send_message(chat_id=admin.id, text=text, reply_markup=reply_markup, parse_mode=telegram.ParseMode.HTML)
 
     if name == "edit_order":
         myorder = Order.get(id=context.user_data['edit_order'])

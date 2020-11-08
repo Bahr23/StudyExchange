@@ -12,16 +12,18 @@ with db_session:
 
 bot = Bot(token=TOKEN)
 
-commands = [
-    BotCommand(command='/start',  description='Начать работу с ботом'),
-    BotCommand(command="/menu", description="Список комманд"),
-    BotCommand(command="/myprofile", description="Мой профиль"),
-    BotCommand(command="/profile", description="Профиль исполнителя"),
-    BotCommand(command="/balance", description="Управление балансом"),
-    BotCommand(command="/neworder", description="Сделать заказ"),
-    BotCommand(command="/myorders", description="Посмотреть свои заказы"),
-    BotCommand(command="/order", description="Посмотреть определенный заказ"),
-]
+commands = []
+
+# commands = [
+#     BotCommand(command='/start',  description='Начать работу с ботом'),
+#     BotCommand(command="/menu", description="Список комманд"),
+#     BotCommand(command="/myprofile", description="Мой профиль"),
+#     BotCommand(command="/profile", description="Профиль исполнителя"),
+#     BotCommand(command="/balance", description="Управление балансом"),
+#     BotCommand(command="/neworder", description="Сделать заказ"),
+#     BotCommand(command="/myorders", description="Посмотреть свои заказы"),
+#     BotCommand(command="/order", description="Посмотреть определенный заказ"),
+# ]
 
 bot.set_my_commands(commands)
 

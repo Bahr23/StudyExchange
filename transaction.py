@@ -19,7 +19,7 @@ class Transaction:
         with db_session:
             t = Transactions.get(id=int(id))
         if t:
-            text =  t.date + ' - ' + str(t.amount) + 'р - ' + t.type + '[' + str(t.id) + ']'
+            text = t.date + ' | ' + str(t.amount) + 'р | ' + t.type + '[' + str(t.id) + ']'
         else:
             text = 'Транзакция с id ' + str(id) + ' не найдена'
         return text

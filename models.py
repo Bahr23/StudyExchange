@@ -4,19 +4,10 @@ from urllib.parse import urlparse
 
 from pony.orm import *
 
-# db = Database()
-# # db_url = urlparse(os.environ['DATABASE_URL'])
-# # args = re.split('[:@]', db_url.netloc)
-# db.bind(provider='postgres', user='postgres', password='', host='localhost', database='studybot')
-#
-# # settings = dict(
-# #     sqlite=dict(provider='sqlite', filename='pony.db', create_db=True),
-# #     postgres=dict(provider='postgres', user='pony', password='pony', host='localhost',
-# #         database='pony')
-# # )
-# #
-# # db = Database(**settings['postgres'])
 
+
+# db = Database()
+# db.bind(provider='postgres', user='postgres', password='', host='localhost', database='')
 
 db = Database()
 db_url = urlparse(os.environ['DATABASE_URL'])
@@ -74,6 +65,8 @@ class Chat(db.Entity):
     order_id = Optional(str)
     worker_yes = Optional(int)
     user_yes = Optional(int)
+    price_msg = Optional(int)
+    done_msg = Optional(int)
 
 
 class Bills(db.Entity):
