@@ -186,7 +186,11 @@ def getorder(update, context):
                         id = int(context.args[0])
                         order = Order.get(id=id)
                         u = User.get(id=int(order.user_id))
-                        text = '<b>' + get_name(u) + '[' + str(u.id) + ']</b>\n'
+                        if not u:
+                            user_id = 0
+                        else:
+                            user_id = u.id
+                        text = '<b>' + get_name(u) + '[' + str(user_id) + ']</b>\n'
                         text += get_order(id)
                         order = Order.get(id=id)
 

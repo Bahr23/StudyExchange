@@ -20,7 +20,9 @@ def get_user(id):
 
 
 def get_name(user):
+    print(user)
     if user:
+        print(1)
         name = str(user.id)
         if user.first_name != 'Не указано':
             name = user.first_name
@@ -29,7 +31,8 @@ def get_name(user):
         else:
             if user.username != 'Не указано':
                 name = user.username
-    return name
+        return name
+    return 'Unknown'
 
 
 @db_session
