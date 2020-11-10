@@ -302,7 +302,8 @@ def button(update, context):
                                     w.orders_number = str(int(w.orders_number) + 1)
                                     u.last_order = str(datetime.date.today()).replace('-', '.')
                                     w.workers_orders += 1
-                                    w.balance += int(chat.price)
+                                    w.balance += int(chat.price) * 0.9
+
                                     buttons = [
                                         InlineKeyboardButton('⭐', callback_data='@' + str(w.id) + '@rate@1'),
                                         InlineKeyboardButton('⭐⭐', callback_data='@' + str(w.id) + '@rate@2'),

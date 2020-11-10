@@ -35,7 +35,7 @@ def adminpanel(update, context):
             else:
                 user.status = 'user'
                 reply_markup = mymenu.get_menu(tag='#main#0')
-                context.bot.send_message(chat_id=update.effective_chat.id, text=reply_markup[1],
+                context.bot.send_message(chat_id=update.effective_chat.id, text='error',
                                          reply_markup=reply_markup[0])
         else:
             start(update, context)

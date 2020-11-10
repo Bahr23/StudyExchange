@@ -225,9 +225,10 @@ def finish_queue(name, answers, update=None, context=None):
             bank = answers[1]['bank']
             card = answers[2]['card']
             if sum <= int(user.balance):
+                sum2 = sum * 0.97
                 text = '<b>Пользователь ' + get_name(user) + '[' + str(user.id) + ']' + ' запрашивает вывод:</b>\n' \
-                                                                                        '1. Сумма - ' + str(sum) + \
-                       'руб\n2. Банк - ' + str(bank) + '\n3. Реквизиты - ' + str(card)
+                                                                                        '1. Сумма без коммисси - ' + str(sum) + \
+                       ' руб\n  - Сумма с учетом комисси - ' + str(sum2) + ' руб\n2. Банк - ' + str(bank) + '\n3. Реквизиты - ' + str(card)
 
                 buttons = [InlineKeyboardButton('Одобрить', callback_data='@' + str(user.id) + '@withdrawconfirm@' + str(sum)),
                            InlineKeyboardButton('Завершить', callback_data='@' + str(user.id) + '@withdrawdone@' + str(sum))]
