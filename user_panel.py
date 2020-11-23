@@ -41,7 +41,7 @@ def start(update, context):
             points = 0
             balance = 0
 
-            newuser = User(id=user.id, status='user', first_name=first_name, last_name=last_name,
+            newuser = User(user_id=user.id, status='user', first_name=first_name, last_name=last_name,
                            username=username, age=age, education=education, city=city, registration_date=registration_date,
                            last_order=last_order, orders_number=orders_number, workers_orders=workers_orders,
                            rate=rate, points=points, balance=balance)
@@ -238,15 +238,19 @@ def my_orders(update, context):
                     current_queue(update, context, user)
                     return
             orders = select(o for o in Order if o.user_id == user.id)
-            text = 'Ваши заказы:\n'
-            buttons = []
-            for order in list(orders):
-                text += '#' + str(order.id) + ' - ' + order.subject + ' [' + order.status + ']\n'
-                buttons.append(InlineKeyboardButton('Заказ ' + str(order.id), callback_data="@" + str(order.id)))
+            if len(orders):
+                text = 'Ваши заказы:\n'
+                buttons = []
+                for order in list(orders):
+                    text += '#' + str(order.id) + ' - ' + order.subject + ' [' + order.status + ']\n'
+                    buttons.append(InlineKeyboardButton('Заказ ' + str(order.id), callback_data="@" + str(order.id)))
 
-            mymenu = Menu()
-            markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
-            context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=InlineKeyboardMarkup(markup))
+                mymenu = Menu()
+                markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=InlineKeyboardMarkup(markup))
+            else:
+                text = 'У Вас пока нет ни одного заказа.'
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
         else:
             start(update, context)
 
@@ -340,5 +344,24 @@ def balance(update, context):
             reply_markup = InlineKeyboardMarkup(markup)
 
             context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup)
+        else:
+            start(update, context)
+
+
+def faq(update, context):
+    if update.message.chat.id > 0:
+        user = get_user(update.message.from_user.id)
+        if user:
+            if user.status == 'banned':
+                context.bot.send_message(chat_id=user.id, text=BANNED_TEXT)
+                return
+            if 'queue' in context.user_data.keys():
+                if context.user_data['queue']:
+                    current_queue(update, context, user)
+                    return
+
+            text = 'FAQ text'
+
+            context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
         else:
             start(update, context)

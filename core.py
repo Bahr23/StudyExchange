@@ -13,7 +13,7 @@ BANNED_TEXT = 'Ваш аккаунт был заблокирован в серв
 @db_session
 def get_user(id):
     try:
-        user = User[id]
+        user = User.get(user_id=id)
         return user
     except Exception as e:
         return False
@@ -41,15 +41,40 @@ def get_profile(id):
     if user:
         name = get_name(user)
 
-        text = "<b>{name} [{id}]</b>\n<i>Статус</i> - {status}\n<i>Никнейм</i> - @{username}\n<i>Дата регистрации</i> " \
-               "- {registration_date}\n\n<i>Образование</i> - {education}\n<i>Город</i> - {city}\n<i>Возраст</i> - " \
-               "{age}\n\n<i>Кол-во завершенных заказов</i> - {orders_number}\n<i>Дата последнего заказа</i> - " \
-               "{last_order}\n<i>Рейтинг исполнителя</i> - {rate}\n".format(name=name, id=user.id, status=user.status,
-                                                                username=user.username,
-                                                                registration_date=user.registration_date,
+        if user.status == 'user':
+            status = 'Клиент'
+
+        if user.status == 'worker':
+            status = 'Исполнитель'
+
+        if user.status == 'admin':
+            status = 'Менеджер'
+
+        if user.username:
+            username = 'Никнейм: @' + user.username + '\n'
+        else:
+            username = ''
+
+        if user.last_order != 'Не указано':
+            last_order_date = user.last_order.split('.')
+            last_order_date = last_order_date[2] + '.' + last_order_date[1] + '.' + last_order_date[0]
+            last_order = 'Дата последнего заказа: ' + last_order_date + '\n'
+        else:
+            last_order = ''
+
+        reg = user.registration_date.split('.')
+        reg = reg[2] + '.' + reg[1] + '.' + reg[0]
+
+
+        text = '<b>{name}</b> [<code>{id}</code>]\nСтатус: {status}\n{username}Дата регистрации: ' \
+               '{registration_date}\n\nОбразование: {education}\nГород: {city}\nВозраст: ' \
+               '{age}\n\nЗавершенные заказы: {orders_number}\n{last_order}\nРейтинг исполнителя: {rate}' \
+               '\n'.format(name=name, id=user.id, status=status,
+                                                                username=username,
+                                                                registration_date=reg,
                                                                 education=user.education, city=user.city, age=user.age,
                                                                 orders_number=user.orders_number,
-                                                                last_order=user.last_order, rate=user.rate)
+                                                                last_order=last_order, rate=user.rate)
         return text
     else:
         return False
@@ -110,6 +135,7 @@ def queue(update, context, user, ans=None):
         finish_queue(context.user_data['queue_name'], context.user_data['queue_answers'], update, context)
         context.user_data['queue'] = False
         if context.user_data['queue_finish']:
+            print(context.user_data['queue_finish'])
             text = context.user_data['queue_finish']
             mymenu = Menu()
             reply_markup = mymenu.get_menu(tag='#main#0')
@@ -206,15 +232,25 @@ def finish_queue(name, answers, update=None, context=None):
         user = User.get(id=context.user_data['edit_profile'])
         key = list(answers[0].keys())[0]
         value = list(answers[0].values())[0]
-        exec('user.' + key + " = '" + value + "'")
-        context.user_data.update({'edit_profile': None})
+        if key == 'age':
+            try:
+                age = int(value)
+                if age < 1:
+                    raise
+                exec('user.' + key + " = '" + value + "'")
+
+            except Exception as e:
+                text = "Введите число больше 0!"
+                context.user_data.update({'queue_finish': False})
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+
 
     if name == "balance":
         print(answers)
 
         try:
             sum = int(answers[0]['sum'])
-            text = '*Инструкция для депозита*\n'
+            text = 'Ссылка на оплату: '
             link = paylink(user.id, sum)
             text += link
         except Exception as e:

@@ -33,6 +33,9 @@ def command_handler(dispatcher):
     dispatcher.add_handler(CommandHandler("myorders", my_orders))
     dispatcher.add_handler(MessageHandler(Filters.text("Мои заказы"), my_orders))
 
+    dispatcher.add_handler(CommandHandler("faq", faq))
+    dispatcher.add_handler(MessageHandler(Filters.text("Как это работает?"), faq))
+
     dispatcher.add_handler(CommandHandler("delorder", del_order))
 
 

@@ -43,7 +43,7 @@ class Menu:
                             InlineKeyboardButton("Мои заказы", callback_data="my_orders"),
                             InlineKeyboardButton("Мой профиль", callback_data="myprofile"),
                             InlineKeyboardButton("Баланс", callback_data="balance"),
-                            InlineKeyboardButton("Поиск польз.", callback_data="profile"),
+                            InlineKeyboardButton("Как это работает?", callback_data="faq"),
                         ],
                         'header': None,
                         'footer': None,
@@ -234,10 +234,10 @@ class Menu:
                 'body': [
                     {
                         'buttons': [
-                            InlineKeyboardButton("Банк №1", callback_data="Банк №1"),
-                            InlineKeyboardButton("Банк №2", callback_data="Банк №2"),
-                            InlineKeyboardButton("Банк №3", callback_data="Банк №3"),
-                            InlineKeyboardButton("Банк №4", callback_data="Банк №4"),
+                            InlineKeyboardButton("СберБанк", callback_data="Банк №1"),
+                            InlineKeyboardButton("Тинькофф", callback_data="Банк №2"),
+                            InlineKeyboardButton("Альфа-Банк", callback_data="Банк №3"),
+                            InlineKeyboardButton("ВТБ", callback_data="Банк №4"),
                         ],
                         'header': None,
                         'footer': None,

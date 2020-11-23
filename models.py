@@ -16,7 +16,8 @@ db.bind(provider=db_url.scheme, user=args[0], password=args[1], host=args[2], po
 
 
 class User(db.Entity):
-    id = PrimaryKey(int)
+    id = PrimaryKey(int, auto=True)
+    user_id = Required(int)
     status = Optional(str)
     first_name = Required(str)
     last_name = Optional(str)
@@ -31,7 +32,7 @@ class User(db.Entity):
     workers_orders = Optional(int)
     rate = Optional(float)
     points = Optional(int)
-    balance = Required(float)
+    balance = Required(int)
 
 
 class Order(db.Entity):
