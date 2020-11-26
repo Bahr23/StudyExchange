@@ -30,18 +30,18 @@ class Menu:
                 ]
             },
             'main': {
-                'text': 'Меню: \n/menu - Список комманд\n/myprofile - Мой профиль\n/profile - Посмотреть профиль '
-                        'исполнителя\n/neworder - Сделать заказ\n/myorders '
-                        '- Посмотреть свои заказы \n/order - Посмотреть определенный заказ '
-                        'Номер_Заказа',
+                'text': 'Меню: \n/menu - список комманд\n/neworder - создать новый заказ\n/myprofile - мой профиль\n'
+                        '/myorders - посмотреть свои заказы \n/balance - управление балансом\n/faq - как это работает\n'
+                        '/order <i>номер_заказа</i> - посмотреть определенный заказ \n'
+                        '/profile <i>id_исполнителя</i> - посмотреть профиль испольнителя',
                 'type': 'reply',
                 'body': [
                     {
                         'buttons': [
                             InlineKeyboardButton("Меню", callback_data="/menu"),
                             InlineKeyboardButton("Новый заказ", callback_data="new_order"),
-                            InlineKeyboardButton("Мои заказы", callback_data="my_orders"),
                             InlineKeyboardButton("Мой профиль", callback_data="myprofile"),
+                            InlineKeyboardButton("Мои заказы", callback_data="my_orders"),
                             InlineKeyboardButton("Баланс", callback_data="balance"),
                             InlineKeyboardButton("Как это работает?", callback_data="faq"),
                         ],
@@ -91,48 +91,33 @@ class Menu:
                 ]
             },
             'subject': {
-                'text': 'Выберите предмет',
+                'text': 'Выберите предмет из списка или напишите свой:',
                 'type': 'inline',
                 'body': [
                     {
                         'buttons': [
-                            InlineKeyboardButton("Предмет 1", callback_data="Предмет 1"),
-                            InlineKeyboardButton("Предмет 2", callback_data="Предмет 2"),
-                            InlineKeyboardButton("Предмет 3", callback_data="Предмет 3")],
+                            InlineKeyboardButton("Математика", callback_data="Математика"),
+                            InlineKeyboardButton("Программирование", callback_data="Программирование"),
+                            InlineKeyboardButton("Физика", callback_data="Физика"),
+                            InlineKeyboardButton("Химия", callback_data="Химия")],
                         'header': None,
-                        'footer': InlineKeyboardButton("Далее", callback_data="#subject#1"),
-                        'n_cols': 1
-                    },
-                    {
-                        'buttons': [
-                            InlineKeyboardButton("Предмет 4", callback_data="Предмет 4"),
-                            InlineKeyboardButton("Предмет 5", callback_data="Предмет 5"),
-                            InlineKeyboardButton("Предмет 6", callback_data="Предмет 6")],
-                        'header': InlineKeyboardButton("Назад", callback_data="#subject#0"),
                         'footer': None,
                         'n_cols': 1
                     },
                 ]
             },
             'type': {
-                'text': 'Выберите тип работы',
+                'text': 'Выберите тип работы из списка или напишите свой:',
                 'type': 'inline',
                 'body': [
                     {
                         'buttons': [
-                            InlineKeyboardButton("Тип 1", callback_data="Тип 1"),
-                            InlineKeyboardButton("Тип 2", callback_data="Тип 2"),
-                            InlineKeyboardButton("Тип 3", callback_data="Тип 3")],
+                            InlineKeyboardButton("Контрольная", callback_data="Контрольная"),
+                            InlineKeyboardButton("Реферат", callback_data="Реферат"),
+                            InlineKeyboardButton("Курсовая", callback_data="Курсовая"),
+                            InlineKeyboardButton("Дипломная", callback_data="Дипломная"),
+                            InlineKeyboardButton("Сдача экзамена", callback_data="Сдача экзамена")],
                         'header': None,
-                        'footer': InlineKeyboardButton("Далее", callback_data="#type#1"),
-                        'n_cols': 1
-                    },
-                    {
-                        'buttons': [
-                            InlineKeyboardButton("Тип 4", callback_data="Тип 4"),
-                            InlineKeyboardButton("Тип 5", callback_data="Тип 5"),
-                            InlineKeyboardButton("Тип 6", callback_data="Тип 6")],
-                        'header': InlineKeyboardButton("Назад", callback_data="#type#0"),
                         'footer': None,
                         'n_cols': 1
                     },
@@ -181,15 +166,15 @@ class Menu:
                 ]
             },
             'deadline': {
-                'text': 'Укажите срок',
+                'text': 'Выберите срок из списка или напишите свой:',
                 'type': 'inline',
                 'body': [
                     {
                         'buttons': [
                             InlineKeyboardButton("1 день", callback_data="1 день"),
-                            InlineKeyboardButton("До 2 дней", callback_data="До 2 дней"),
-                            InlineKeyboardButton("До 3 дней", callback_data="До 3 дней"),
-                            InlineKeyboardButton("До 7 дней", callback_data="До 7 дней")
+                            InlineKeyboardButton("До 7 дней", callback_data="До 7 дней"),
+                            InlineKeyboardButton("До 30 дней", callback_data="До 30 дней"),
+                            InlineKeyboardButton("До конца семестра", callback_data="До конца семестра")
                         ],
                         'header': None,
                         'footer': None,
@@ -198,18 +183,20 @@ class Menu:
                 ]
             },
             'price': {
-                'text': 'Укажите цену',
+                'text': 'Выберите цену из списка или напишите свою:',
                 'type': 'inline',
                 'body': [
                     {
                         'buttons': [
-                            InlineKeyboardButton("500 руб", callback_data="500 руб"),
-                            InlineKeyboardButton("1000 руб", callback_data="1000 руб"),
-                            InlineKeyboardButton("1500 руб", callback_data="1500 руб"),
-                            InlineKeyboardButton("2000 руб", callback_data="2000 руб")
+                            InlineKeyboardButton("500-1000 рублей", callback_data="500-1000 рублей"),
+                            InlineKeyboardButton("1000-2000 руб", callback_data="1000-2000 руб"),
+                            InlineKeyboardButton("2000-3000 руб", callback_data="2000-3000 руб"),
+                            InlineKeyboardButton("3000-4000 руб", callback_data="3000-4000 руб"),
+                            InlineKeyboardButton("4000-5000 руб", callback_data="4000-5000 руб"),
+                            InlineKeyboardButton("По договоренности", callback_data="По договоренности")
                         ],
                         'header': None,
-                        'footer': InlineKeyboardButton("Договорная", callback_data="Договорная"),
+                        'footer': None,
                         'n_cols': 1
                     },
                 ]
@@ -286,7 +273,7 @@ class Menu:
         else:
             header_buttons = None
         markup = self.build_menu(buttons=buttons, n_cols=1, header_buttons=header_buttons,
-                                   footer_buttons=InlineKeyboardButton('❌ Удалить заказ ❌', callback_data='@' + str(id) + '@predel'))
+                                   footer_buttons=InlineKeyboardButton('❌ Отменить заказ ❌', callback_data='@' + str(id) + '@predel'))
         reply_markup = InlineKeyboardMarkup(markup)
         return reply_markup
 

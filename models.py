@@ -33,6 +33,7 @@ class User(db.Entity):
     rate = Optional(float)
     points = Optional(int)
     balance = Required(int)
+    wanted = Optional(bool)
 
 
 class Order(db.Entity):

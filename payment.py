@@ -1,6 +1,9 @@
 from pyqiwip2p import QiwiP2P
 from pyqiwip2p.types import QiwiCustomer, QiwiDatetime
 import time
+
+from telegram import Bot
+
 from pay import *
 
 from models import *
@@ -17,6 +20,13 @@ tr = Transaction
 
 
 def monitoring():
+    with db_session:
+        TOKEN = Settings.get(key='tg_token').value
+
+    bot = Bot(token=TOKEN)
+
+    print(bot.username + ' start cheeking Transactions!')
+
     while True:
         with db_session:
             bills = list(select(u for u in Bills))
@@ -31,13 +41,14 @@ def monitoring():
                             user = User.get(id=int(comment[0]))
                             if user:
                                 user.balance += int(float(bi.amount))
-                                t = tr.new(type='DEPOSIT', bill_id=str(bi.id), amount=int(float(bi.amount)), user_id=user.id, date=time.strftime('%d.%M.%Y'))
+                                t = tr.new(type='DEPOSIT', bill_id=str(bi.bill_id), amount=int(float(bi.amount)), user_id=user.id, date=time.strftime('%d.%M.%Y'))
                                 p2p.reject(bill_id=b.bill_id)
                                 b.delete()
+                                text = 'На ваш баланс зачислено ' + str(int(float(bi.amount))) + 'руб.'
+                                bot.send_message(chat_id=user.user_id, text=text)
                 else:
                     p2p.reject(bill_id=b.bill_id)
                     b.delete()
         time.sleep(1)
-
 
 monitoring()

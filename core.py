@@ -14,15 +14,14 @@ BANNED_TEXT = 'Ваш аккаунт был заблокирован в серв
 def get_user(id):
     try:
         user = User.get(user_id=id)
+        print(1, id)
         return user
     except Exception as e:
         return False
 
 
-def get_name(user):
-    print(user)
+def get_name(user, id=False):
     if user:
-        print(1)
         name = str(user.id)
         if user.first_name != 'Не указано':
             name = user.first_name
@@ -31,6 +30,9 @@ def get_name(user):
         else:
             if user.username != 'Не указано':
                 name = user.username
+        if id:
+            name = '<b>' + name
+            name += '</b>[id<code>' + str(user.id) + '</code>]'
         return name
     return 'Unknown'
 
@@ -42,20 +44,20 @@ def get_profile(id):
         name = get_name(user)
 
         if user.status == 'user':
-            status = 'Клиент'
+            status = 'клиент'
 
         if user.status == 'worker':
-            status = 'Исполнитель'
+            status = 'исполнитель'
 
         if user.status == 'admin':
-            status = 'Менеджер'
+            status = 'менеджер'
 
-        if user.username:
-            username = 'Никнейм: @' + user.username + '\n'
-        else:
-            username = ''
+        # if user.username:
+        #     username = 'Никнейм: @' + user.username + '\n'
+        # else:
+        #     username = ''
 
-        if user.last_order != 'Не указано':
+        if user.last_order != 'не указано':
             last_order_date = user.last_order.split('.')
             last_order_date = last_order_date[2] + '.' + last_order_date[1] + '.' + last_order_date[0]
             last_order = 'Дата последнего заказа: ' + last_order_date + '\n'
@@ -66,12 +68,10 @@ def get_profile(id):
         reg = reg[2] + '.' + reg[1] + '.' + reg[0]
 
 
-        text = '<b>{name}</b> [<code>{id}</code>]\nСтатус: {status}\n{username}Дата регистрации: ' \
+        text = '{name} [id<code>{id}</code>]\nСтатус: {status}\nДата регистрации: ' \
                '{registration_date}\n\nОбразование: {education}\nГород: {city}\nВозраст: ' \
                '{age}\n\nЗавершенные заказы: {orders_number}\n{last_order}\nРейтинг исполнителя: {rate}' \
-               '\n'.format(name=name, id=user.id, status=status,
-                                                                username=username,
-                                                                registration_date=reg,
+               '\n'.format(name=name, id=user.id, status=status, registration_date=reg,
                                                                 education=user.education, city=user.city, age=user.age,
                                                                 orders_number=user.orders_number,
                                                                 last_order=last_order, rate=user.rate)
@@ -98,9 +98,8 @@ def get_order(id):
         else:
             teacher = ''
 
-        text = 'Номер заказа - ' + str(order.id) + '\nСтатус - ' + order.status + '\nПредмет - ' + order.subject + '\nТип '\
-                                                                                                                   '- ' +\
-               order.type + faculty + departament + teacher + '\nСроки - ' + order.deadline + '\nЦена - ' + order.price + '\nОписание - ' + \
+        text = 'Номер заказа: ' + str(order.id) + '\nСтатус: ' + order.status + '\nПредмет: ' + order.subject + '\nТип: ' + \
+               order.type + faculty + departament + teacher + '\nСроки: ' + order.deadline + '\nЦена: ' + order.price + '\nОписание: ' + \
                order.description
         return text
     else:
@@ -193,18 +192,18 @@ def finish_queue(name, answers, update=None, context=None):
             print(e)
             url = 'Вложения не добавлены'
 
-        order = Order(user_id=user.id, status='New', subject=subject, type=order_type, faculty=faculty,
+        order = Order(user_id=user.id, status='В обработке', subject=subject, type=order_type, faculty=faculty,
                       departament=departament, teacher=teacher, description=description,
                       deadline=deadline, price=price, worker_id='', docs=url)
 
-        # Оповещение пользователя
-        text = 'Ваш заказ добавлен в обработку и в скором времени будет опубликован'
-        context.bot.send_message(chat_id=user.id, text=text)
+        # # Оповещение пользователя
+        # text = 'Ваш заказ добавлен в обработку и в скором времени будет опубликован'
+        # context.bot.send_message(chat_id=user.user_id, text=text)
 
         # Оповещение админов
         orders = select(o for o in Order)
         id = int(list(orders)[-1].id)
-        text = '<b>Пользователь ' + get_name(user) + '[' + str(user.id) + ']' + ' создал заказ №' + str(id) + '</b>\n'
+        text = 'Пользователь ' + get_name(user, True) + ' создал заказ №' + str(id) + '\n'
         text += get_order(id)
         mymenu = Menu()
         buttons = [InlineKeyboardButton('Одобрить', callback_data='@' + str(id) + '@push'),
@@ -219,7 +218,7 @@ def finish_queue(name, answers, update=None, context=None):
             text += '\nВложения:\n' + order.docs
 
         for admin in admins:
-            context.bot.send_message(chat_id=admin.id, text=text, reply_markup=reply_markup, parse_mode=telegram.ParseMode.HTML)
+            context.bot.send_message(chat_id=admin.user_id, text=text, reply_markup=reply_markup, parse_mode=telegram.ParseMode.HTML)
 
     if name == "edit_order":
         myorder = Order.get(id=context.user_data['edit_order'])
@@ -250,9 +249,12 @@ def finish_queue(name, answers, update=None, context=None):
 
         try:
             sum = int(answers[0]['sum'])
-            text = 'Ссылка на оплату: '
-            link = paylink(user.id, sum)
-            text += link
+            if sum > 0:
+                text = 'Ссылка на оплату: '
+                link = paylink(user.id, sum)
+                text += link
+            else:
+                text = "Сумма пополнения должна быть болье 0!"
         except Exception as e:
             print(e)
             text = 'Сумма пополнения должна быть числом!'
@@ -269,15 +271,15 @@ def finish_queue(name, answers, update=None, context=None):
                                                                                         '1. Сумма без комисси - ' + str(sum) + \
                        ' руб\n  - Сумма с учетом комисси - ' + str(sum2) + ' руб\n2. Банк - ' + str(bank) + '\n3. Реквизиты - ' + str(card)
 
-                buttons = [InlineKeyboardButton('Одобрить', callback_data='@' + str(user.id) + '@withdrawconfirm@' + str(sum)),
-                           InlineKeyboardButton('Завершить', callback_data='@' + str(user.id) + '@withdrawdone@' + str(sum))]
+                buttons = [InlineKeyboardButton('Одобрить', callback_data='@' + str(user.user_id) + '@withdrawconfirm@' + str(sum)),
+                           InlineKeyboardButton('Завершить', callback_data='@' + str(user.user_id) + '@withdrawdone@' + str(sum))]
 
                 markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
                 reply_markup = InlineKeyboardMarkup(markup)
 
                 admins = list(select(u for u in User if u.status == 'admin'))
                 for admin in admins:
-                    context.bot.send_message(chat_id=admin.id, text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
+                    context.bot.send_message(chat_id=admin.user_id, text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
                 context.bot.send_message(chat_id=update.effective_chat.id,
                                          text='Ваша заявка на вывод отправлена на рассмотрение.')
             else:
