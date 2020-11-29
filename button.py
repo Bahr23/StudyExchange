@@ -125,18 +125,22 @@ def button(update, context):
                             myorder = Order.get(id=int(args[1]))
                             workers = myorder.worker_id.split(',')[:-1]
 
-                            text = 'Текущие исполнители для заказа №' + args[1] + ':\n'
-                            buttons = []
+                            if workers:
+                                text = 'Текущие исполнители для заказа №' + args[1] + ':\n'
+                                buttons = []
 
-                            for w in workers:
-                                wor = User.get(id=int(w))
-                                label = wor.first_name + ' ' + wor.last_name + ' [' + str(wor.id) + ']\n'
-                                text += wor.status + ' - ' + label
-                                buttons.append(InlineKeyboardButton('Выбрать ' + label, callback_data='@' + args[1] + '@choose@' + str(wor.id)))
+                                for w in workers:
+                                    wor = User.get(id=int(w))
+                                    label = wor.first_name + ' ' + wor.last_name + ' [' + str(wor.id) + ']\n'
+                                    text += wor.status + ' - ' + label
+                                    buttons.append(InlineKeyboardButton('Выбрать ' + label, callback_data='@' + args[1] + '@choose@' + str(wor.id)))
 
-                            markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
-                            reply_markup = InlineKeyboardMarkup(markup)
-                            context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup)
+                                markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
+                                reply_markup = InlineKeyboardMarkup(markup)
+                                context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup)
+                            else:
+                                text = 'Пока никто не согласился на выполнение этого заказа.'
+                                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
                         if args[2] == 'want':
                             if not user.wanted:
@@ -159,11 +163,11 @@ def button(update, context):
                                 for admin in admins:
                                     context.bot.send_message(chat_id=admin.user_id, text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
 
-                                text = 'Вы отправили заявку на роль исполнителя. Ожидайте пока мененджер свяжется с вами.'
+                                text = 'Вы успешно отправили заявку на роль исполнителя. Ожидайте, пока мененджер свяжется с Вами.'
                                 user.wanted = True
                                 context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
                             else:
-                                text = 'Вы уже отправили заявку на роль испольнителя. Ожидайье ответа мененджера.'
+                                text = ' Вы уже отправили заявку на роль испольнителя. Ожидайте ответа мененджера.'
                                 context.bot.send_message(chat_id=update.effective_chat.id, text=text,
                                                          parse_mode=telegram.ParseMode.HTML)
 
@@ -184,6 +188,7 @@ def button(update, context):
                                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
                         if args[2] == 'del':
+                            order = Order.get(id=int(args[1]))
                             if order.status != 'Оплачен':
                                 id = int(args[1])
                                 text = delete_order(id)
@@ -201,14 +206,20 @@ def button(update, context):
                             buttons = [InlineKeyboardButton('Взять заказ', callback_data='@' + str(args[1]) + '@take')]
                             markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
 
-                            if myorder.docs:
-                                text += '\nВложения:\n' + myorder.docs
+                            if myorder:
+                                if myorder.docs != 'Вложения не добавлены':
+                                    text += '\nВложения:\n' + myorder.docs
 
                             usert = User.get(id=int(myorder.user_id))
 
-                            context.bot.send_message(chat_id=CHANNEL_ID, text=text, reply_markup=InlineKeyboardMarkup(markup))
+                            post = context.bot.send_message(chat_id=CHANNEL_ID, text=text, reply_markup=InlineKeyboardMarkup(markup))
+                            post = 'https://t.me/StudyExchangePosts/' + str(post.message_id)
                             context.bot.send_message(chat_id=update.effective_chat.id, text='Заказ №' + args[1] + ' успешно одобрен!')
-                            context.bot.send_message(chat_id=usert.user_id, text='Ваi заказ №' + args[1] + ' одобрен и опубликован!')
+                            context.bot.send_message(chat_id=usert.user_id, text='Ваш заказ №'
+                                                                                 + args[1] + ' одобрен и <a href="' +
+                                                                                 post + '">опубликован</a> '
+                                                                                        'на канале биржи!',
+                                                     parse_mode=telegram.ParseMode.HTML)
 
                         if args[2] == 'buy':
                             order = Order.get(id=int(args[1]))
@@ -228,7 +239,7 @@ def button(update, context):
                                     text = 'Вы еще не утвердили цену с исполнителем или заказ уже оплачен.'
                                     context.bot.send_message(chat_id=update.effective_chat.id, text=text)
                             else:
-                                text = 'Вы еще не нашли исполнителя.'
+                                text = 'Пока никто не согласился на выполнение этого заказа.'
                                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
                         if args[2] == 'buyyes':
@@ -389,7 +400,7 @@ def button(update, context):
                             user = User.get(id=int(args[1]))
 
                             queue_list = [
-                                {'sum': 'Укажите сумму пополнения (в рублях)', 'menu': None},
+                                {'sum': 'Укажите сумму пополнения:', 'menu': None},
                             ]
                             context.user_data.update(
                                 {'queue': True, 'queue_name': 'balance', 'queue_finish': None,
@@ -402,7 +413,7 @@ def button(update, context):
                             user = User.get(id=int(args[1]))
 
                             queue_list = [
-                                {'sum': 'Укажите сумму вывода (в рублях)', 'menu': None},
+                                {'sum': 'Укажите сумму вывода:', 'menu': None},
                                 {'bank': 'Выберите банк', 'menu': '#banks#0'},
                                 {'card': 'Укажите номер вашей карты', 'menu': None}
                             ]

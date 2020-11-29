@@ -46,7 +46,7 @@ def start(update, context):
                            last_order=last_order, orders_number=orders_number, workers_orders=workers_orders,
                            rate=rate, points=points, balance=balance)
             context.user_data.update({'queue': False})
-            text = newuser.first_name + ', добро пожаловать на биржу студенческих работ СПбПУ! По всем вопросам пишите Вашему персональному менеджеру: @admin'
+            text = 'Добро пожаловать на биржу студенческих работ СПбПУ! По всем вопросам пишите Вашему персональному менеджеру: @admin'
             context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0])
 
 
@@ -126,6 +126,8 @@ def stop(update, context):
 @db_session
 def profile(update, context):
     if update.message.chat.id > 0:
+        context.user_data.update({'queue': False})
+    if update.message.chat.id > 0:
         user = get_user(update.message.from_user.id)
         if user:
             if user.status == 'banned':
@@ -148,6 +150,8 @@ def profile(update, context):
 
 
 def myprofile(update, context):
+    if update.message.chat.id > 0:
+        context.user_data.update({'queue': False})
     if update.message.chat.id > 0:
         user = get_user(update.message.from_user.id)
         if user:
@@ -176,6 +180,8 @@ def myprofile(update, context):
 
 def menu(update, context):
     if update.message.chat.id > 0:
+        context.user_data.update({'queue': False})
+    if update.message.chat.id > 0:
         user = get_user(update.message.from_user.id)
         if user:
             if user.status == 'banned':
@@ -198,6 +204,8 @@ def menu(update, context):
 
 def new_order(update, context):
     if update.message.chat.id > 0:
+        context.user_data.update({'queue': False})
+    if update.message.chat.id > 0:
         user = get_user(update.message.from_user.id)
         if user:
             if user.status == 'banned':
@@ -208,19 +216,21 @@ def new_order(update, context):
                     current_queue(update, context, user)
                     return
             queue_list = [
-                {'subject': 'Выберите предмет (или напишите свой):', 'menu': "#subject#0"},
-                {'type': 'Выберите тип работы (или напишите свой):', 'menu': '#type#0'},
-                {'faculty': 'Укажите ваш факультет? (не обязательно)', 'menu': '#faculty#0'},
-                {'departament': 'Укажите вашу кафедру? (не обязательно)', 'menu': '#departament#0'},
-                {'teacher': 'Укажите вашего преподователя? (не обязательно)', 'menu': '#teacher#0'},
+                {'subject': 'Выберите предмет из списка или укажите его в ответном сообщении::', 'menu': "#subject#0"},
+                {'type': 'Выберите тип работы из списка или укажите его в ответном сообщении::', 'menu': '#type#0'},
                 {'description': 'Укажите описание работы:', 'menu': None},
-                {'deadline': 'Выберите срок (или укажите свой срок):', 'menu': '#deadline#0'},
-                {'price': 'Выберите цену (или укажите свою цену):', 'menu': '#price#0'},
-                {'docs': 'Прикрепите фотографии и нажмите кнопку "Готово"', 'menu': '#done#0'},
+                {'deadline': 'Выберите срок из списка или укажите его в ответном сообщении:\n'
+                             'Если требуется помощь в онлайн-режиме, то укажите дату и '
+                             'время проведения работы (по Москве).', 'menu': '#deadline#0'},
+                {'price': 'Выберите цену из списка или укажите ее в ответном сообщении::', 'menu': '#price#0'},
+                {'faculty': 'Укажите ваш факультет?', 'menu': '#faculty#0'},
+                {'departament': 'Укажите вашу кафедру?', 'menu': '#departament#0'},
+                {'teacher': 'Укажите вашего преподователя?', 'menu': '#teacher#0'},
+                {'docs': 'Прикрепите фотографии, если это необходимо, и нажмите на кнопку «Готово» ✅', 'menu': '#done#0'},
             ]
             context.user_data.update({'queue': True, 'queue_name': 'new_order', 'queue_finish':
-                'Вы успешно создали заказ! Сейчас он находится на проверке. Мы пришлем Вам уведомление, '
-                'когда он будет опубликован на канале.',
+                'Вы успешно создали заказ! Сейчас он находится на проверке. Мы пришлём Вам уведомление,'
+                ' когда он будет одобрен.',
                                       'queue_list': queue_list, 'queue_position': 0, 'queue_answers': [], 'queue_docs': '',
                                       'last_queue_message': ''})
 
@@ -231,6 +241,8 @@ def new_order(update, context):
 
 @db_session
 def my_orders(update, context):
+    if update.message.chat.id > 0:
+        context.user_data.update({'queue': False})
     if update.message.chat.id > 0:
         user = get_user(update.message.from_user.id)
         if user:
@@ -262,6 +274,8 @@ def my_orders(update, context):
 @db_session
 def del_order(update, context):
     if update.message.chat.id > 0:
+        context.user_data.update({'queue': False})
+    if update.message.chat.id > 0:
         user = get_user(update.message.from_user.id)
         if user:
             if user.status == 'banned':
@@ -288,6 +302,8 @@ def del_order(update, context):
 
 @db_session
 def order(update, context):
+    if update.message.chat.id > 0:
+        context.user_data.update({'queue': False})
     if update.message.chat.id > 0:
         user = get_user(update.message.from_user.id)
         if user:
@@ -329,6 +345,8 @@ def order(update, context):
 
 def balance(update, context):
     if update.message.chat.id > 0:
+        context.user_data.update({'queue': False})
+    if update.message.chat.id > 0:
         user = get_user(update.message.from_user.id)
         if user:
             if user.status == 'banned':
@@ -338,7 +356,7 @@ def balance(update, context):
                 if context.user_data['queue']:
                     current_queue(update, context, user)
                     return
-            text = 'Ваш баланс - ' + str(user.balance) + 'руб.'
+            text = 'Ваш баланс: ' + str(user.balance) + 'руб.'
 
             mymenu = Menu()
             buttons = [InlineKeyboardButton('Пополнить', callback_data='@' + str(user.id) + '@deposit'),
@@ -355,6 +373,8 @@ def balance(update, context):
 
 def faq(update, context):
     if update.message.chat.id > 0:
+        context.user_data.update({'queue': False})
+    if update.message.chat.id > 0:
         user = get_user(update.message.from_user.id)
         if user:
             if user.status == 'banned':
@@ -365,7 +385,18 @@ def faq(update, context):
                     current_queue(update, context, user)
                     return
 
-            text = 'FAQ text'
+            text = '1. Вы оформляете новый заказ на выполнение студенческой работы через этого бота (/neworder).' \
+                   '\n2. Ваша заявка отправляется на рассмотрение менеджеру и спустя время публикуется на канале ' \
+                   '(ссылка на канал) с заказами.' \
+                   '\n3. Исполнители отправляют заявки на выполнение Вашего заказа, о чём Вы получаете уведомления ' \
+                   'в боте.' \
+                   '\n4. После того, как Вы выберите проходящего исполнителя, менеджер создаст общий чат, где вы ' \
+                   'должны договориться об условиях работы.' \
+                   '\n5. Далее Вам необходимо внести оплату. Эти средства будут удержаны на счёте администрации ' \
+                   'биржи, исполнитель не получит к ним доступ до завершения заказа.' \
+                   '\n6. Когда работа готова, Вы проверяете её и подтверждаете соблюдение всех условий. ' \
+                   'Теперь исполнитель получит оплату, а Вы сможете оценить его работу.' \
+                   '\n\nПо всем вопросам пишите Вашему персональному менеджеру: @admin'
 
             context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
         else:

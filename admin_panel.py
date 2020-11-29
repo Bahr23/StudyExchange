@@ -20,7 +20,7 @@ def adminpanel(update, context):
         mymenu = Menu()
         if user:
             if user.status == 'banned':
-                context.bot.send_message(chat_id=user.id, text=BANNED_TEXT)
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
                 return
             if 'queue' in context.user_data.keys():
                 if context.user_data['queue']:
@@ -46,7 +46,7 @@ def channel(update, context):
         user = get_user(update.message.from_user.id)
         if user:
             if user.status == 'banned':
-                context.bot.send_message(chat_id=user.id, text=BANNED_TEXT)
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
                 return
             if 'queue' in context.user_data.keys():
                 if context.user_data['queue']:
@@ -69,7 +69,7 @@ def message(update, context):
         user = get_user(update.message.from_user.id)
         if user:
             if user.status == 'banned':
-                context.bot.send_message(chat_id=user.id, text=BANNED_TEXT)
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
                 return
             if 'queue' in context.user_data.keys():
                 if context.user_data['queue']:
@@ -100,7 +100,7 @@ def ubalance(update, context):
         user = get_user(update.message.from_user.id)
         if user:
             if user.status == 'banned':
-                context.bot.send_message(chat_id=user.id, text=BANNED_TEXT)
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
                 return
             if 'queue' in context.user_data.keys():
                 if context.user_data['queue']:
@@ -114,7 +114,7 @@ def ubalance(update, context):
                         user = User.get(id=int(context.args[0]))
                         if user:
                             amount = int(' '.join(context.args[1:]))
-                            chat_id = user.id
+                            chat_id = user.user_id
                             user.balance += amount
                             t = tr.new(type='ADMINREBALANCE', bill_id='None', amount=int(amount), user_id=user.id,
                                        date=time.strftime('%d.%M.%Y'))
@@ -128,13 +128,13 @@ def ubalance(update, context):
         else:
             start(update, context)
 
-
+@db_session
 def user(update, context):
     if update.message.chat.id > 0:
         user = get_user(update.message.from_user.id)
         if user:
             if user.status == 'banned':
-                context.bot.send_message(chat_id=user.id, text=BANNED_TEXT)
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
                 return
             if 'queue' in context.user_data.keys():
                 if context.user_data['queue']:
@@ -143,7 +143,7 @@ def user(update, context):
             if user.status == 'admin':
                 try:
                     id = int(context.args[0])
-                    find_user = get_user(id)
+                    find_user = User.get(id=id)
                     if find_user:
                         mymenu = Menu()
                         buttons = [InlineKeyboardButton('Заказы', callback_data='@' + str(id) + '@userorders'),
@@ -173,7 +173,7 @@ def getorder(update, context):
         user = get_user(update.message.from_user.id)
         if user:
             if user.status == 'banned':
-                context.bot.send_message(chat_id=user.id, text=BANNED_TEXT)
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
                 return
             if 'queue' in context.user_data.keys():
                 if context.user_data['queue']:
@@ -206,8 +206,9 @@ def getorder(update, context):
                 else:
                     text = 'Используйте /getorder Номер_заказа!'
 
-                if order.docs:
-                    text += '\nВложения:\n' + order.docs
+                if order:
+                    if order.docs != 'Вложения не добавлены':
+                        text += '\nВложения:\n' + order.docs
 
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup, parse_mode=telegram.ParseMode.HTML)
         else:
@@ -220,7 +221,7 @@ def orders(update, context):
         user = get_user(update.message.from_user.id)
         if user:
             if user.status == 'banned':
-                context.bot.send_message(chat_id=user.id, text=BANNED_TEXT)
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
                 return
             if 'queue' in context.user_data.keys():
                 if context.user_data['queue']:
@@ -254,7 +255,7 @@ def setstatus(update, context):
         user = get_user(update.message.from_user.id)
         if user:
             if user.status == 'banned':
-                context.bot.send_message(chat_id=user.id, text=BANNED_TEXT)
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
                 return
             if 'queue' in context.user_data.keys():
                 if context.user_data['queue']:
@@ -268,7 +269,7 @@ def setstatus(update, context):
                         if user:
                             user.status = context.args[1]
                             text = 'Вы успешно изменили статус пользователя с id ' + str(user.id) + ' на ' + context.args[1]
-                            context.bot.send_message(chat_id=user.id, text='Ваш статус изменен на ' + context.args[1])
+                            context.bot.send_message(chat_id=user.user_id, text='Ваш статус изменен на ' + context.args[1])
                         else:
                             text = 'Пользователь с id ' + context.args[0] + ' не найден'
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)

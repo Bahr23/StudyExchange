@@ -14,7 +14,6 @@ BANNED_TEXT = 'Ваш аккаунт был заблокирован в серв
 def get_user(id):
     try:
         user = User.get(user_id=id)
-        print(1, id)
         return user
     except Exception as e:
         return False
@@ -23,12 +22,12 @@ def get_user(id):
 def get_name(user, id=False):
     if user:
         name = str(user.id)
-        if user.first_name != 'Не указано':
+        if user.first_name != 'не указано':
             name = user.first_name
-            if user.last_name != 'Не указано':
+            if user.last_name != 'не указано':
                 name += ' ' + user.last_name
         else:
-            if user.username != 'Не указано':
+            if user.username != 'не указано':
                 name = user.username
         if id:
             name = '<b>' + name
@@ -60,7 +59,7 @@ def get_profile(id):
         if user.last_order != 'не указано':
             last_order_date = user.last_order.split('.')
             last_order_date = last_order_date[2] + '.' + last_order_date[1] + '.' + last_order_date[0]
-            last_order = 'Дата последнего заказа: ' + last_order_date + '\n'
+            last_order = '\nДата последнего заказа: ' + last_order_date + '\n'
         else:
             last_order = ''
 
@@ -68,9 +67,9 @@ def get_profile(id):
         reg = reg[2] + '.' + reg[1] + '.' + reg[0]
 
 
-        text = '{name} [id<code>{id}</code>]\nСтатус: {status}\nДата регистрации: ' \
+        text = '{name} [id<code>{id}</code>]\n\nСтатус: {status}\nДата регистрации: ' \
                '{registration_date}\n\nОбразование: {education}\nГород: {city}\nВозраст: ' \
-               '{age}\n\nЗавершенные заказы: {orders_number}\n{last_order}\nРейтинг исполнителя: {rate}' \
+               '{age}\n\nЗавершенные заказы: {orders_number}{last_order}\nРейтинг исполнителя: {rate}' \
                '\n'.format(name=name, id=user.id, status=status, registration_date=reg,
                                                                 education=user.education, city=user.city, age=user.age,
                                                                 orders_number=user.orders_number,
@@ -79,27 +78,28 @@ def get_profile(id):
     else:
         return False
 
+
 @db_session
 def get_order(id):
     order = Order.get(id=id)
     if order:
         if order.faculty != 'Пропустить':
-            faculty = '\nФакультет - ' + order.faculty
+            faculty = '\nФакультет - ' + order.faculty.lower()
         else:
             faculty = ''
 
         if order.departament != 'Пропустить':
-            departament = '\nКафедра - ' + order.departament
+            departament = '\nКафедра - ' + order.departament.lower()
         else:
             departament = ''
 
         if order.teacher != 'Пропустить':
-            teacher = '\nПреподователь - ' + order.teacher
+            teacher = '\nПреподователь - ' + order.teacher.lower()
         else:
             teacher = ''
 
-        text = 'Номер заказа: ' + str(order.id) + '\nСтатус: ' + order.status + '\nПредмет: ' + order.subject + '\nТип: ' + \
-               order.type + faculty + departament + teacher + '\nСроки: ' + order.deadline + '\nЦена: ' + order.price + '\nОписание: ' + \
+        text = 'Номер заказа: ' + str(order.id) + '\nСтатус: ' + order.status.lower() + '\nПредмет: ' + order.subject.lower() + '\nТип: ' + \
+               order.type.lower() + faculty + departament + teacher + '\nСроки: ' + order.deadline.lower() + '\nЦена: ' + order.price.lower() + '\nОписание: ' + \
                order.description
         return text
     else:
@@ -228,6 +228,7 @@ def finish_queue(name, answers, update=None, context=None):
         context.user_data.update({'edit_order': None})
 
     if name == "edit_profile":
+        print(answers)
         user = User.get(id=context.user_data['edit_profile'])
         key = list(answers[0].keys())[0]
         value = list(answers[0].values())[0]
@@ -243,6 +244,33 @@ def finish_queue(name, answers, update=None, context=None):
                 context.user_data.update({'queue_finish': False})
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
+        if key == 'education':
+            try:
+                education = str(value)
+                for s in education:
+                    if not s.isalpha() and s != '-':
+                        raise
+                exec('user.' + key + " = '" + value + "'")
+
+            except Exception as e:
+                print(e)
+                text = "В поле 'Образование' должные содержаться только буквы!"
+                context.user_data.update({'queue_finish': False})
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+
+        if key == 'city':
+            try:
+                city = str(value)
+                for s in city:
+                    if not s.isalpha() and s != '-':
+                        raise
+                exec('user.' + key + " = '" + value + "'")
+
+            except Exception as e:
+                print(e)
+                text = "В поле 'Город' должные содержаться только буквы!"
+                context.user_data.update({'queue_finish': False})
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
     if name == "balance":
         print(answers)

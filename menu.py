@@ -30,10 +30,10 @@ class Menu:
                 ]
             },
             'main': {
-                'text': 'Меню: \n/menu - список комманд\n/neworder - создать новый заказ\n/myprofile - мой профиль\n'
-                        '/myorders - посмотреть свои заказы \n/balance - управление балансом\n/faq - как это работает\n'
-                        '/order <i>номер_заказа</i> - посмотреть определенный заказ \n'
-                        '/profile <i>id_исполнителя</i> - посмотреть профиль испольнителя',
+                'text': '/menu - список комманд\n/neworder - новый заказ\n/myprofile - мой профиль\n'
+                        '/myorders - мои заказы \n/balance - управление балансом\n/faq - как это работает?\n'
+                        '/order <i>номер_заказа</i> - поиск заказа по его id\n'
+                        '/profile <i>id_исполнителя</i> - поиск профиля исполнителя по его id',
                 'type': 'reply',
                 'body': [
                     {
@@ -112,10 +112,10 @@ class Menu:
                 'body': [
                     {
                         'buttons': [
-                            InlineKeyboardButton("Контрольная", callback_data="Контрольная"),
+                            InlineKeyboardButton("Контрольная работа", callback_data="Контрольная работа"),
                             InlineKeyboardButton("Реферат", callback_data="Реферат"),
-                            InlineKeyboardButton("Курсовая", callback_data="Курсовая"),
-                            InlineKeyboardButton("Дипломная", callback_data="Дипломная"),
+                            InlineKeyboardButton("Курсовая работа", callback_data="Курсовая работа"),
+                            InlineKeyboardButton("Дипломная работа", callback_data="Дипломная работа"),
                             InlineKeyboardButton("Сдача экзамена", callback_data="Сдача экзамена")],
                         'header': None,
                         'footer': None,
@@ -264,7 +264,7 @@ class Menu:
 
     def order_buttons(self, id, workers=None):
         buttons = [
-            InlineKeyboardButton('Редактировать', callback_data='@' + str(id) + '@edit@list'),
+            # InlineKeyboardButton('Редактировать', callback_data='@' + str(id) + '@edit@list'),
             InlineKeyboardButton('Оплатить', callback_data='@' + str(id) + '@buy'),
         ]
 
