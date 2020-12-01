@@ -55,8 +55,6 @@ def channel(update, context):
             if user.status == 'admin':
                 if context.args:
                     context.bot.send_message(chat_id=CHANNEL_ID, text=' '.join(context.args))
-                else:
-                    context.bot.send_message(chat_id=CHANNEL_ID, text='Hello World!')
             else:
                 context.bot.send_message(chat_id=update.effective_chat.id, text='Вы не являетесь админом')
         else:
@@ -119,6 +117,7 @@ def ubalance(update, context):
                             t = tr.new(type='ADMINREBALANCE', bill_id='None', amount=int(amount), user_id=user.id,
                                        date=time.strftime('%d.%M.%Y'))
                             text = 'Баланс пользователя ' + get_name(user) + ' изменен на ' + str(amount) + 'р.'
+
                         else:
                             text = 'Пользователь с id ' + context.args[0] + ' не найден'
                 context.bot.send_message(chat_id=chat_id, text=text)
@@ -154,7 +153,7 @@ def user(update, context):
 
                         markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
                         reply_markup = InlineKeyboardMarkup(markup)
-                        text = get_profile(find_user.id)
+                        text = "@" + find_user.username + '\n' + get_profile(find_user.id)
                     else:
                         reply_markup = None
                         text = 'Пользователь с id ' + str(id) + ' не найден'
@@ -269,7 +268,12 @@ def setstatus(update, context):
                         if user:
                             user.status = context.args[1]
                             text = 'Вы успешно изменили статус пользователя с id ' + str(user.id) + ' на ' + context.args[1]
-                            context.bot.send_message(chat_id=user.user_id, text='Ваш статус изменен на ' + context.args[1])
+                            utext = 'Ваш статус изменен на ' + context.args[1]
+
+                            if context.args[1] == 'worker':
+                                utext = 'Ваша заявка на роль исполнителя успешно одобрена! Можете приступать к работе.'
+
+                            context.bot.send_message(chat_id=user.user_id, text=utext)
                         else:
                             text = 'Пользователь с id ' + context.args[0] + ' не найден'
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
@@ -278,3 +282,77 @@ def setstatus(update, context):
                 context.bot.send_message(chat_id=update.effective_chat.id, text='Вы не являетесь админом')
         else:
             start(update, context)
+
+
+@db_session
+def coupon(update, context):
+    if update.message.chat.id > 0:
+        user = get_user(update.message.from_user.id)
+        if user:
+            if user.status == 'banned':
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
+                return
+            if 'queue' in context.user_data.keys():
+                if context.user_data['queue']:
+                    current_queue(update, context, user)
+                    return
+            if user.status == 'admin':
+                if len(context.args) == 1:
+                    coupon = Coupons.get(name=context.args[0])
+                    if coupon:
+                        text = 'Name - ' + coupon.name + '\nAmount - ' + str(coupon.amount) + \
+                               '\nCount - ' + str(coupon.count)
+                if len(context.args) == 3:
+                    try:
+                        name = context.args[0]
+                        amount = int(context.args[1])
+                        count = int(context.args[2])
+
+                        coupon = Coupons.get(name=name)
+                        if coupon:
+                            text = 'Купон с этим названием уже существует'
+                        else:
+                            coupon = Coupons(name=name, amount=amount, count=count)
+                            text = 'Вы успешно создали купон ' + name
+                    except Exception as e:
+                        print(e)
+                        text = 'Error'
+
+                if not context.args:
+                    text = '/coupon coupon_name - получить информацию о купоне' \
+                           '\n/coupon coupon_name amount count - создать новый купон'
+
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+            else:
+                context.bot.send_message(chat_id=update.effective_chat.id, text='Вы не являетесь админом')
+        else:
+            start(update, context)
+
+
+@db_session
+def delcoupon(update, context):
+    if update.message.chat.id > 0:
+        user = get_user(update.message.from_user.id)
+        if user:
+            if user.status == 'banned':
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
+                return
+            if 'queue' in context.user_data.keys():
+                if context.user_data['queue']:
+                    current_queue(update, context, user)
+                    return
+            if user.status == 'admin':
+                if len(context.args) == 1:
+                    coupon = Coupons.get(name=context.args[0])
+                    if coupon:
+                        delete(c for c in Coupons if c.name == context.args[0])
+                        text = 'Купон ' + context.args[0] + ' удален.'
+                    else:
+                        text = 'Купон ' + context.args[0] + ' не найден.'
+
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+            else:
+                context.bot.send_message(chat_id=update.effective_chat.id, text='Вы не являетесь админом')
+        else:
+            start(update, context)
+

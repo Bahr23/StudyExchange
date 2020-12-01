@@ -44,11 +44,12 @@ def monitoring():
                                 t = tr.new(type='DEPOSIT', bill_id=str(bi.bill_id), amount=int(float(bi.amount)), user_id=user.id, date=time.strftime('%d.%M.%Y'))
                                 p2p.reject(bill_id=b.bill_id)
                                 b.delete()
-                                text = 'На ваш баланс зачислено ' + str(int(float(bi.amount))) + 'руб.'
+                                text = 'Ваш баланс пополнен на ' + str(int(float(bi.amount))) + ' руб.'
                                 bot.send_message(chat_id=user.user_id, text=text)
                 else:
                     p2p.reject(bill_id=b.bill_id)
                     b.delete()
         time.sleep(1)
+
 
 monitoring()

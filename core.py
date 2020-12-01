@@ -124,7 +124,6 @@ def queue(update, context, user, ans=None):
     else:
         if not ans:
             ans = update.message.text
-    print(ans)
     answer = {list(context.user_data['queue_list'][context.user_data['queue_position']].keys())[0]: ans}
     context.user_data['queue_answers'].append(answer)
     context.user_data['queue_position'] += 1
@@ -134,7 +133,6 @@ def queue(update, context, user, ans=None):
         finish_queue(context.user_data['queue_name'], context.user_data['queue_answers'], update, context)
         context.user_data['queue'] = False
         if context.user_data['queue_finish']:
-            print(context.user_data['queue_finish'])
             text = context.user_data['queue_finish']
             mymenu = Menu()
             reply_markup = mymenu.get_menu(tag='#main#0')
@@ -142,8 +140,6 @@ def queue(update, context, user, ans=None):
 
 
 def current_queue(update, context, user):
-    print(context.user_data['queue_position'])
-    print(context.user_data)
     if (context.user_data['queue_name'] == 'edit_order' or context.user_data['queue_name'] == 'edit_profile') and context.user_data['queue_position'] == 1:
         return
     text = list(context.user_data['queue_list'][context.user_data['queue_position']].values())[0]
@@ -173,13 +169,19 @@ def finish_queue(name, answers, update=None, context=None):
     if name == "new_order":
         subject = list(answers[0].values())[0]
         order_type = list(answers[1].values())[0]
-        faculty = list(answers[2].values())[0]
-        departament = list(answers[3].values())[0]
-        teacher = list(answers[4].values())[0]
-        description = list(answers[5].values())[0]
-        deadline = list(answers[6].values())[0]
-        price = list(answers[7].values())[0]
+        description = list(answers[2].values())[0]
+        deadline = list(answers[3].values())[0]
+        price = list(answers[4].values())[0]
+        faculty = list(answers[5].values())[0]
+        departament = list(answers[6].values())[0]
+        teacher = list(answers[7].values())[0]
         docs = list(answers[8].values())[0]
+        promo = list(answers[9].values())[0]
+
+        coupon = Coupons.get(name=promo)
+
+        if not coupon:
+            promo = '0'
 
         try:
             docs = docs.split(', ')
@@ -189,12 +191,11 @@ def finish_queue(name, answers, update=None, context=None):
                     media_group.append(InputMediaPhoto(media=d.replace(',', '')))
             url = 'https://t.me/StudyExchangeMedia/' + str(context.bot.send_media_group(chat_id=MEDIA_ID, media=media_group)[0].message_id)
         except Exception as e:
-            print(e)
             url = 'Вложения не добавлены'
 
         order = Order(user_id=user.id, status='В обработке', subject=subject, type=order_type, faculty=faculty,
                       departament=departament, teacher=teacher, description=description,
-                      deadline=deadline, price=price, worker_id='', docs=url)
+                      deadline=deadline, price=price, worker_id='', docs=url, promo=promo)
 
         # # Оповещение пользователя
         # text = 'Ваш заказ добавлен в обработку и в скором времени будет опубликован'
@@ -228,7 +229,6 @@ def finish_queue(name, answers, update=None, context=None):
         context.user_data.update({'edit_order': None})
 
     if name == "edit_profile":
-        print(answers)
         user = User.get(id=context.user_data['edit_profile'])
         key = list(answers[0].keys())[0]
         value = list(answers[0].values())[0]
@@ -253,8 +253,7 @@ def finish_queue(name, answers, update=None, context=None):
                 exec('user.' + key + " = '" + value + "'")
 
             except Exception as e:
-                print(e)
-                text = "В поле 'Образование' должные содержаться только буквы!"
+                text = "В поле «Образование» должные содержаться только буквы!"
                 context.user_data.update({'queue_finish': False})
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
@@ -267,14 +266,11 @@ def finish_queue(name, answers, update=None, context=None):
                 exec('user.' + key + " = '" + value + "'")
 
             except Exception as e:
-                print(e)
-                text = "В поле 'Город' должные содержаться только буквы!"
+                text = "В поле «Город» должные содержаться только буквы!"
                 context.user_data.update({'queue_finish': False})
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
     if name == "balance":
-        print(answers)
-
         try:
             sum = int(answers[0]['sum'])
             if sum > 0:
@@ -284,7 +280,6 @@ def finish_queue(name, answers, update=None, context=None):
             else:
                 text = "Сумма пополнения должна быть болье 0!"
         except Exception as e:
-            print(e)
             text = 'Сумма пополнения должна быть числом!'
         context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
@@ -297,7 +292,7 @@ def finish_queue(name, answers, update=None, context=None):
                 sum2 = sum * 0.97
                 text = '<b>Пользователь ' + get_name(user) + '[' + str(user.id) + ']' + ' запрашивает вывод:</b>\n' \
                                                                                         '1. Сумма без комисси - ' + str(sum) + \
-                       ' руб\n  - Сумма с учетом комисси - ' + str(sum2) + ' руб\n2. Банк - ' + str(bank) + '\n3. Реквизиты - ' + str(card)
+                       ' руб.\n  - Сумма с учетом комисси - ' + str(sum2) + ' руб\n2. Банк - ' + str(bank) + '\n3. Реквизиты - ' + str(card)
 
                 buttons = [InlineKeyboardButton('Одобрить', callback_data='@' + str(user.user_id) + '@withdrawconfirm@' + str(sum)),
                            InlineKeyboardButton('Завершить', callback_data='@' + str(user.user_id) + '@withdrawdone@' + str(sum))]
@@ -315,5 +310,4 @@ def finish_queue(name, answers, update=None, context=None):
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
         except Exception as e:
-            print(e)
             text = 'Сумма вывода должна быть числом!'

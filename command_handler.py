@@ -59,6 +59,8 @@ def command_handler(dispatcher):
     dispatcher.add_handler(CommandHandler("orders", orders))
     dispatcher.add_handler(CommandHandler("setstatus", setstatus))
     dispatcher.add_handler(CommandHandler("ubalance", ubalance))
+    dispatcher.add_handler(CommandHandler("coupon", coupon))
+    dispatcher.add_handler(CommandHandler("delcoupon", delcoupon))
 
     # Utils
     dispatcher.add_handler(MessageHandler(Filters.text, all_messages))

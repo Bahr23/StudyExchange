@@ -25,7 +25,7 @@ def chat(update, context):
                         context.bot.set_chat_title(chat_id=update.effective_chat.id, title='None')
                         context.bot.set_chat_description(chat_id=update.effective_chat.id, description='None')
 
-                        title = order.subject + ' [' + str(order.id) + ']'
+                        title = "Заказ #" + str(order.id) + ' [' + order.subject + ']'
                         context.bot.set_chat_title(chat_id=update.effective_chat.id, title=title)
 
                         description = 'Чат по поводу заказа ' + order.subject + ' [' + str(order.id) + ']'
@@ -115,7 +115,7 @@ def price(update, context):
                             if chat.price_msg:
                                 context.bot.delete_message(chat_id=chat.chat_id, message_id=chat.price_msg)
 
-                            text = "Пользователь " + name + ' предлагает цену - <b>' + context.args[0] + 'р.</b>\nНажмите кнопку ниже, если вы согласны.'
+                            text = "Пользователь " + name + ' предлагает цену - <b>' + context.args[0] + ' руб.</b>\nНажмите кнопку ниже, если вы согласны.'
                             text += '\nСогласны:\n'
 
                             mymenu = Menu()
