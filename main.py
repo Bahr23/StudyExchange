@@ -27,5 +27,3 @@ command_handler(dispatcher)
 
 updater.start_polling()
 os.system('python payment.py')
-
-

@@ -42,7 +42,7 @@ def command_handler(dispatcher):
     dispatcher.add_handler(CommandHandler("chat", chat))
 
     dispatcher.add_handler(CommandHandler("admin", admin))
-    dispatcher.add_handler(MessageHandler(Filters.regex("Вызвать админа"), admin))
+    dispatcher.add_handler(MessageHandler(Filters.regex("Вызвать менеджера"), admin))
 
     dispatcher.add_handler(CommandHandler("price", price))
     dispatcher.add_handler(MessageHandler(Filters.regex("Утвердить цену"), price))

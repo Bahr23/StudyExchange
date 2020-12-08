@@ -8,7 +8,7 @@ from pay import *
 
 CHANNEL_ID = '-1001361464885'
 MEDIA_ID = '-1001412307468'
-BANNED_TEXT = 'Ваш аккаунт был заблокирован в сервисе StudyExchange!'
+BANNED_TEXT = 'Ваш аккаунт был заблокирован!'
 
 @db_session
 def get_user(id):
@@ -31,7 +31,7 @@ def get_name(user, id=False):
                 name = user.username
         if id:
             name = '<b>' + name
-            name += '</b>[id<code>' + str(user.id) + '</code>]'
+            name += '</b> (id<code>' + str(user.id) + '</code>)'
         return name
     return 'Unknown'
 
@@ -66,10 +66,9 @@ def get_profile(id):
         reg = user.registration_date.split('.')
         reg = reg[2] + '.' + reg[1] + '.' + reg[0]
 
-
-        text = '{name} [id<code>{id}</code>]\n\nСтатус: {status}\nДата регистрации: ' \
+        text = '{name} (id<code>{id}</code>)\n\nСтатус: {status}\nДата регистрации: ' \
                '{registration_date}\n\nОбразование: {education}\nГород: {city}\nВозраст: ' \
-               '{age}\n\nЗавершенные заказы: {orders_number}{last_order}\nРейтинг исполнителя: {rate}' \
+               '{age}\n\nЗавершённые заказы: {orders_number}{last_order}\nРейтинг: {rate}' \
                '\n'.format(name=name, id=user.id, status=status, registration_date=reg,
                                                                 education=user.education, city=user.city, age=user.age,
                                                                 orders_number=user.orders_number,
@@ -81,27 +80,19 @@ def get_profile(id):
 
 @db_session
 def get_order(id):
-    order = Order.get(id=id)
-    if order:
-        if order.faculty != 'Пропустить':
-            faculty = '\nФакультет - ' + order.faculty.lower()
-        else:
-            faculty = ''
-
-        if order.departament != 'Пропустить':
-            departament = '\nКафедра - ' + order.departament.lower()
-        else:
-            departament = ''
-
-        if order.teacher != 'Пропустить':
-            teacher = '\nПреподователь - ' + order.teacher.lower()
-        else:
-            teacher = ''
-
-        text = 'Номер заказа: ' + str(order.id) + '\nСтатус: ' + order.status.lower() + '\nПредмет: ' + order.subject.lower() + '\nТип: ' + \
-               order.type.lower() + faculty + departament + teacher + '\nСроки: ' + order.deadline.lower() + '\nЦена: ' + order.price.lower() + '\nОписание: ' + \
-               order.description
-        return text
+    o = Order.get(id=id)
+    if o:
+        extra_info = ','.join([x for x in (o.faculty, o.departament, o.teacher) if x != 'Пропустить']) + '\n'
+        print(str(o.id))
+        return 'Заказ #{id} ({subject})\n{status}\n\n{type}, {deadline}, {price}\n{extra_info}{description}'.format(
+            id=o.id,
+            subject=o.subject.lower(),
+            status=o.status.lower(),
+            type=o.type,
+            deadline=o.deadline.lower(),
+            price=o.price.lower(),
+            extra_info=extra_info,
+            description=o.description)
     else:
         return False
 
@@ -111,9 +102,9 @@ def delete_order(id):
     order = Order.get(id=id)
     if order:
         delete(o for o in Order if o.id == id)
-        return 'Заказ №' + str(id) + ' удален.'
+        return 'Заказ #' + str(id) + ' удалён.'
     else:
-        return 'Заказ номер ' + str(id) + ' не найден.'
+        return 'Заказ #' + str(id) + ' не найден.'
 
 
 def queue(update, context, user, ans=None):
@@ -204,7 +195,7 @@ def finish_queue(name, answers, update=None, context=None):
         # Оповещение админов
         orders = select(o for o in Order)
         id = int(list(orders)[-1].id)
-        text = 'Пользователь ' + get_name(user, True) + ' создал заказ №' + str(id) + '\n'
+        text = 'Пользователь ' + get_name(user, True) + ' создал заказ #' + str(id) + '\n'
         text += get_order(id)
         mymenu = Menu()
         buttons = [InlineKeyboardButton('Одобрить', callback_data='@' + str(id) + '@push'),
@@ -240,7 +231,7 @@ def finish_queue(name, answers, update=None, context=None):
                 exec('user.' + key + " = '" + value + "'")
 
             except Exception as e:
-                text = "Введите число больше 0!"
+                text = "Введите число больше нуля!"
                 context.user_data.update({'queue_finish': False})
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
@@ -253,7 +244,7 @@ def finish_queue(name, answers, update=None, context=None):
                 exec('user.' + key + " = '" + value + "'")
 
             except Exception as e:
-                text = "В поле «Образование» должные содержаться только буквы!"
+                text = "В поле «Образование» могут находиться только буквы!"
                 context.user_data.update({'queue_finish': False})
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
@@ -266,7 +257,7 @@ def finish_queue(name, answers, update=None, context=None):
                 exec('user.' + key + " = '" + value + "'")
 
             except Exception as e:
-                text = "В поле «Город» должные содержаться только буквы!"
+                text = "В поле «Город» могут находиться только буквы!"
                 context.user_data.update({'queue_finish': False})
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
@@ -278,7 +269,7 @@ def finish_queue(name, answers, update=None, context=None):
                 link = paylink(user.id, sum)
                 text += link
             else:
-                text = "Сумма пополнения должна быть болье 0!"
+                text = "Сумма пополнения должна быть больше нуля!"
         except Exception as e:
             text = 'Сумма пополнения должна быть числом!'
         context.bot.send_message(chat_id=update.effective_chat.id, text=text)

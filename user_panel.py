@@ -74,7 +74,7 @@ def all_messages(update, context):
             context.user_data.update({'last_message': update.message.text})
             mymenu = Menu()
             reply_markup = mymenu.get_menu(tag='#main#0')
-            text = user.first_name + ', я не знаю как на это ответить'
+            text = user.first_name + ', я не знаю как на это ответить.'
             context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0])
         else:
             start(update, context)
@@ -91,7 +91,7 @@ def get_docs(update, context):
                 if context.user_data['queue']:
                     if list(context.user_data['queue_list'][context.user_data['queue_position']].keys())[0] == 'docs':
                         if update.message.photo:
-                            text = "Фото сохранено, отправьте еще или нажмите «Готово» ✅"
+                            text = "Фото сохранено, отправьте ёще или нажмите «Готово» ✅"
                             fid = update.message.photo[0].file_id
 
                             context.user_data['queue_docs'] += fid + ', '
@@ -99,7 +99,7 @@ def get_docs(update, context):
 
                             # context.bot.send_photo(chat_id=MEDIA_ID, photo=update.message.photo[0].file_id)
                         if update.message.document:
-                            text = 'Отправьте медиа как фото, а не файлы'
+                            text = 'Отправьте вложение, как фото, а не файлы.'
                             # context.bot.send_document(chat_id=MEDIA_ID, document=update.message.document.file_id)
 
                         context.bot.send_message(chat_id=update.effective_chat.id, text=text)
@@ -109,7 +109,7 @@ def get_docs(update, context):
             else:
                 mymenu = Menu()
                 reply_markup = mymenu.get_menu(tag='#main#0')
-                text = user.first_name + ', я не знаю как на это ответить'
+                text = user.first_name + ', я не знаю как на это ответить.'
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0])
                 context.user_data.update({'last_message': update.message.text})
 
@@ -143,7 +143,7 @@ def profile(update, context):
                 if user:
                     text = get_profile(user.id)
                 else:
-                    text = 'Пользователь с id ' + context.args[0] + ' не найден'
+                    text = 'Такой пользователь не найден.'
             context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
         else:
             start(update, context)
@@ -222,12 +222,12 @@ def new_order(update, context):
                 {'deadline': 'Выберите срок из списка или укажите его в ответном сообщении 👇\n'
                              'p.s. Если требуется помощь в онлайн-режиме, '
                              'то укажите дату и время проведения работы (по Москве).', 'menu': '#deadline#0'},
-                {'price': 'Выберите цену из списка или укажите ее в ответном сообщении 👇', 'menu': '#price#0'},
-                {'faculty': 'Укажите ваш факультет', 'menu': '#faculty#0'},
-                {'departament': 'Укажите вашу кафедру', 'menu': '#departament#0'},
-                {'teacher': 'Укажите вашего преподователя', 'menu': '#teacher#0'},
+                {'price': 'Выберите цену из списка или укажите её в ответном сообщении 👇', 'menu': '#price#0'},
+                {'faculty': 'Укажите Ваш факультет 👇', 'menu': '#faculty#0'},
+                {'departament': 'Укажите Вашу кафедру 👇', 'menu': '#departament#0'},
+                {'teacher': 'Укажите ФИО преподователя 👇', 'menu': '#teacher#0'},
                 {'docs': 'Прикрепите фотографии, если это необходимо, и нажмите на кнопку «Готово» ✅', 'menu': '#done#0'},
-                {'promo': 'Укажите промокод (не обязтельно)', 'menu': '#faculty#0'},
+                {'promo': 'Укажите промокод 👇', 'menu': '#faculty#0'},
             ]
             context.user_data.update({
                 'queue': True,
@@ -261,11 +261,11 @@ def my_orders(update, context):
                     return
             orders = select(o for o in Order if o.user_id == user.id)
             if len(orders):
-                text = 'Ваши заказы:\n'
+                text = '' # Ваши заказы:\n
                 buttons = []
                 for order in list(orders):
-                    text += '#' + str(order.id) + ' - ' + order.subject + ' [' + order.status + ']\n'
-                    buttons.append(InlineKeyboardButton('Заказ ' + str(order.id), callback_data="@" + str(order.id)))
+                    text += '#' + str(order.id) + ' - ' + order.subject + ' (' + order.status + ')\n'
+                    buttons.append(InlineKeyboardButton('Заказ #' + str(order.id), callback_data="@" + str(order.id)))
 
                 mymenu = Menu()
                 markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
@@ -297,9 +297,9 @@ def del_order(update, context):
                     id = int(context.args[0])
                     text = delete_order(id)
                 except Exception as e:
-                    text = 'Используйте /delorder Номер_заказа!'
+                    text = 'Используйте /delorder <i>id_заказа</i>!'
             else:
-                text = 'Используйте /delorder Номер_заказа!'
+                text = 'Используйте /delorder <i>id_заказа</i>!'
 
             context.bot.send_message(chat_id=update.effective_chat.id, text=text)
         else:
@@ -336,9 +336,9 @@ def order(update, context):
                         mymenu = Menu()
                         reply_markup = mymenu.order_buttons(id, workers)
                 except Exception as e:
-                    text = 'Используйте /order <i>номер_заказа</i>!'
+                    text = 'Используйте /order <i>id_заказа</i>!'
             else:
-                text = 'Используйте /order <i>номер_заказа</i>!'
+                text = 'Используйте /order <i>id_заказа</i>!'
 
             if order:
                 if order.docs != 'Вложения не добавлены':

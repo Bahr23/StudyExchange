@@ -30,7 +30,7 @@ class Menu:
                 ]
             },
             'main': {
-                'text': '/menu - список комманд\n/neworder - новый заказ\n/myprofile - мой профиль\n'
+                'text': '/menu - список команд\n/neworder - новый заказ\n/myprofile - мой профиль\n'
                         '/myorders - мои заказы \n/balance - управление балансом\n/faq - как это работает?\n'
                         '/order <i>номер_заказа</i> - поиск заказа по его id\n'
                         '/profile <i>id_исполнителя</i> - поиск профиля исполнителя по его id',
@@ -52,14 +52,14 @@ class Menu:
                 ]
             },
             'chat': {
-                'text': 'Чат меню:\n/price - утвердить цену\n/done - завершить заказ\n/admin - вызвать админа',
+                'text': 'Чат меню:\n/price - утвердить цену\n/done - завершить заказ\n/admin - вызвать менеджера',
                 'type': 'reply',
                 'body': [
                     {
                         'buttons': [
                             InlineKeyboardButton("Утвердить цену", callback_data="/price"),
                             InlineKeyboardButton("Завершить заказ", callback_data="/done"),
-                            InlineKeyboardButton("Вызвать админа", callback_data="/admin"),
+                            InlineKeyboardButton("Вызвать менеджера", callback_data="/admin"),
                         ],
                         'header': None,
                         'footer': None,

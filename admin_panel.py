@@ -195,19 +195,22 @@ def getorder(update, context):
 
                         mymenu = Menu()
                         buttons = [InlineKeyboardButton('Одобрить', callback_data='@' + str(id) + '@push'),
+                                   InlineKeyboardButton('Редактировать', callback_data='@' + str(id) + '@edit@list'),
                                     InlineKeyboardButton('Удалить', callback_data='@' + str(id) + '@del')]
 
                         markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
                         reply_markup = InlineKeyboardMarkup(markup)
+
+                        if order:
+                            if order.docs != 'Вложения не добавлены':
+                                text += '\nВложения:\n' + order.docs
+
                     except Exception as e:
                         print(e)
                         text = 'Используйте /getorder Номер_заказа!'
                 else:
                     text = 'Используйте /getorder Номер_заказа!'
 
-                if order:
-                    if order.docs != 'Вложения не добавлены':
-                        text += '\nВложения:\n' + order.docs
 
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup, parse_mode=telegram.ParseMode.HTML)
         else:
