@@ -43,18 +43,17 @@ def button(update, context):
                             id = int(query.data[1:])
                             order = Order.get(id=id)
                             text = get_order(id)
-                            print(text)
                             mymenu = Menu()
                             reply_markup = mymenu.order_buttons(id)
                         except Exception as e:
                             print(e)
                             text = 'Используйте /order id_заказа!'
 
-                        if order:
-                            if order.docs != 'Вложения не добавлены.':
-                                text += '\nВложения:\n' + order.docs
+                        # if order:
+                        #     if order.docs != 'Вложения не добавлены.':
+                        #         text += '\nВложения:\n' + order.docs
 
-                        context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup)
+                        context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup, parse_mode=telegram.ParseMode.HTML)
                     else:
                         if args[2] == 'ban':
                             text = 'Используйте <b>/setstatus user_id banned</b> для блокировки пользователя\n' \
@@ -91,7 +90,7 @@ def button(update, context):
                                 text = '<b>Незавершенные заказы пользователя ' + get_name(user) + '[' + str(user.id) + ']</b>\n' \
                                         '<i>Используйте /getorder для получения полной инофрмации</i>\n\n'
 
-                                orders = list(select(o for o in Order if o.user_id == user.id and o.status != 'Завершен'))
+                                orders = list(select(o for o in Order if o.user_id == user.id and o.status != 'Завершён'))
 
                                 if orders:
                                     for o in orders:
@@ -109,10 +108,10 @@ def button(update, context):
                         if args[2] == 'userfinishedorders':
                             user = User.get(id=int(args[1]))
                             if user:
-                                text = '<b>Завершенные заказы пользователя ' + get_name(user) + '[' + str(user.id) + ']</b>\n' \
+                                text = '<b>Завершённые заказы пользователя ' + get_name(user) + '[' + str(user.id) + ']</b>\n' \
                                         '<i>Используйте /getorder для получения полной инофрмации</i>\n\n'
 
-                                orders = list(select(o for o in Order if o.user_id == user.id and o.status == 'Завершен'))
+                                orders = list(select(o for o in Order if o.user_id == user.id and o.status == 'Завершён'))
 
                                 if orders:
                                     for o in orders:
@@ -228,7 +227,7 @@ def button(update, context):
 
                             usert = User.get(id=int(myorder.user_id))
 
-                            post = context.bot.send_message(chat_id=CHANNEL_ID, text=text, reply_markup=InlineKeyboardMarkup(markup))
+                            post = context.bot.send_message(chat_id=CHANNEL_ID, text=text, reply_markup=InlineKeyboardMarkup(markup), parse_mode=telegram.ParseMode.HTML)
                             post_link = 'https://t.me/StudyExchangePosts/' + str(post.message_id)
 
                             text = 'Заказ #{} ({}) успешно одобрен!'.format(myorder.id, myorder.subject)
@@ -399,7 +398,7 @@ def button(update, context):
                                                                footer_buttons=None)
                                     reply_markup = InlineKeyboardMarkup(markup)
 
-                                order.status = "Завершен"
+                                order.status = "Завершён"
 
                                 text += '\n<b>Заказ закрыт!</b>'
                                 user_text = 'Заказ #{} ({}) успешно завершён!\nПожалуйста, оцените работу иполнителя!'.format(order.id, order.subject)

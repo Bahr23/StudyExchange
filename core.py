@@ -30,8 +30,7 @@ def get_name(user, id=False):
             if user.username != 'не указано':
                 name = user.username
         if id:
-            name = '<b>' + name
-            name += '</b> (id<code>' + str(user.id) + '</code>)'
+            name = '<b>{} (id{})</b>'.format(name, user.id)
         return name
     return 'Unknown'
 
@@ -66,7 +65,7 @@ def get_profile(id):
         reg = user.registration_date.split('.')
         reg = reg[2] + '.' + reg[1] + '.' + reg[0]
 
-        text = '{name} (id<code>{id}</code>)\n\nСтатус: {status}\nДата регистрации: ' \
+        text = '<b>{name} (id{id})</b>\n\nСтатус: {status}\nДата регистрации: ' \
                '{registration_date}\n\nОбразование: {education}\nГород: {city}\nВозраст: ' \
                '{age}\n\nЗавершённые заказы: {orders_number}{last_order}\nРейтинг: {rate}' \
                '\n'.format(name=name, id=user.id, status=status, registration_date=reg,
@@ -82,12 +81,25 @@ def get_profile(id):
 def get_order(id):
     o = Order.get(id=id)
     if o:
+        emoji_status = {
+            'В обработке': '🔎',
+            'Поиск исполнителя': '📢',
+            'Исполнитель выбран': '🧑‍💻',
+            'Ожидает оплаты': '⏳',
+            'Оплачен': '💰',
+            'Завершён': '✅',
+        }
+
+        try:
+            status = '{st} {emoji}'.format(st=o.status, emoji=emoji_status[o.status])
+        except Exception as e:
+            status = o.status
+
         extra_info = ','.join([x for x in (o.faculty, o.departament, o.teacher) if x != 'Пропустить']) + '\n'
-        print(str(o.id))
-        return 'Заказ #{id} ({subject})\n{status}\n\n{type}, {deadline}, {price}\n{extra_info}{description}'.format(
+        return '<b>Заказ #{id} ({subject})</b>\n{status}\n\n{type}, {deadline}, {price}\n{extra_info}{description}'.format(
             id=o.id,
-            subject=o.subject.lower(),
-            status=o.status.lower(),
+            subject=o.subject,
+            status=status,
             type=o.type,
             deadline=o.deadline.lower(),
             price=o.price.lower(),

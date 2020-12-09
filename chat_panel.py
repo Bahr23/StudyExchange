@@ -22,7 +22,7 @@ def chat(update, context):
                     order = Order.get(id=int(context.args[0]))
                     chat = Chat.get(chat_id=update.effective_chat.id)
                     if order and not chat:
-                        context.bot.set_chat_title(chat_id=update.effective_chat.id, title='None')
+                        # context.bot.set_chat_title(chat_id=update.effective_chat.id, title='None')
                         # context.bot.set_chat_description(chat_id=update.effective_chat.id, description='None')
 
                         title = "Заказ #" + str(order.id) + ' (' + order.subject + ')'
@@ -50,26 +50,26 @@ def chat(update, context):
 
                         client = User.get(id=int(order.user_id))
                         text = 'Чат с исполнителем по поводу заказа #{} ({}): {}'.format(order.id, order.subject, link)
-                        context.bot.send_message(chat_id=client.user_id, text=text)
+                        context.bot.send_message(chat_id=client.user_id, text=text, parse_mode=telegram.ParseMode.HTML,)
 
                         worker = User.get(id=int(order.worker_id))
                         text = 'Чат с клиентом по поводу заказа #{} ({}): {}'.format(order.id, order.subject, link)
-                        context.bot.send_message(chat_id=worker.user_id, text=text)
+                        context.bot.send_message(chat_id=worker.user_id, text=text, parse_mode=telegram.ParseMode.HTML,)
 
                         mymenu = Menu()
                         reply_markup = mymenu.get_menu(tag='#chat#0')
 
-                        pintext = 'Команды чата 👇\n/admin - вызвать менеджера\n/price - утвердить цену\n/done - завершить заказ'
-                        pinid = context.bot.send_message(chat_id=update.effective_chat.id, text=pintext, timeout=500, reply_markup=reply_markup[0])
+                        pintext = 'Команды чата 👇\n/price <i>цена</i> - утвердить цену\n/admin - вызвать менеджера\n/done - завершить заказ'
+                        pinid = context.bot.send_message(chat_id=update.effective_chat.id, text=pintext, timeout=500, reply_markup=reply_markup[0], parse_mode=telegram.ParseMode.HTML,)
                         context.bot.pin_chat_message(chat_id=update.effective_chat.id, message_id=pinid.message_id)
 
                         chat = Chat(chat_id=update.effective_chat.id, price='0', user_id=str(order.user_id), worker_id=str(order.worker_id), order_id=str(order.id))
-                        text = 'Чат успешно создан'
-                        context.bot.send_message(chat_id=update.effective_chat.id, text=text, timeout=500)
+                        # text = 'Чат успешно создан'
+                        # context.bot.send_message(chat_id=update.effective_chat.id, text=text, timeout=500)
 
                     else:
-                        text = 'Заказ ' + context.args[0] + ' не найден или чат уже создан.'
-                        context.bot.send_message(chat_id=update.effective_chat.id, text=text, timeout=500)
+                        text = 'Заказ #' + context.args[0] + ' не найден или чат уже создан.'
+                        context.bot.send_message(chat_id=update.effective_chat.id, text=text, timeout=500, parse_mode=telegram.ParseMode.HTML,)
 
 
 @db_session
