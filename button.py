@@ -273,8 +273,13 @@ def button(update, context):
                                     if int(chat.price) <= user.balance:
 
                                         if order.promo != '0':
-                                            promo = 1 - float(Coupons.get(name=order.promo).amount) / 100
-                                            price = int(int(chat.price) * promo)
+                                            coup = Coupons.get(name=order.promo)
+                                            if coup.count > 0:
+                                                promo = 1 - float(coup.amount) / 100
+                                                coup.count -= 1
+                                                price = int(int(chat.price) * promo)
+                                            else:
+                                                price = chat.price
                                         else:
                                             price = chat.price
 
