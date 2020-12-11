@@ -49,6 +49,7 @@ class Order(db.Entity):
     worker_id = Optional(str)
     docs = Optional(str)
     promo = Optional(str)
+    channel_message = Optional(int)
 
 
 class Settings(db.Entity):

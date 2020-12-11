@@ -1,6 +1,7 @@
 from pyqiwip2p import QiwiP2P
 from pyqiwip2p.types import QiwiCustomer, QiwiDatetime
 import time
+import datetime
 
 from telegram import Bot
 
@@ -41,7 +42,7 @@ def monitoring():
                             user = User.get(id=int(comment[0]))
                             if user:
                                 user.balance += int(float(bi.amount))
-                                t = tr.new(type='DEPOSIT', bill_id=str(bi.bill_id), amount=int(float(bi.amount)), user_id=user.id, date=time.strftime('%d.%M.%Y'))
+                                t = tr.new(type='DEPOSIT', bill_id=str(bi.bill_id), amount=int(float(bi.amount)), user_id=user.id, date=str(datetime.datetime.now())[0:19])
                                 p2p.reject(bill_id=b.bill_id)
                                 b.delete()
                                 text = 'Ваш баланс пополнен на ' + str(int(float(bi.amount))) + ' руб.'

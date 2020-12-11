@@ -43,12 +43,15 @@ def get_profile(id):
 
         if user.status == 'user':
             status = 'клиент'
+            rate = ''
 
         if user.status == 'worker':
             status = 'исполнитель'
+            rate = 'Рейтинг: ' + str(user.rate)
 
         if user.status == 'admin':
             status = 'менеджер'
+            rate = ''
 
         # if user.username:
         #     username = 'Никнейм: @' + user.username + '\n'
@@ -67,11 +70,11 @@ def get_profile(id):
 
         text = '<b>{name} (id{id})</b>\n\nСтатус: {status}\nДата регистрации: ' \
                '{registration_date}\n\nОбразование: {education}\nГород: {city}\nВозраст: ' \
-               '{age}\n\nЗавершённые заказы: {orders_number}{last_order}\nРейтинг: {rate}' \
+               '{age}\n\nЗавершённые заказы: {orders_number}{last_order}\n{rate}' \
                '\n'.format(name=name, id=user.id, status=status, registration_date=reg,
                                                                 education=user.education, city=user.city, age=user.age,
                                                                 orders_number=user.orders_number,
-                                                                last_order=last_order, rate=user.rate)
+                                                                last_order=last_order, rate=rate)
         return text
     else:
         return False
@@ -95,8 +98,8 @@ def get_order(id):
         except Exception as e:
             status = o.status
 
-        extra_info = ','.join([x for x in (o.faculty, o.departament, o.teacher) if x != 'Пропустить']) + '\n'
-        return '<b>Заказ #{id} ({subject})</b>\n{status}\n\n{type}, {deadline}, {price}\n{extra_info}{description}'.format(
+        extra_info = ', '.join([x for x in (o.faculty, o.departament, o.teacher) if x != 'Пропустить']) + '\n'
+        return '<b>Заказ #{id} ({subject})</b>\n{status}\n\n{type}, {deadline}, {price}\n{extra_info}\n{description}'.format(
             id=o.id,
             subject=o.subject,
             status=status,
@@ -211,6 +214,7 @@ def finish_queue(name, answers, update=None, context=None):
         text += get_order(id)
         mymenu = Menu()
         buttons = [InlineKeyboardButton('Одобрить', callback_data='@' + str(id) + '@push'),
+                   InlineKeyboardButton('Редактировать', callback_data='@' + str(id) + '@edit@list'),
                    InlineKeyboardButton('Удалить', callback_data='@' + str(id) + '@del')]
 
         markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)

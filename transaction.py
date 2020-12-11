@@ -1,4 +1,4 @@
-import time
+import datetime
 
 from models import *
 
@@ -30,3 +30,5 @@ class Transaction:
 #     t = tr.new(type='DEPOSIT', bill_id='3131331-3131', amount=100, user_id=455788012, date=time.strftime('%d.%M.%Y'))
 #
 # print(tr.get(t.id))
+
+# print(str(datetime.datetime.now())[0:19])

@@ -230,6 +230,8 @@ def button(update, context):
                             post = context.bot.send_message(chat_id=CHANNEL_ID, text=text, reply_markup=InlineKeyboardMarkup(markup), parse_mode=telegram.ParseMode.HTML)
                             post_link = 'https://t.me/StudyExchangePosts/' + str(post.message_id)
 
+                            myorder.channel_message = post.message_id
+
                             text = 'Заказ #{} ({}) успешно одобрен!'.format(myorder.id, myorder.subject)
                             context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
@@ -287,6 +289,10 @@ def button(update, context):
                                         t = tr.new(type='PAYFORORDER', bill_id='None', amount=-int(chat.price), user_id=user.id,
                                                    date=time.strftime('%d.%M.%Y'))
                                         order.status = 'Оплачен'
+
+                                        context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
+                                                          text=get_order(order.id), reply_markup=None, parse_mode=telegram.ParseMode.HTML)
+
                                         name = get_name(user, True)
                                         context.bot.send_message(chat_id=update.effective_chat.id, text='Заказ успешно оплачен!')
                                         text = 'Клиент успешно оплатил заказ #{} ({}). Можете приступать к работе!'.format(order.id, order.subject)
@@ -333,6 +339,9 @@ def button(update, context):
                             if chat.user_yes == 1 and chat.worker_yes == 1:
                                 chat.price = args[3]
                                 order.status = 'Ожидает оплаты'
+                                context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
+                                                              text=get_order(order.id), reply_markup=None,
+                                                              parse_mode=telegram.ParseMode.HTML)
                                 text += '\n<b>Цена утверждена!</b>'
                                 reply_markup = None
                                 user_text = 'Цена по заказу #{} ({}) утверждена. Для оплаты нажмите на кнопку ниже 👇'.format(order.id, order.subject)
@@ -382,7 +391,15 @@ def button(update, context):
                                     w.orders_number = str(int(w.orders_number) + 1)
                                     u.last_order = str(datetime.date.today()).replace('-', '.')
                                     w.workers_orders += 1
-                                    w.balance += int(int(chat.price) * 0.85)
+
+                                    rebalance = int(int(chat.price) * 0.85)
+
+                                    w.balance += rebalance
+
+                                    t = tr.new(type='ORDER', bill_id='None', amount=int(rebalance),
+                                               user_id=w.id,
+                                               date=str(datetime.datetime.now())[0:19])
+
                                     wtext = 'Заказ #{} ({}) успешно завершён!'.format(order.id, order.subject)
                                     context.bot.send_message(chat_id=int(w.user_id), text=wtext)
 
@@ -399,6 +416,10 @@ def button(update, context):
                                     reply_markup = InlineKeyboardMarkup(markup)
 
                                 order.status = "Завершён"
+
+                                context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
+                                                              text=get_order(order.id), reply_markup=None,
+                                                              parse_mode=telegram.ParseMode.HTML)
 
                                 text += '\n<b>Заказ закрыт!</b>'
                                 user_text = 'Заказ #{} ({}) успешно завершён!\nПожалуйста, оцените работу иполнителя!'.format(order.id, order.subject)
@@ -431,7 +452,8 @@ def button(update, context):
 
                             context.bot.send_message(chat_id=w.user_id, text=text)
 
-                            print(w.rate)
+                            text = 'Спасибо за оценку исполнителя!\nЖелаем удачи на экзаменах 👌'
+                            context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
                         if args[2] == 'deposit':
                             user = User.get(id=int(args[1]))
@@ -522,6 +544,10 @@ def button(update, context):
                             order = Order.get(id=int(args[1]))
                             order.status = 'Исполнитель выбран'
 
+                            context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
+                                                          text=get_order(order.id), reply_markup=None,
+                                                          parse_mode=telegram.ParseMode.HTML)
+
                             worker_id = args[3]
 
                             for w in order.worker_id.split(','):
@@ -606,7 +632,7 @@ def button(update, context):
 
                     name = get_name(wor)
 
-                    label = name + ' [' + str(wor.id) + ']\n'
+                    label = name + ' (id' + str(wor.id) + ')\n'
                     buttons = [InlineKeyboardButton('Профиль ' + label, callback_data='@' + str(wor.id) + '@showprofile'),
                         InlineKeyboardButton('Выбрать ' + label, callback_data='@' + args[1] + '@choose@' + str(wor.id)),
                     ]

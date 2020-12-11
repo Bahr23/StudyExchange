@@ -1,4 +1,4 @@
-import time
+import datetime
 
 import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
@@ -115,7 +115,7 @@ def ubalance(update, context):
                             chat_id = user.user_id
                             user.balance += amount
                             t = tr.new(type='ADMINREBALANCE', bill_id='None', amount=int(amount), user_id=user.id,
-                                       date=time.strftime('%d.%M.%Y'))
+                                       date=str(datetime.datetime.now())[0:19])
                             text = 'Баланс пользователя ' + get_name(user) + ' изменен на ' + str(amount) + 'р.'
 
                         else:
@@ -323,7 +323,8 @@ def coupon(update, context):
 
                 if not context.args:
                     text = '/coupon coupon_name - получить информацию о купоне' \
-                           '\n/coupon coupon_name amount count - создать новый купон'
+                           '\n/coupon coupon_name amount count - создать новый купон' \
+                           '\n/delcoupon coupon_name - удалить купон'
 
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
             else:
