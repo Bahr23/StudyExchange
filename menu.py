@@ -1,4 +1,5 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
+from models import *
 
 
 class Menu:
@@ -262,6 +263,7 @@ class Menu:
             menu.append([footer_buttons])
         return menu
 
+    @db_session
     def order_buttons(self, id, workers=None):
         buttons = [
             # InlineKeyboardButton('Редактировать', callback_data='@' + str(id) + '@edit@list'),
@@ -270,10 +272,16 @@ class Menu:
 
         if id:
             header_buttons = InlineKeyboardButton('Исполнители', callback_data='@' + str(id) + '@workers')
+            order = Order.get(id=int(id))
+            if order.status != 'Оплачен':
+                footer_buttons = InlineKeyboardButton('❌ Отменить заказ ❌', callback_data='@' + str(id) + '@predel')
+            else:
+                footer_buttons = None
         else:
             header_buttons = None
+
         markup = self.build_menu(buttons=buttons, n_cols=1, header_buttons=header_buttons,
-                                   footer_buttons=InlineKeyboardButton('❌ Отменить заказ ❌', callback_data='@' + str(id) + '@predel'))
+                                   footer_buttons=footer_buttons)
         reply_markup = InlineKeyboardMarkup(markup)
         return reply_markup
 

@@ -13,6 +13,7 @@ from transaction import Transaction
 
 tr = Transaction
 
+
 @db_session
 def button(update, context):
     query = update.callback_query
