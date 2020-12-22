@@ -42,10 +42,10 @@ def monitoring():
                             user = User.get(id=int(comment[0]))
                             if user:
                                 user.balance += int(float(bi.amount))
-                                t = tr.new(type='DEPOSIT', bill_id=str(bi.bill_id), amount=int(float(bi.amount)), user_id=user.id, date=str(datetime.datetime.now())[0:19])
+                                t = tr.new(type='Пополнение', bill_id=str(bi.bill_id), amount=int(float(bi.amount)), user_id=user.id, date=str(datetime.datetime.now())[0:19])
                                 p2p.reject(bill_id=b.bill_id)
                                 b.delete()
-                                text = 'Ваш баланс пополнен на ' + str(int(float(bi.amount))) + ' руб.'
+                                text = 'Ваш баланс пополнен на ' + str(int(float(bi.amount))) + ' руб. 💰'
                                 bot.send_message(chat_id=user.user_id, text=text)
                 else:
                     p2p.reject(bill_id=b.bill_id)

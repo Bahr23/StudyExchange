@@ -8,7 +8,7 @@ from pay import *
 
 CHANNEL_ID = '-1001361464885'
 MEDIA_ID = '-1001412307468'
-BANNED_TEXT = 'Ваш аккаунт был заблокирован!'
+BANNED_TEXT = 'К сожалению, Ваш аккаунт был заблокирован.'
 
 @db_session
 def get_user(id):
@@ -87,7 +87,7 @@ def get_order(id):
         emoji_status = {
             'В обработке': '🔎',
             'Поиск исполнителя': '📢',
-            'Исполнитель выбран': '🧑‍💻',
+            'Исполнитель выбран': '👨‍🎓',
             'Ожидает оплаты': '⏳',
             'Оплачен': '💰',
             'Завершён': '✅',
@@ -99,7 +99,7 @@ def get_order(id):
             status = o.status
 
         extra_info = ', '.join([x for x in (o.faculty, o.departament, o.teacher) if x != 'Пропустить']) + '\n'
-        return '<b>Заказ #{id} ({subject})</b>\n{status}\n\n{type}, {deadline}, {price}\n{extra_info}\n{description}'.format(
+        return '<b>Заказ #{id} ({subject})</b>\n{status}\n\n{type}, {deadline}, {price}\n{extra_info}{description}'.format(
             id=o.id,
             subject=o.subject,
             status=status,
@@ -113,13 +113,13 @@ def get_order(id):
 
 
 @db_session
-def delete_order(id):
-    order = Order.get(id=id)
+def delete_order(o_id):
+    order = Order.get(id=o_id)
     if order:
-        delete(o for o in Order if o.id == id)
-        return 'Заказ #' + str(id) + ' удалён.'
+        delete(o for o in Order if o.id == o_id)
+        return 'Заказ #' + str(o_id) + ' успешно удалён.'
     else:
-        return 'Заказ #' + str(id) + ' не найден.'
+        return 'Заказ #' + str(o_id) + ' не найден.'
 
 
 def queue(update, context, user, ans=None):
@@ -260,7 +260,7 @@ def finish_queue(name, answers, update=None, context=None):
                 exec('user.' + key + " = '" + value + "'")
 
             except Exception as e:
-                text = "В поле «Образование» могут находиться только буквы!"
+                text = 'В поле "Образование" могут находиться только буквы!'
                 context.user_data.update({'queue_finish': False})
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
@@ -273,7 +273,7 @@ def finish_queue(name, answers, update=None, context=None):
                 exec('user.' + key + " = '" + value + "'")
 
             except Exception as e:
-                text = "В поле «Город» могут находиться только буквы!"
+                text = 'В поле "Город" могут находиться только буквы!'
                 context.user_data.update({'queue_finish': False})
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
@@ -281,7 +281,7 @@ def finish_queue(name, answers, update=None, context=None):
         try:
             sum = int(answers[0]['sum'])
             if sum > 0:
-                text = 'Ссылка на оплату: '
+                text = 'Ссылка на оплату 👉 '
                 link = paylink(user.id, sum)
                 text += link
             else:
@@ -311,9 +311,9 @@ def finish_queue(name, answers, update=None, context=None):
                 for admin in admins:
                     context.bot.send_message(chat_id=admin.user_id, text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
                 context.bot.send_message(chat_id=update.effective_chat.id,
-                                         text='Ваша заявка на вывод отправлена на рассмотрение.')
+                                         text='Ваша заявка на вывод средств успешно отправлена. Ожидайте решение <a href="https://t.me/alexmustdie">менеджера</a> ⏳', parse_mode=telegram.ParseMode.HTML)
             else:
-                text = 'Ваша заявка отклонена. На балансе недостаточно средств.'
+                text = 'Ваша заявка отклонена: на балансе недостаточно средств.'
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
         except Exception as e:

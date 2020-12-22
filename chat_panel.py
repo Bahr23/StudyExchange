@@ -49,11 +49,11 @@ def chat(update, context):
                         link = context.bot.export_chat_invite_link(chat_id=update.effective_chat.id)
 
                         client = User.get(id=int(order.user_id))
-                        text = 'Чат с исполнителем по поводу заказа #{} ({}): {}'.format(order.id, order.subject, link)
+                        text = 'Чат с исполнителем по заказу #{} ({}) успешно создан 👉 {}'.format(order.id, order.subject, link)
                         context.bot.send_message(chat_id=client.user_id, text=text, parse_mode=telegram.ParseMode.HTML,)
 
                         worker = User.get(id=int(order.worker_id))
-                        text = 'Чат с клиентом по поводу заказа #{} ({}): {}'.format(order.id, order.subject, link)
+                        text = 'Чат с клиентом по заказу #{} ({}) успешно создан 👉 {}'.format(order.id, order.subject, link)
                         context.bot.send_message(chat_id=worker.user_id, text=text, parse_mode=telegram.ParseMode.HTML,)
 
                         mymenu = Menu()
@@ -165,7 +165,7 @@ def done(update, context):
                         chat.done_msg = context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML,
                                                  reply_markup=reply_markup).message_id
                     else:
-                        text = 'Этот заказ уже закрыт!'
+                        text = 'Этот заказ завершён!'
                         context.bot.send_message(chat_id=update.effective_chat.id, text=text)
                 else:
                     text = 'Этот заказ ещё не оплачен!'

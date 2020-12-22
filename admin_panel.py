@@ -114,7 +114,7 @@ def ubalance(update, context):
                             amount = int(' '.join(context.args[1:]))
                             chat_id = user.user_id
                             user.balance += amount
-                            t = tr.new(type='ADMINREBALANCE', bill_id='None', amount=int(amount), user_id=user.id,
+                            t = tr.new(type='Пополнение админом', bill_id='None', amount=int(amount), user_id=user.id,
                                        date=str(datetime.datetime.now())[0:19])
                             text = 'Баланс пользователя ' + get_name(user) + ' изменен на ' + str(amount) + 'р.'
 
@@ -243,7 +243,7 @@ def orders(update, context):
                     markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
                 except Exception as e:
                     print(e)
-                    text = 'Заказы не найденны'
+                    text = 'Заказы не найдены'
             else:
                 text = 'Вы не являетесь админом'
             context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=InlineKeyboardMarkup(markup))
@@ -274,7 +274,7 @@ def setstatus(update, context):
                             utext = 'Ваш статус изменен на ' + context.args[1]
 
                             if context.args[1] == 'worker':
-                                utext = 'Ваша заявка на роль исполнителя успешно одобрена! Можете приступать к работе.'
+                                utext = 'Ваша заявка на роль исполнителя успешно одобрена. Можете приступать к работе!'
 
                             context.bot.send_message(chat_id=user.user_id, text=utext)
                         else:

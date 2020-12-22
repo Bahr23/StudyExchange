@@ -233,6 +233,19 @@ class Menu:
                     },
                 ]
             },
+            'promo': {
+                'text': "Укажите промокод 👇 банк",
+                'type': 'reply',
+                'body': [
+                    {
+                        'buttons': [
+                            InlineKeyboardButton("Отправить ✅", callback_data="Отправить ✅")],
+                        'header': None,
+                        'footer': None,
+                        'n_cols': 1
+                    },
+                ]
+            },
         }
 
     def get_menu(self, tag):
