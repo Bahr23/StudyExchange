@@ -17,7 +17,7 @@ def start(update, context):
         reply_markup = mymenu.get_menu(tag='#main#0')
         if user:
             if user.status == 'banned':
-                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT, parse_mode=telegram.ParseMode.HTML)
                 return
             if 'queue' in context.user_data.keys():
                 if context.user_data['queue']:
@@ -47,7 +47,7 @@ def start(update, context):
                            rate=rate, points=points, balance=balance)
             context.user_data.update({'queue': False})
             text = 'Добро пожаловать на биржу студенческих работ StudyX СПбПУ! По всем вопросам пишите Вашему <a href="https://t.me/alexmustdie">персональному менеджеру</a> 👨‍💻'
-            context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0])
+            context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0], parse_mode=telegram.ParseMode.HTML)
 
 
 def all_messages(update, context):

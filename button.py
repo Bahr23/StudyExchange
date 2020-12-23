@@ -186,7 +186,7 @@ def button(update, context):
                                                          reply_markup=reply_markup)
                             else:
                                 text = 'Заказ невозможно удалить. Пожалуйста, свяжитесь с <a href="https://t.me/alexmustdie">менеджером</a> для решения этой проблемы.'
-                                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+                                context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
 
                         if args[2] == 'del':
                             order = Order.get(id=int(args[1]))
@@ -210,7 +210,7 @@ def button(update, context):
                                     context.bot.send_message(chat_id=update.effective_chat.id, text=text)
                             else:
                                 text = 'Заказ невозможно удалить. Пожалуйста, свяжитесь с <a href="https://t.me/alexmustdie">менеджером</a> для решения этой проблемы.'
-                                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+                                context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
 
                         if args[2] == 'push':
                             myorder = Order.get(id=int(args[1]))

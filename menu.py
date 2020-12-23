@@ -33,7 +33,7 @@ class Menu:
             'main': {
                 'text': '/menu - список команд\n/neworder - новый заказ\n/myprofile - мой профиль\n'
                         '/myorders - мои заказы \n/balance - управление балансом\n/faq - как это работает?\n'
-                        '/order <i>номер_заказа</i> - поиск заказа по его id\n'
+                        '/order <i>id_заказа</i> - поиск заказа по его id\n'
                         '/profile <i>id_исполнителя</i> - поиск профиля исполнителя по его id',
                 'type': 'reply',
                 'body': [
