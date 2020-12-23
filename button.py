@@ -292,12 +292,12 @@ def button(update, context):
                                                                       text=message.text + '\n👉 ОПЛАЧЕНО', reply_markup=None,
                                                                       parse_mode=telegram.ParseMode.HTML)
 
-                                        t = tr.new(type='Оплата заказа', bill_id='None', amount=-int(chat.price), user_id=user.id,
+                                        t = tr.new(type='Оплата заказа #' + str(order.id), bill_id='None', amount=-int(chat.price), user_id=user.id,
                                                    date=str(datetime.datetime.now())[0:19])
                                         order.status = 'Оплачен'
 
-                                        context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
-                                                          text=get_order(order.id), reply_markup=None, parse_mode=telegram.ParseMode.HTML)
+                                        # context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
+                                        #                   text=get_order(order.id), reply_markup=None, parse_mode=telegram.ParseMode.HTML)
 
                                         name = get_name(user, True)
                                         context.bot.send_message(chat_id=update.effective_chat.id, text='Заказ успешно оплачен!')
@@ -346,13 +346,13 @@ def button(update, context):
                             if chat.user_yes == 1 and chat.worker_yes == 1:
                                 chat.price = args[3]
                                 order.status = 'Ожидает оплаты'
-                                ortext = get_order(order.id)
-                                try:
-                                    context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
-                                                                  text=ortext, reply_markup=None,
-                                                                  parse_mode=telegram.ParseMode.HTML)
-                                except:
-                                    pass
+                                # ortext = get_order(order.id)
+                                # try:
+                                #     context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
+                                #                                   text=ortext, reply_markup=None,
+                                #                                   parse_mode=telegram.ParseMode.HTML)
+                                # except:
+                                #     pass
                                 text += '\n<b>Цена утверждена!</b>'
                                 reply_markup = None
                                 user_text = 'Цена по заказу #{} ({}) утверждена. Для оплаты нажмите на кнопку ниже 👇'.format(order.id, order.subject)
@@ -407,7 +407,7 @@ def button(update, context):
 
                                     w.balance += rebalance
 
-                                    t = tr.new(type='Выполнение заказа', bill_id='None', amount=int(rebalance),
+                                    t = tr.new(type='Выполнение заказа #' + str(order.id), bill_id='None', amount=int(rebalance),
                                                user_id=w.id,
                                                date=str(datetime.datetime.now())[0:19])
 
@@ -605,7 +605,6 @@ def button(update, context):
                             # print(args)
                             # user = User.get(id=int(args[1]))
                             # print(user)
-                            print(user.user_id)
                             user.balance -= int(args[3])
 
                             t = tr.new(type='Вывод', bill_id='None', amount=int(args[3]),

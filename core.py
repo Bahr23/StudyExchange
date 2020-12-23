@@ -85,7 +85,7 @@ def get_order(id):
     o = Order.get(id=id)
     if o:
         emoji_status = {
-            'В обработке': '🔎',
+            'На проверке': '🔎',
             'Поиск исполнителя': '📢',
             'Исполнитель выбран': '👨‍🎓',
             'Ожидает оплаты': '⏳',
@@ -199,7 +199,7 @@ def finish_queue(name, answers, update=None, context=None):
         except Exception as e:
             url = 'Вложения не добавлены'
 
-        order = Order(user_id=user.id, status='В обработке', subject=subject, type=order_type, faculty=faculty,
+        order = Order(user_id=user.id, status='На проверке', subject=subject, type=order_type, faculty=faculty,
                       departament=departament, teacher=teacher, description=description,
                       deadline=deadline, price=price, worker_id='', docs=url, promo=promo)
 
