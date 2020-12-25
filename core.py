@@ -98,8 +98,13 @@ def get_order(id):
         except Exception as e:
             status = o.status
 
+        if o.docs == 'Вложения не добавлены':
+            docs = ''
+        else:
+            docs = '\n\nВложения: ' + o.docs
+
         extra_info = ', '.join([x for x in (o.faculty, o.departament, o.teacher) if x != 'Пропустить']) + '\n'
-        return '<b>Заказ #{id} ({subject})</b>\n{status}\n\n{type}, {deadline}, {price}\n{extra_info}{description}'.format(
+        return '<b>Заказ #{id} ({subject})</b>\n{status}\n\n{type}, {deadline}, {price}\n{extra_info}{description}{docs}'.format(
             id=o.id,
             subject=o.subject,
             status=status,
@@ -107,7 +112,8 @@ def get_order(id):
             deadline=o.deadline.lower(),
             price=o.price.lower(),
             extra_info=extra_info,
-            description=o.description)
+            description=o.description,
+            docs=docs)
     else:
         return False
 

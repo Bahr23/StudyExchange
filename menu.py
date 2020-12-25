@@ -278,14 +278,18 @@ class Menu:
 
     @db_session
     def order_buttons(self, id, workers=None):
-        buttons = [
-            # InlineKeyboardButton('Редактировать', callback_data='@' + str(id) + '@edit@list'),
-            InlineKeyboardButton('Оплатить', callback_data='@' + str(id) + '@buy'),
-        ]
+
 
         if id:
             header_buttons = InlineKeyboardButton('Исполнители', callback_data='@' + str(id) + '@workers')
             order = Order.get(id=int(id))
+            buttons = []
+
+            if order.status == 'Ожидает оплаты':
+                buttons = [
+                    # InlineKeyboardButton('Редактировать', callback_data='@' + str(id) + '@edit@list'),
+                    InlineKeyboardButton('Оплатить', callback_data='@' + str(id) + '@buy'),
+                ]
             if order.status != 'Оплачен':
                 footer_buttons = InlineKeyboardButton('❌ Отменить заказ ❌', callback_data='@' + str(id) + '@predel')
             else:

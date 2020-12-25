@@ -202,6 +202,8 @@ def button(update, context):
                                                                      parse_mode=telegram.ParseMode.HTML)
 
                                 chat = Chat.get(order_id=str(order.id))
+                                if order.status != 'Завершён':
+                                    context.bot.delete_message(chat_id=CHANNEL_ID, message_id=order.channel_message)
                                 if chat:
                                     text = delete_order(id)
                                     context.bot.send_message(chat_id=chat.chat_id, text=text)
