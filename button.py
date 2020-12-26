@@ -202,8 +202,9 @@ def button(update, context):
                                                                      parse_mode=telegram.ParseMode.HTML)
 
                                 chat = Chat.get(order_id=str(order.id))
-                                if order.status != 'Завершён':
-                                    context.bot.delete_message(chat_id=CHANNEL_ID, message_id=order.channel_message)
+                                if order.channel_message:
+                                    if order.status != 'Завершён':
+                                        context.bot.delete_message(chat_id=CHANNEL_ID, message_id=order.channel_message)
                                 if chat:
                                     text = delete_order(id)
                                     context.bot.send_message(chat_id=chat.chat_id, text=text)
@@ -431,14 +432,21 @@ def button(update, context):
 
                                 order.status = "Завершён"
 
-                                context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
-                                                              text=get_order(order.id), reply_markup=None,
-                                                              parse_mode=telegram.ParseMode.HTML)
+                                try:
+                                    context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
+                                                                  text=get_order(order.id), reply_markup=None,
+                                                                  parse_mode=telegram.ParseMode.HTML)
+                                except:
+                                    pass
 
                                 text += '\n<b>Заказ завершён!</b>'
                                 user_text = 'Заказ #{} ({}) успешно завершён!\nПожалуйста, оцените работу иполнителя 👇'.format(order.id, order.subject)
                                 context.bot.send_message(chat_id=int(u.user_id), text=user_text, reply_markup=reply_markup)
                                 reply_markup = None
+
+                                ch_text = 'Всем спасибо за работу! До новых встреч 👋'
+                                context.bot.send_message(chat_id=chat_id, text=ch_text, reply_markup=telegram.ReplyKeyboardRemove())
+
                                 chat.delete()
 
                             context.bot.edit_message_text(chat_id=chat_id, message_id=message.message_id,
