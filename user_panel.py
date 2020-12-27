@@ -23,7 +23,7 @@ def start(update, context):
                 if context.user_data['queue']:
                     current_queue(update, context, user)
                     return
-            text = user.first_name + ', по всем вопросам пишите Вашему <a href="https://t.me/alexmustdie">персональному менеджеру</a> 👨‍💻'
+            text = 'Рад снова Вас видеть, ' + user.first_name + '! По всем вопросам пишите Вашему <a href="https://t.me/alexmustdie">персональному менеджеру</a> 👨‍💻'
             context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0], parse_mode=telegram.ParseMode.HTML)
         else:
             user = update.message.from_user
@@ -46,7 +46,7 @@ def start(update, context):
                            last_order=last_order, orders_number=orders_number, workers_orders=workers_orders,
                            rate=rate, points=points, balance=balance)
             context.user_data.update({'queue': False})
-            text = 'Добро пожаловать на биржу студенческих работ StudyX СПбПУ! По всем вопросам пишите Вашему <a href="https://t.me/alexmustdie">персональному менеджеру</a> 👨‍💻'
+            text = 'Вы успешно зарегистрировались на StudyX! По всем вопросам пишите Вашему <a href="https://t.me/alexmustdie">персональному менеджеру</a> 👨‍💻'
             context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0], parse_mode=telegram.ParseMode.HTML)
 
 
@@ -74,7 +74,7 @@ def all_messages(update, context):
             context.user_data.update({'last_message': update.message.text})
             mymenu = Menu()
             reply_markup = mymenu.get_menu(tag='#main#0')
-            text = user.first_name + ', я не знаю как на это ответить.'
+            text = user.first_name + ', я не знаю как на это ответить 😔'
             context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0])
         else:
             start(update, context)
@@ -91,7 +91,7 @@ def get_docs(update, context):
                 if context.user_data['queue']:
                     if list(context.user_data['queue_list'][context.user_data['queue_position']].keys())[0] == 'docs':
                         if update.message.photo:
-                            text = 'Фото сохранено, отправьте ёще или нажмите "Готово" 👇'
+                            text = 'Фото сохранено, отправьте ещё или нажмите "Готово" 👇'
                             fid = update.message.photo[0].file_id
 
                             context.user_data['queue_docs'] += fid + ', '
@@ -99,7 +99,7 @@ def get_docs(update, context):
 
                             # context.bot.send_photo(chat_id=MEDIA_ID, photo=update.message.photo[0].file_id)
                         if update.message.document:
-                            text = 'Отправьте вложение, как фото, а не файлы.'
+                            text = 'Отправьте вложение, как фото, а не файлы!'
                             # context.bot.send_document(chat_id=MEDIA_ID, document=update.message.document.file_id)
 
                         context.bot.send_message(chat_id=update.effective_chat.id, text=text)
@@ -109,7 +109,7 @@ def get_docs(update, context):
             else:
                 mymenu = Menu()
                 reply_markup = mymenu.get_menu(tag='#main#0')
-                text = user.first_name + ', я не знаю как на это ответить.'
+                text = user.first_name + ', я не знаю как на это ответить 😔'
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0])
                 context.user_data.update({'last_message': update.message.text})
 
@@ -137,13 +137,13 @@ def profile(update, context):
                 if context.user_data['queue']:
                     current_queue(update, context, user)
                     return
-            text = 'Используйте /profile id_пользователя'
+            text = 'Используйте /profile <i>id_пользователя</i>'
             if context.args:
                 user = User.get(id=int(context.args[0]))
                 if user:
                     text = get_profile(user.id)
                 else:
-                    text = 'Такой пользователь не найден.'
+                    text = 'Такой пользователь не найден 😔'
             context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
         else:
             start(update, context)
@@ -168,7 +168,7 @@ def myprofile(update, context):
             buttons = [InlineKeyboardButton('Редактировать', callback_data='@' + str(user.id) + '@profile@list')]
 
             if not user.wanted:
-                buttons.append(InlineKeyboardButton('Хочу стать исполнителем', callback_data='@' + str(user.id) + '@want'))
+                buttons.append(InlineKeyboardButton('Хочу стать исполнителем 👋', callback_data='@' + str(user.id) + '@want'))
 
             markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
             reply_markup = InlineKeyboardMarkup(markup)
@@ -222,12 +222,12 @@ def new_order(update, context):
                 {'deadline': 'Выберите срок выполнения работы из списка или укажите его в ответном сообщении 👇\n'
                              '\np.s. Если требуется помощь в онлайн-режиме, '
                              'то укажите дату и время проведения работы (по Москве).', 'menu': '#deadline#0'},
-                {'price': 'Выберите желаемый ценовой диапазон из списка или укажите его в ответном сообщении 👇', 'menu': '#price#0'},
+                {'price': 'Выберите желаемый ценовой диапазон из списка или укажите свою цену в ответном сообщении 👇', 'menu': '#price#0'},
                 {'faculty': 'Укажите Ваш факультет 👇', 'menu': '#faculty#0'},
                 {'departament': 'Укажите Вашу кафедру 👇', 'menu': '#departament#0'},
-                {'teacher': 'Укажите ФИО преподователя 👇', 'menu': '#teacher#0'},
-                {'docs': 'Прикрепите фотографии, если это необходимо, и нажмите на кнопку "Готово" 👇', 'menu': '#done#0'},
-                {'promo': 'Укажите промокод 👇', 'menu': '#promo#0'},
+                {'teacher': 'Укажите ФИО преподавателя 👇', 'menu': '#teacher#0'},
+                {'docs': 'Прикрепите фотографии, если это необходимо, и нажмите "Готово" 👇', 'menu': '#done#0'},
+                {'promo': 'Укажите промокод, если он у Вас есть, или нажмите "Отправить" 👇', 'menu': '#promo#0'},
             ]
             context.user_data.update({
                 'queue': True,
@@ -271,7 +271,7 @@ def my_orders(update, context):
                 markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=InlineKeyboardMarkup(markup))
             else:
-                text = 'У Вас пока нет ни одного заказа.'
+                text = 'У Вас пока нет ни одного заказа 😔'
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
         else:
             start(update, context)
@@ -301,7 +301,7 @@ def del_order(update, context):
             else:
                 text = 'Используйте /delorder <i>id_заказа</i>!'
 
-            context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+            context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
         else:
             start(update, context)
 
@@ -330,7 +330,7 @@ def order(update, context):
                     if order.user_id != user.id and user.status != 'admin':
                         text = False
                     if not text:
-                        text = 'Заказ #' + str(id) + ' не найден!'
+                        text = 'Заказ #' + str(id) + ' не найден 😔'
                     else:
                         workers = order.worker_id
                         mymenu = Menu()

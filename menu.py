@@ -189,12 +189,12 @@ class Menu:
                 'body': [
                     {
                         'buttons': [
-                            InlineKeyboardButton("500-1000 рублей", callback_data="500-1000 рублей"),
+                            InlineKeyboardButton("500-1000 руб.", callback_data="500-1000 руб."),
                             InlineKeyboardButton("1000-2000 руб.", callback_data="1000-2000 руб."),
                             InlineKeyboardButton("2000-3000 руб.", callback_data="2000-3000 руб."),
                             InlineKeyboardButton("3000-4000 руб.", callback_data="3000-4000 руб."),
                             InlineKeyboardButton("4000-5000 руб.", callback_data="4000-5000 руб."),
-                            InlineKeyboardButton("По договоренности", callback_data="По договоренности")
+                            InlineKeyboardButton("По договорённости", callback_data="По договорённости")
                         ],
                         'header': None,
                         'footer': None,
@@ -291,7 +291,7 @@ class Menu:
                     InlineKeyboardButton('Оплатить', callback_data='@' + str(id) + '@buy'),
                 ]
             if order.status != 'Оплачен':
-                footer_buttons = InlineKeyboardButton('❌ Отменить заказ ❌', callback_data='@' + str(id) + '@predel')
+                footer_buttons = InlineKeyboardButton('❌ Удалить заказ ❌', callback_data='@' + str(id) + '@predel')
             else:
                 footer_buttons = None
         else:

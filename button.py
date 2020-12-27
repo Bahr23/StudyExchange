@@ -165,7 +165,7 @@ def button(update, context):
                                 for admin in admins:
                                     context.bot.send_message(chat_id=admin.user_id, text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
 
-                                text = 'Вы успешно отправили заявку на роль исполнителя. Менеджер рассмотрит её в ближайшее время.'
+                                text = 'Вы успешно отправили заявку на роль исполнителя. <a href="https://t.me/alexmustdie">Менеджер</a> рассмотрит её в ближайшее время. ⏳'
                                 user.wanted = True
                                 context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
                             else:
@@ -185,7 +185,7 @@ def button(update, context):
                                 context.bot.send_message(chat_id=update.effective_chat.id, text=text,
                                                          reply_markup=reply_markup)
                             else:
-                                text = 'Заказ невозможно удалить. Пожалуйста, свяжитесь с <a href="https://t.me/alexmustdie">менеджером</a> для решения этой проблемы.'
+                                text = 'Заказ невозможно удалить 😔 Пожалуйста, свяжитесь с <a href="https://t.me/alexmustdie">менеджером</a> для решения этой проблемы.'
                                 context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
 
                         if args[2] == 'del':
@@ -197,7 +197,7 @@ def button(update, context):
                                     for w in order.worker_id.split(','):
                                         if w != '':
                                             wr = User.get(id=int(w))
-                                            text = 'К сожалению, по заказу #{} ({}) был выбран другой исполнитель или заказ был отменён.'.format(order.id, order.subject)
+                                            text = 'К сожалению, по заказу #{} ({}) был выбран другой исполнитель или заказ был удалён 😔'.format(order.id, order.subject)
                                             context.bot.send_message(chat_id=wr.user_id, text=text,
                                                                      parse_mode=telegram.ParseMode.HTML)
 
@@ -212,7 +212,7 @@ def button(update, context):
                                     text = delete_order(id)
                                     context.bot.send_message(chat_id=update.effective_chat.id, text=text)
                             else:
-                                text = 'Заказ невозможно удалить. Пожалуйста, свяжитесь с <a href="https://t.me/alexmustdie">менеджером</a> для решения этой проблемы.'
+                                text = 'Заказ невозможно удалить 😔 Пожалуйста, свяжитесь с <a href="https://t.me/alexmustdie">менеджером</a> для решения этой проблемы.'
                                 context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
 
                         if args[2] == 'push':
@@ -263,10 +263,10 @@ def button(update, context):
                                     reply_markup = InlineKeyboardMarkup(markup)
                                     context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup)
                                 else:
-                                    text = 'Вы еще не утвердили цену с исполнителем или заказ уже оплачен.'
+                                    text = 'Вы ещё не утвердили цену с исполнителем или заказ уже оплачен.'
                                     context.bot.send_message(chat_id=update.effective_chat.id, text=text)
                             else:
-                                text = 'Пока никто не согласился на выполнение этого заказа.'
+                                text = 'Пока никто не согласился на выполнение этого заказа 😔'
                                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
                         if args[2] == 'buyyes':
@@ -311,7 +311,7 @@ def button(update, context):
                                         context.bot.send_message(chat_id=w.user_id, text=text, parse_mode=telegram.ParseMode.HTML)
                                         context.bot.send_message(chat_id=int(chat.chat_id), text=text, parse_mode=telegram.ParseMode.HTML)
                                     else:
-                                        text = 'На балансе недостаточно средств: ' + str(user.balance) + ' руб.'
+                                        text = 'На балансе недостаточно средств: ' + str(user.balance) + ' руб. 😔'
                                         buttons = [
                                             InlineKeyboardButton('Пополнить', callback_data='@' + str(user.id) + '@deposit')]
 
@@ -515,7 +515,7 @@ def button(update, context):
                                 for t in transctions[0:19]:
                                     text += transction.get(t.id) + '\n'
                             else:
-                                text = 'У Вас пока нет ни одной транзакции.'
+                                text = 'У Вас пока нет ни одной транзакции 😔'
 
                             context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
@@ -575,7 +575,7 @@ def button(update, context):
                             for w in order.worker_id.split(','):
                                 if w != worker_id and w != '':
                                     wr = User.get(id=int(w))
-                                    text = 'К сожалению, по заказу #{} ({}) был выбран другой исполнитель или заказ был отменён.'.format(order.id, order.subject)
+                                    text = 'К сожалению, по заказу #{} ({}) был выбран другой исполнитель или заказ был удалён 😔'.format(order.id, order.subject)
                                     context.bot.send_message(chat_id=wr.user_id, text=text, parse_mode=telegram.ParseMode.HTML)
 
                             order.worker_id = args[3]
@@ -670,5 +670,5 @@ def button(update, context):
                     text = 'Заявка на выполнение заказа #{} ({}) успешно отправлена! Ожидайте решение клиента ⏳'.format(myorder.id, myorder.subject)
                     context.bot.send_message(chat_id=update.callback_query.from_user.id, text=text)
                 else:
-                    text = 'К сожалению, по заказу #{} ({}) был выбран другой исполнитель или заказ был отменён.'.format(myorder.id, myorder.subject)
+                    text = 'К сожалению, по заказу #{} ({}) был выбран другой исполнитель или заказ был удалён 😔'.format(myorder.id, myorder.subject)
                     context.bot.send_message(chat_id=update.callback_query.from_user.id, text=text)

@@ -350,7 +350,7 @@ def delcoupon(update, context):
                     coupon = Coupons.get(name=context.args[0])
                     if coupon:
                         delete(c for c in Coupons if c.name == context.args[0])
-                        text = 'Купон ' + context.args[0] + ' удален.'
+                        text = 'Купон ' + context.args[0] + ' удалён.'
                     else:
                         text = 'Купон ' + context.args[0] + ' не найден.'
 

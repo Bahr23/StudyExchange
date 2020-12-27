@@ -8,7 +8,7 @@ from pay import *
 
 CHANNEL_ID = '-1001361464885'
 MEDIA_ID = '-1001412307468'
-BANNED_TEXT = 'К сожалению, Ваш аккаунт был заблокирован.'
+BANNED_TEXT = 'К сожалению, Ваш аккаунт был заблокирован 😔'
 
 @db_session
 def get_user(id):
@@ -98,13 +98,13 @@ def get_order(id):
         except Exception as e:
             status = o.status
 
-        if o.docs == 'Вложения не добавлены':
-            docs = ''
-        else:
-            docs = '\n\nВложения: ' + o.docs
+        price = price if price[-1] == '.' else (price + '.')
+        docs = '' if o.docs == 'Вложения не добавлены' else o.docs
 
-        extra_info = ', '.join([x for x in (o.faculty, o.departament, o.teacher) if x != 'Пропустить']) + '\n'
-        return '<b>Заказ #{id} ({subject})</b>\n{status}\n\n{type}, {deadline}, {price}\n{extra_info}{description}{docs}'.format(
+        extra_list = [x for x in (o.faculty, o.departament, o.teacher) if x != 'Пропустить']
+        extra_info = ', '.join(extra_list) + ('\n' if len(extra_list) else '')
+
+        return '<b>Заказ #{id} ({subject})</b>\n{status}\n\n{type}, {deadline}, {price}\n{extra_info}\n{description}\n\n{docs}'.format(
             id=o.id,
             subject=o.subject,
             status=status,
