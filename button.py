@@ -515,7 +515,7 @@ def button(update, context):
                                 for t in transctions[0:19]:
                                     text += transction.get(t.id) + '\n'
                             else:
-                                text = 'У Вас пока нет ни одной транзакции 😔'
+                                text = 'Тут ничего нет 😔'
 
                             context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 

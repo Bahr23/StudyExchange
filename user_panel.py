@@ -74,7 +74,7 @@ def all_messages(update, context):
             context.user_data.update({'last_message': update.message.text})
             mymenu = Menu()
             reply_markup = mymenu.get_menu(tag='#main#0')
-            text = user.first_name + ', я не знаю как на это ответить 😔'
+            text = user.first_name + ', я не знаю, как на это ответить 😔'
             context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0])
         else:
             start(update, context)
@@ -271,7 +271,7 @@ def my_orders(update, context):
                 markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=InlineKeyboardMarkup(markup))
             else:
-                text = 'У Вас пока нет ни одного заказа 😔'
+                text = 'Тут ничего нет 😔'
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
         else:
             start(update, context)

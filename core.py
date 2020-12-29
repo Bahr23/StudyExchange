@@ -6,7 +6,7 @@ from models import *
 from pay import *
 
 
-CHANNEL_ID = '-1001361464885'
+CHANNEL_ID = '-1001291038829'
 MEDIA_ID = '-1001412307468'
 BANNED_TEXT = 'К сожалению, Ваш аккаунт был заблокирован 😔'
 
@@ -98,7 +98,7 @@ def get_order(id):
         except Exception as e:
             status = o.status
 
-        price = price if price[-1] == '.' else (price + '.')
+        price = o.price if o.price[-1] == '.' else (o.price + '.')
         docs = '' if o.docs == 'Вложения не добавлены' else o.docs
 
         extra_list = [x for x in (o.faculty, o.departament, o.teacher) if x != 'Пропустить']
@@ -110,7 +110,7 @@ def get_order(id):
             status=status,
             type=o.type,
             deadline=o.deadline.lower(),
-            price=o.price.lower(),
+            price=price.lower(),
             extra_info=extra_info,
             description=o.description,
             docs=docs)
