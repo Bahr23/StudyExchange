@@ -295,7 +295,7 @@ def button(update, context):
                                                                       text=message.text + '\n👉 ОПЛАЧЕНО', reply_markup=None,
                                                                       parse_mode=telegram.ParseMode.HTML)
 
-                                        t = tr.new(type='Оплата заказа ' + f'{order.subject} (id{str(order.id)})', bill_id='None', amount=-int(chat.price), user_id=user.id,
+                                        t = tr.new(type='Оплата заказа ' + f'#{str(order.id)}({order.subject})', bill_id='None', amount=-int(chat.price), user_id=user.id,
                                                    date=str(datetime.datetime.now())[0:19])
                                         order.status = 'Оплачен'
 
@@ -410,7 +410,7 @@ def button(update, context):
 
                                     w.balance += rebalance
 
-                                    t = tr.new(type='Выполнение заказа ' + f'{order.subject} (id{str(order.id)})', bill_id='None', amount=int(rebalance),
+                                    t = tr.new(type='Выполнение заказа ' + f'#{str(order.id)}({order.subject})', bill_id='None', amount=int(rebalance),
                                                user_id=w.id,
                                                date=str(datetime.datetime.now())[0:19])
 
@@ -637,6 +637,10 @@ def button(update, context):
                 wor = User.get(user_id=int(update.callback_query.from_user.id))
                 if wor.status != 'worker':
                     text = 'Для того чтобы отправить заявку на выполнение заказа, необходимо получить статус исполнителя: перейдите в раздел /myprofile и нажмите на кнопку "Хочу стать исполнителем".'
+                    context.bot.send_message(chat_id=update.callback_query.from_user.id, text=text)
+                    return
+                if myorder.user_id == wor.id:
+                    text = 'Вы не можете отправить заявку на выполнение своего заказ.'
                     context.bot.send_message(chat_id=update.callback_query.from_user.id, text=text)
                     return
                 if myorder and myorder.status == 'Поиск исполнителя':
