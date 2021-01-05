@@ -27,8 +27,8 @@ def start(update, context):
             context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0], parse_mode=telegram.ParseMode.HTML)
         else:
             user = update.message.from_user
-            first_name = user.first_name if user.first_name else 'не указано'
-            last_name = user.last_name if user.last_name else 'не указано'
+            first_name = user.first_name.capitalize() if user.first_name else 'не указано'
+            last_name = user.last_name.capitalize() if user.last_name else 'не указано'
             username = user.username if user.username else str(user.id)
             age = 'не указано'
             education = 'не указано'
@@ -391,7 +391,7 @@ def faq(update, context):
 
             text = "1. Вы оформляете новый заказ на выполнение студенческой работы через этого бота (/neworder)." \
                    "\n2. Ваша заявка отправляется на рассмотрение менеджеру и спустя время публикуется " \
-                   "<a href='https://t.me/StudyExchangePosts/'>на канале</a> с заказами." \
+                   "<a href='https://t.me/StudyExchangeSPbPU'>на канале</a> с заказами." \
                    "\n3. Исполнители отправляют заявки на выполнение Вашего заказа, о чём Вы получаете уведомления " \
                    "в боте." \
                    "\n4. После того, как Вы выберете подходящего исполнителя, менеджер создаст общий чат, где Вы " \

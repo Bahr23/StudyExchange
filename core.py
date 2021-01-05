@@ -99,10 +99,11 @@ def get_order(id):
             status = o.status
 
         price = o.price if o.price[-1] == '.' else (o.price + '.')
+        description = o.description if o.description[-1] == '.' else (o.description + '.')
         docs = '' if o.docs == 'Вложения не добавлены' else o.docs
 
         extra_list = [x for x in (o.faculty, o.departament, o.teacher) if x != 'Пропустить']
-        extra_info = ', '.join(extra_list) + ('\n' if len(extra_list) else '')
+        extra_info = ', '.join(extra_list) + ('.\n' if len(extra_list) else '')
 
         return '<b>Заказ #{id} ({subject})</b>\n{status}\n\n{type}, {deadline}, {price}\n{extra_info}\n{description}\n\n{docs}'.format(
             id=o.id,
@@ -112,7 +113,7 @@ def get_order(id):
             deadline=o.deadline.lower(),
             price=price.lower(),
             extra_info=extra_info,
-            description=o.description,
+            description=description,
             docs=docs)
     else:
         return False
@@ -287,7 +288,7 @@ def finish_queue(name, answers, update=None, context=None):
         try:
             sum = int(answers[0]['sum'])
             if sum > 0:
-                text = 'Ссылка на оплату 👉 '
+                text = 'Перейдите на страницу оплаты 👉 '
                 link = paylink(user.id, sum)
                 text += link
             else:

@@ -232,7 +232,7 @@ def button(update, context):
                             usert = User.get(id=int(myorder.user_id))
 
                             post = context.bot.send_message(chat_id=CHANNEL_ID, text=text, reply_markup=InlineKeyboardMarkup(markup), parse_mode=telegram.ParseMode.HTML)
-                            post_link = 'https://t.me/StudyExchangePosts/' + str(post.message_id)
+                            post_link = 'https://t.me/StudyExchangeSPbPU/' + str(post.message_id)
 
                             myorder.channel_message = post.message_id
 

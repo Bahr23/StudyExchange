@@ -193,6 +193,23 @@ def getorder(update, context):
                         text += get_order(id)
                         order = Order.get(id=id)
 
+                        if ',' in order.worker_id:
+                            workers = order.worker_id.split(',')[:-1]
+                        else:
+                            workers = [order.worker_id]
+                        print(workers)
+                        wtext = 'Исполнители:\n'
+                        if workers:
+                            # 'Текущие исполнители для заказа #' + args[1] + ':\n'
+                            buttons = []
+
+                            for w in workers:
+                                wor = User.get(id=int(w))
+                                label = wor.first_name + ' ' + ' (' + str(wor.id) + ')\n'
+                                wtext += label
+
+                        text += '\n' + wtext
+
                         mymenu = Menu()
                         buttons = [InlineKeyboardButton('Одобрить', callback_data='@' + str(id) + '@push'),
                                    InlineKeyboardButton('Редактировать', callback_data='@' + str(id) + '@edit@list'),
@@ -201,9 +218,9 @@ def getorder(update, context):
                         markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
                         reply_markup = InlineKeyboardMarkup(markup)
 
-                        if order:
-                            if order.docs != 'Вложения не добавлены':
-                                text += '\nВложения:\n' + order.docs
+                        # if order:
+                        #     if order.docs != 'Вложения не добавлены':
+                        #         text += '\nВложения:\n' + order.docs
 
                     except Exception as e:
                         print(e)
@@ -211,8 +228,8 @@ def getorder(update, context):
                 else:
                     text = 'Используйте /getorder Номер_заказа!'
 
-
-                context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup, parse_mode=telegram.ParseMode.HTML)
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text,
+                                         reply_markup=reply_markup, parse_mode=telegram.ParseMode.HTML)
         else:
             start(update, context)
 

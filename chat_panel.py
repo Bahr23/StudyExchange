@@ -112,8 +112,8 @@ def price(update, context):
                             if chat.price_msg:
                                 context.bot.delete_message(chat_id=chat.chat_id, message_id=chat.price_msg)
 
-                            text = "Пользователь " + name + ' предлагает цену <b>' + context.args[0] + ' руб.</b>\nНажмите на кнопку ниже, если Вы согласны 👇'
-                            text += '\nСогласны:\n'
+                            text = name + ' предлагает цену - <b>' + context.args[0] + ' руб.</b>\nНажмите на кнопку ниже, если Вы согласны 👇\n'
+                            # text += '\nСогласны:\n'
 
                             mymenu = Menu()
                             buttons = [InlineKeyboardButton('Согласен', callback_data='@' + str(chat.id) + '@yes@' + context.args[0])]
@@ -153,8 +153,8 @@ def done(update, context):
                         if chat.done_msg:
                             context.bot.delete_message(chat_id=chat.chat_id, message_id=chat.done_msg)
 
-                        text = "Пользователь " + name + ' предлагает завершить заказ.\nНажмите на кнопку ниже, если Вы согласны 👇'
-                        text += '\nСогласны:\n'
+                        text = name + ' предлагает завершить заказ.\nНажмите на кнопку ниже, если Вы согласны 👇\n'
+                        # text += '\nСогласны:\n'
 
                         mymenu = Menu()
                         buttons = [InlineKeyboardButton('Согласен', callback_data='@' + str(chat.id) + '@done')]
