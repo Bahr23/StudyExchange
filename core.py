@@ -106,10 +106,11 @@ def get_order(id):
         # extra_info = ', '.join(extra_list) + ('.\n' if len(extra_list) else '')
         extra_info = ', '.join(extra_list)
         print(extra_info)
-        if extra_info[-1] != '.':
-            extra_info += '.\n'
-        else:
-            extra_info += '\n'
+        if extra_info:
+            if extra_info[-1] != '.':
+                extra_info += '.\n'
+            else:
+                extra_info += '\n'
 
 
         return '<b>Заказ #{id} ({subject})</b>\n{status}\n\n{type}, {deadline}, {price}\n{extra_info}\n{description}\n\n{docs}'.format(
