@@ -103,7 +103,14 @@ def get_order(id):
         docs = '' if o.docs == 'Вложения не добавлены' else o.docs
 
         extra_list = [x for x in (o.faculty, o.departament, o.teacher) if x != 'Пропустить']
-        extra_info = ', '.join(extra_list) + ('.\n' if len(extra_list) else '')
+        # extra_info = ', '.join(extra_list) + ('.\n' if len(extra_list) else '')
+        extra_info = ', '.join(extra_list)
+        print(extra_info)
+        if extra_info[-1] != '.':
+            extra_info += '.\n'
+        else:
+            extra_info += '\n'
+
 
         return '<b>Заказ #{id} ({subject})</b>\n{status}\n\n{type}, {deadline}, {price}\n{extra_info}\n{description}\n\n{docs}'.format(
             id=o.id,

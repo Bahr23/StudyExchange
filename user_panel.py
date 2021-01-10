@@ -259,7 +259,7 @@ def my_orders(update, context):
                 if context.user_data['queue']:
                     current_queue(update, context, user)
                     return
-            orders = select(o for o in Order if o.user_id == user.id)
+            orders = select(o for o in Order if o.user_id == user.id).order_by(lambda: o.id)
             if len(orders):
                 text = '' # Ваши заказы:\n
                 buttons = []
