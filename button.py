@@ -295,7 +295,7 @@ def button(update, context):
                                                                       text=message.text + '\n👉 ОПЛАЧЕНО', reply_markup=None,
                                                                       parse_mode=telegram.ParseMode.HTML)
 
-                                        t = tr.new(type='Оплата заказа ' + f'#{str(order.id)}({order.subject})', bill_id='None', amount=-int(chat.price), user_id=user.id,
+                                        t = tr.new(type='Оплата заказа ' + f'#{str(order.id)} ({order.subject})', bill_id='None', amount=-int(chat.price), user_id=user.id,
                                                    date=str(datetime.datetime.now())[0:19])
                                         order.status = 'Оплачен'
 
@@ -413,7 +413,7 @@ def button(update, context):
 
                                     w.balance += rebalance
 
-                                    t = tr.new(type='Выполнение заказа ' + f'#{str(order.id)}({order.subject})', bill_id='None', amount=int(rebalance),
+                                    t = tr.new(type='Выполнение заказа ' + f'#{str(order.id)} ({order.subject})', bill_id='None', amount=int(rebalance),
                                                user_id=w.id,
                                                date=str(datetime.datetime.now())[0:19])
 
@@ -472,7 +472,7 @@ def button(update, context):
                             else:
                                 w.rate = 0
 
-                            text = get_name(user) + ' (id' + str(user.id) + ') поставил Вам оценку ' + args[3] + ' ⭐️' \
+                            text = 'Клиент поставил Вам оценку ' + args[3] + ' ⭐️' \
                                    + '\nВаш рейтинг: ' + str(w.rate)
 
                             context.bot.send_message(chat_id=w.user_id, text=text)

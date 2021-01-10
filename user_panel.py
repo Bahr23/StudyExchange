@@ -46,7 +46,7 @@ def start(update, context):
                            last_order=last_order, orders_number=orders_number, workers_orders=workers_orders,
                            rate=rate, points=points, balance=balance)
             context.user_data.update({'queue': False})
-            text = 'Вы успешно зарегистрировались на StudyX! По всем вопросам пишите Вашему <a href="https://t.me/alexmustdie">персональному менеджеру</a> 👨‍💻'
+            text = '<b>Поздравляю с успешной регистрацией на StudyX 🎓</b>\nПо всем вопросам пишите Вашему <a href="https://t.me/alexmustdie">персональному менеджеру</a> 👨‍💻'
             context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0], parse_mode=telegram.ParseMode.HTML)
 
 
