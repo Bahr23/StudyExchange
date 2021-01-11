@@ -177,6 +177,14 @@ def current_queue(update, context, user):
     context.user_data.update({'last_queue_message': text})
 
 
+@db_session
+def new_order_db(user_id, subject, order_type, description, deadline, price, faculty, departament, teacher, url, promo):
+    order = Order(user_id=user_id, status='На проверке', subject=subject, type=order_type, faculty=faculty,
+                  departament=departament, teacher=teacher, description=description,
+                  deadline=deadline, price=price, worker_id='', docs=url, promo=promo)
+    commit()
+    return order
+
 
 @db_session
 def finish_queue(name, answers, update=None, context=None):
@@ -214,17 +222,18 @@ def finish_queue(name, answers, update=None, context=None):
         except Exception as e:
             url = 'Вложения не добавлены'
 
-        order = Order(user_id=user.id, status='На проверке', subject=subject, type=order_type, faculty=faculty,
-                      departament=departament, teacher=teacher, description=description,
-                      deadline=deadline, price=price, worker_id='', docs=url, promo=promo)
+        order = new_order_db(user.id, subject, order_type, description, deadline, price, faculty, departament, teacher, url, promo)
+        print(order)
+        id = order.id
+        print(id)
 
         # # Оповещение пользователя
         # text = 'Ваш заказ добавлен в обработку и в скором времени будет опубликован'
         # context.bot.send_message(chat_id=user.user_id, text=text)
 
         # Оповещение админов
-        orders = select(o for o in Order)
-        id = int(list(orders)[-1].id)
+        # orders = select(o for o in Order)
+        # id = int(list(orders)[-1].id)
         text = 'Пользователь ' + get_name(user, True) + ' создал заказ #' + str(id) + '\n'
         text += get_order(id)
         mymenu = Menu()

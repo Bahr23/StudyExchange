@@ -281,19 +281,24 @@ class Menu:
 
 
         if id:
-            header_buttons = InlineKeyboardButton('Исполнители', callback_data='@' + str(id) + '@workers')
             order = Order.get(id=int(id))
             buttons = []
+
+            if order.status == 'Поиск исполнителя':
+                header_buttons = InlineKeyboardButton('Исполнители', callback_data='@' + str(id) + '@workers')
+            else:
+                header_buttons = None
 
             if order.status == 'Ожидает оплаты':
                 buttons = [
                     # InlineKeyboardButton('Редактировать', callback_data='@' + str(id) + '@edit@list'),
                     InlineKeyboardButton('Оплатить', callback_data='@' + str(id) + '@buy'),
                 ]
-            if order.status != 'Оплачен':
-                footer_buttons = InlineKeyboardButton('❌ Удалить заказ ❌', callback_data='@' + str(id) + '@predel')
-            else:
-                footer_buttons = None
+            # if order.status != 'Оплачен':
+            #     footer_buttons = InlineKeyboardButton('❌ Удалить заказ ❌', callback_data='@' + str(id) + '@predel')
+            # else:
+            #     footer_buttons = None
+            footer_buttons = None
         else:
             header_buttons = None
 

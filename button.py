@@ -643,7 +643,7 @@ def button(update, context):
                     context.bot.send_message(chat_id=update.callback_query.from_user.id, text=text)
                     return
                 if myorder.user_id == wor.id:
-                    text = 'Вы не можете отправить заявку на выполнение своего заказ.'
+                    text = 'Невозможно отправить заявку на выполнение своего заказа.'
                     context.bot.send_message(chat_id=update.callback_query.from_user.id, text=text)
                     return
                 if myorder and myorder.status == 'Поиск исполнителя':
@@ -670,9 +670,10 @@ def button(update, context):
                     usert = User.get(id=myorder.user_id)
                     name = get_name(user, True)
 
-                    text = 'Исполнитель {} (id{}) отправил заявку на выполнение Вашего заказа #{} ({}).'.format(get_name(wor), wor.id, myorder.id, myorder.subject)
-                    context.bot.send_message(chat_id=usert.user_id, text=text,
-                                             reply_markup=InlineKeyboardMarkup(markup), parse_mode=telegram.ParseMode.HTML)
+                    if usert:
+                        text = 'Исполнитель {} (id{}) отправил заявку на выполнение Вашего заказа #{} ({}).'.format(get_name(wor), wor.id, myorder.id, myorder.subject)
+                        context.bot.send_message(chat_id=usert.user_id, text=text,
+                                                 reply_markup=InlineKeyboardMarkup(markup), parse_mode=telegram.ParseMode.HTML)
 
                     text = 'Заявка на выполнение заказа #{} ({}) успешно отправлена! Ожидайте решение клиента ⏳'.format(myorder.id, myorder.subject)
                     context.bot.send_message(chat_id=update.callback_query.from_user.id, text=text)
