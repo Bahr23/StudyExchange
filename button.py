@@ -254,8 +254,9 @@ def button(update, context):
                                     else:
                                         price = chat.price
 
-                                    text = 'Вы уверены, что хотите оплатить заказ ' + order.subject + \
-                                           ' [' + str(order.id) + '] на сумму ' + str(price) + ' руб?'
+                                    text = f'Вы уверены, что хотите оплатить заказ #{str(order.id)} ({order.subject}) на сумму {str(price)} руб.?'
+                                    # text = 'Вы уверены, что хотите оплатить заказ ' + order.subject + \
+                                           ' [' +  + '] на сумму ' + str(price) + ' руб?'
                                     buttons = [
                                         InlineKeyboardButton('Да', callback_data='@' + str(order.id) + '@buyyes')]
                                     markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
