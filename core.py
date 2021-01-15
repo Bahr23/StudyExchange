@@ -320,12 +320,14 @@ def finish_queue(name, answers, update=None, context=None):
             bank = answers[1]['bank']
             card = answers[2]['card']
             if sum <= int(user.balance):
+                user.balance -= sum
                 sum2 = sum * 0.97
                 text = '<b>Пользователь ' + get_name(user) + '[' + str(user.id) + ']' + ' запрашивает вывод:</b>\n' \
                                                                                         '1. Сумма без комисси - ' + str(sum) + \
                        ' руб.\n  - Сумма с учетом комисси - ' + str(sum2) + ' руб\n2. Банк - ' + str(bank) + '\n3. Реквизиты - ' + str(card)
 
-                buttons = [InlineKeyboardButton('Одобрить', callback_data='@' + str(user.user_id) + '@withdrawconfirm@' + str(sum)),
+                buttons = [InlineKeyboardButton('Отклонить', callback_data='@' + str(user.user_id) + '@withdrawreject@' + str(sum)),
+                           InlineKeyboardButton('Одобрить', callback_data='@' + str(user.user_id) + '@withdrawconfirm@' + str(sum)),
                            InlineKeyboardButton('Завершить', callback_data='@' + str(user.user_id) + '@withdrawdone@' + str(sum))]
 
                 markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)

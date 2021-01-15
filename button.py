@@ -515,7 +515,7 @@ def button(update, context):
                             text = '' # История Ваших транзакций:\n
                             if transctions:
                                 for t in transctions[0:19]:
-                                    text += transction.get(t.id) + '\n'
+                                    text += transction.get(t.id) + '\n\n'
                             else:
                                 text = 'Тут ничего нет 😔'
 
@@ -597,6 +597,20 @@ def button(update, context):
                             text = 'Вас выбрали исполнителем для заказа #{} ({})! Ожидайте создание чата ⏳'.format(order.id, order.subject)
                             context.bot.send_message(chat_id=wort.user_id, text=text, parse_mode=telegram.ParseMode.HTML)
 
+                        if args[2] == 'withdrawreject':
+                            # user = User.get(id=int(args[1]))
+                            user.balance += int(args[3])
+
+                            message = update.callback_query.message
+                            context.bot.edit_message_text(chat_id=update.effective_chat.id,
+                                                          message_id=message.message_id,
+                                                          text=message.text + '\n👎 ОТКЛОНЕНО',
+                                                          parse_mode=telegram.ParseMode.HTML, reply_markup=None, )
+
+                            text = 'Ваша заявка на вывод <b>' + args[3] + ' руб.</b> отклонена, средства востановлены на балансе.'
+                            context.bot.send_message(chat_id=int(args[1]), text=text, parse_mode=telegram.ParseMode.HTML)
+
+
                         if args[2] == 'withdrawconfirm':
                             buttons = [InlineKeyboardButton('Завершить', callback_data='@' + args[1] + '@withdrawdone@' + args[3])]
 
@@ -607,7 +621,7 @@ def button(update, context):
                             message = update.callback_query.message
                             context.bot.edit_message_text(chat_id=update.effective_chat.id,
                                                           message_id=message.message_id,
-                                                          text=message.text + '\n👌 ОДОБРЕНО',
+                                                          text=message.text + '\n👍 ОДОБРЕНО',
                                                           parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup, )
 
                             text = 'Ваша заявка на вывод <b>' + args[3] + ' руб.</b> одобрена и будет выполнена в ближайшее время.'
@@ -617,20 +631,20 @@ def button(update, context):
                             # print(args)
                             # user = User.get(id=int(args[1]))
                             # print(user)
-                            user.balance -= int(args[3])
+                            # user.balance -= int(args[3])
 
                             t = tr.new(type='Вывод', bill_id='None', amount=int(args[3]),
                                        user_id=user.id, date=str(datetime.datetime.now())[0:19])
 
                             message = update.callback_query.message
                             context.bot.edit_message_text(chat_id=update.effective_chat.id, message_id=message.message_id,
-                                                          text=message.text + '\n👉 ЗАВЕРШЕНО', reply_markup=None,
+                                                          text=message.text + '\n👌 ЗАВЕРШЕНО', reply_markup=None,
                                                           parse_mode=telegram.ParseMode.HTML)
 
                             text = 'Ваша заявка на вывод <b>' + args[3] + ' руб.</b> выполнена ✅'
                             context.bot.send_message(chat_id=user.user_id, text=text, parse_mode=telegram.ParseMode.HTML)
-                            context.bot.send_message(chat_id=update.effective_chat.id, text='Баланс пользователя ' + get_name(user, True) +
-                                                     ' <b>уменьшен на ' + args[3] + ' руб.</b>', parse_mode=telegram.ParseMode.HTML)
+                            # context.bot.send_message(chat_id=update.effective_chat.id, text='Баланс пользователя ' + get_name(user, True) +
+                            #                          ' <b>уменьшен на ' + args[3] + ' руб.</b>', parse_mode=telegram.ParseMode.HTML)
     else:
         if query.data[0] == '@':
             args = query.data.split('@')
