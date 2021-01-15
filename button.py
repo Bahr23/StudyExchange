@@ -607,7 +607,7 @@ def button(update, context):
                                                           text=message.text + '\n👎 ОТКЛОНЕНО',
                                                           parse_mode=telegram.ParseMode.HTML, reply_markup=None, )
 
-                            text = 'Ваша заявка на вывод <b>' + args[3] + ' руб.</b> отклонена, средства востановлены на балансе.'
+                            text = 'Ваша заявка на вывод <b>' + args[3] + ' руб.</b> отклонена, средства восстановлены на балансе.'
                             context.bot.send_message(chat_id=int(args[1]), text=text, parse_mode=telegram.ParseMode.HTML)
 
 
