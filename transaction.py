@@ -22,7 +22,11 @@ class Transaction:
             datetime = t.date.split(' ')
             date = datetime[0].split('-')
             date = f"{date[2]}.{date[1]}.{date[0]}"
-            text = '{} | {} | {} руб.'.format(date + ' ' + datetime[1][:-3], t.type, t.amount)
+            if t.amount > 0:
+                amount = '+' + str(t.amount)
+            else:
+                amount = t.amount
+            text = '{} | {} | {} руб.'.format(date + ' ' + datetime[1][:-3], t.type, amount)
         else:
             text = 'Транзакция с id ' + str(id) + ' не найдена'
         return text

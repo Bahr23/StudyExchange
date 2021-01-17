@@ -114,7 +114,7 @@ def ubalance(update, context):
                             amount = int(' '.join(context.args[1:]))
                             chat_id = user.user_id
                             user.balance += amount
-                            t = tr.new(type='Пополнение админом', bill_id='None', amount=int(amount), user_id=user.id,
+                            t = tr.new(type='Пополнение менеджером', bill_id='None', amount=int(amount), user_id=user.id,
                                        date=str(datetime.datetime.now())[0:19])
                             text = 'Баланс пользователя ' + get_name(user) + ' изменен на ' + str(amount) + 'р.'
 
@@ -199,13 +199,13 @@ def getorder(update, context):
                             workers = [order.worker_id]
                         print(workers)
                         wtext = 'Исполнители:\n'
-                        if workers:
+                        if workers != ['']:
                             # 'Текущие исполнители для заказа #' + args[1] + ':\n'
                             buttons = []
 
                             for w in workers:
                                 wor = User.get(id=int(w))
-                                label = wor.first_name + ' ' + ' (' + str(wor.id) + ')\n'
+                                label = wor.first_name + ' (' + str(wor.id) + ')\n'
                                 wtext += label
 
                         text += '\n' + wtext
@@ -218,9 +218,9 @@ def getorder(update, context):
                         markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
                         reply_markup = InlineKeyboardMarkup(markup)
 
-                        # if order:
-                        #     if order.docs != 'Вложения не добавлены':
-                        #         text += '\nВложения:\n' + order.docs
+                    # if order:
+                    #     if order.docs != 'Вложения не добавлены':
+                    #         text += '\nВложения:\n' + order.docs
 
                     except Exception as e:
                         print(e)

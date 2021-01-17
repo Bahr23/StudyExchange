@@ -10,6 +10,7 @@ CHANNEL_ID = '-1001291038829'
 MEDIA_ID = '-1001412307468'
 BANNED_TEXT = 'К сожалению, Ваш аккаунт был заблокирован 😔'
 
+
 @db_session
 def get_user(id):
     try:
@@ -105,7 +106,6 @@ def get_order(id):
         extra_list = [x for x in (o.faculty, o.departament, o.teacher) if x != 'Пропустить']
         # extra_info = ', '.join(extra_list) + ('.\n' if len(extra_list) else '')
         extra_info = ', '.join(extra_list)
-        print(extra_info)
         if extra_info:
             if extra_info[-1] != '.':
                 extra_info += '.\n'
