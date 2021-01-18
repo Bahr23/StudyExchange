@@ -65,7 +65,7 @@ def button(update, context):
                             user = User.get(id=int(args[1]))
                             if user:
                                 user.status = 'worker'
-                                text = 'Вы успешно изменили статус пользователя' + get_name(user) + '[' + str(user.id) + '] на worker'
+                                text = 'Вы успешно изменили статус пользователя ' + get_name(user) + '[' + str(user.id) + '] на worker'
                                 context.bot.send_message(chat_id=user.user_id, text='Ваша заявка на роль исполнителя успешно одобрена. Можете приступать к работе!')
                             else:
                                 text = 'Такой пользователь не найден.'
