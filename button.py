@@ -291,7 +291,7 @@ def button(update, context):
                                         message = update.callback_query.message
                                         context.bot.edit_message_text(chat_id=update.effective_chat.id,
                                                                       message_id=message.message_id,
-                                                                      text=message.text + '\n👉 ОПЛАЧЕНО', reply_markup=None,
+                                                                      text=message.text + '\nОПЛАЧЕНО 👍', reply_markup=None,
                                                                       parse_mode=telegram.ParseMode.HTML)
 
                                         t = tr.new(type='Оплата заказа ' + f'#{str(order.id)} ({order.subject})', bill_id='None', amount=-int(chat.price), user_id=user.id,
@@ -630,8 +630,9 @@ def button(update, context):
                         if args[2] == 'withdrawdone':
                             # print(args)
                             # user = User.get(id=int(args[1]))
-                            # print(user)
-                            # user.balance -= int(args[3])
+                            # # print(user)
+                            # # user.balance -= int(args[3])
+                            # print(args)
 
                             t = tr.new(type='Вывод', bill_id='None', amount=int(args[3]),
                                        user_id=user.id, date=str(datetime.datetime.now())[0:19])
@@ -642,7 +643,7 @@ def button(update, context):
                                                           parse_mode=telegram.ParseMode.HTML)
 
                             text = 'Ваша заявка на вывод <b>' + args[3] + ' руб.</b> выполнена ✅'
-                            context.bot.send_message(chat_id=user.user_id, text=text, parse_mode=telegram.ParseMode.HTML)
+                            context.bot.send_message(chat_id=int(args[1]), text=text, parse_mode=telegram.ParseMode.HTML)
                             # context.bot.send_message(chat_id=update.effective_chat.id, text='Баланс пользователя ' + get_name(user, True) +
                             #                          ' <b>уменьшен на ' + args[3] + ' руб.</b>', parse_mode=telegram.ParseMode.HTML)
     else:
