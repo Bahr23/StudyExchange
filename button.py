@@ -65,7 +65,7 @@ def button(update, context):
                             user = User.get(id=int(args[1]))
                             if user:
                                 user.status = 'worker'
-                                text = 'Вы успешно изменили статус пользователя ' + get_name(user) + '[' + str(user.id) + '] на worker'
+                                text = 'Вы успешно изменили статус пользователя ' + get_name(user) + '(' + str(user.id) + ') на worker'
                                 context.bot.send_message(chat_id=user.user_id, text='Ваша заявка на роль исполнителя успешно одобрена. Можете приступать к работе!')
                             else:
                                 text = 'Такой пользователь не найден.'
@@ -411,6 +411,29 @@ def button(update, context):
                                     rebalance = int(int(chat.price) * 0.85)
 
                                     w.balance += rebalance
+
+                                    if order.promo != '0':
+                                        coup = Coupons.get(name=order.promo)
+                                        if coup.count > 0:
+                                            promo = 1 - float(coup.amount) / 100
+                                            coup.count -= 1
+                                            price = int(int(chat.price) * promo)
+                                        else:
+                                            price = chat.price
+                                    else:
+                                        price = chat.price
+
+                                    profit = int(price) - rebalance
+                                    partner_profit = int(profit * 0.25)
+                                    partner = User.get(id=Settings.get(key='partner_id').value)
+                                    partner.balance += partner_profit
+
+                                    context.bot.send_message(chat_id=int(partner.user_id), text=f"Заказ #{order.id} ({order.subject}) успешно завершён, ваш баланс пополнен на {partner_profit} руб.")
+
+                                    t = tr.new(type='Партнерская выплата с заказа ' + f'#{str(order.id)} ({order.subject})',
+                                               bill_id='None', amount=int(partner_profit),
+                                               user_id=partner.id,
+                                               date=str(datetime.datetime.now())[0:19])
 
                                     t = tr.new(type='Выполнение заказа ' + f'#{str(order.id)} ({order.subject})', bill_id='None', amount=int(rebalance),
                                                user_id=w.id,

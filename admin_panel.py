@@ -117,10 +117,15 @@ def ubalance(update, context):
                             t = tr.new(type='Пополнение менеджером', bill_id='None', amount=int(amount), user_id=user.id,
                                        date=str(datetime.datetime.now())[0:19])
                             text = 'Баланс пользователя ' + get_name(user) + ' изменен на ' + str(amount) + 'р.'
-
+                            if amount > 0:
+                                utext = f'Ваш баланс пополнен на { str(amount)} руб. 💰'
+                            else:
+                                utext = f'Ваш баланс уменьшен на {str(abs(amount))} руб. 💰'
+                            context.bot.send_message(chat_id=user.user_id, text=utext)
                         else:
                             text = 'Пользователь с id ' + context.args[0] + ' не найден'
                 context.bot.send_message(chat_id=chat_id, text=text)
+
 
             else:
                 context.bot.send_message(chat_id=update.effective_chat.id, text='Вы не являетесь админом')
@@ -193,11 +198,16 @@ def getorder(update, context):
                         text += get_order(id)
                         order = Order.get(id=id)
 
+                        if order.promo != '0':
+                            ctext = f'Купон: {order.promo}'
+                        else:
+                            ctext = f'Купон: None'
+                        text += '\n' + ctext
+
                         if ',' in order.worker_id:
                             workers = order.worker_id.split(',')[:-1]
                         else:
                             workers = [order.worker_id]
-                        print(workers)
                         wtext = 'Исполнители:\n'
                         if workers != ['']:
                             # 'Текущие исполнители для заказа #' + args[1] + ':\n'
