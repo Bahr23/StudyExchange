@@ -222,10 +222,10 @@ class Menu:
                 'body': [
                     {
                         'buttons': [
-                            InlineKeyboardButton("СберБанк", callback_data="Банк №1"),
-                            InlineKeyboardButton("Тинькофф", callback_data="Банк №2"),
-                            InlineKeyboardButton("Альфа-Банк", callback_data="Банк №3"),
-                            InlineKeyboardButton("ВТБ", callback_data="Банк №4"),
+                            InlineKeyboardButton("СберБанк", callback_data="СберБанк"),
+                            InlineKeyboardButton("Тинькофф", callback_data="Тинькофф"),
+                            InlineKeyboardButton("Альфа-Банк", callback_data="Альфа-Банк"),
+                            InlineKeyboardButton("ВТБ", callback_data="ВТБ"),
                         ],
                         'header': None,
                         'footer': None,
