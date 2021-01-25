@@ -106,17 +106,16 @@ def ubalance(update, context):
                     return
             if user.status == 'admin':
                 text = 'Используйте /ubalance user_id [-/+]amount'
-                chat_id = update.effective_chat.id
                 if context.args:
                     if len(context.args) >= 2:
                         user = User.get(id=int(context.args[0]))
                         if user:
                             amount = int(' '.join(context.args[1:]))
-                            chat_id = user.user_id
                             user.balance += amount
                             t = tr.new(type='Пополнение менеджером', bill_id='None', amount=int(amount), user_id=user.id,
                                        date=str(datetime.datetime.now())[0:19])
                             text = 'Баланс пользователя ' + get_name(user) + ' изменен на ' + str(amount) + 'р.'
+
                             if amount > 0:
                                 utext = f'Ваш баланс пополнен на { str(amount)} руб. 💰'
                             else:
@@ -124,7 +123,7 @@ def ubalance(update, context):
                             context.bot.send_message(chat_id=user.user_id, text=utext)
                         else:
                             text = 'Пользователь с id ' + context.args[0] + ' не найден'
-                context.bot.send_message(chat_id=chat_id, text=text)
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
 
             else:
