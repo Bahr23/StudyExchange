@@ -407,6 +407,10 @@ def button(update, context):
                                     w.orders_number = str(int(w.orders_number) + 1)
                                     u.last_order = str(datetime.date.today()).replace('-', '.')
                                     w.workers_orders += 1
+                                    if w.rated_orders:
+                                        w.rated_orders += 1
+                                    else:
+                                        w.rated_orders = 1
 
                                     rebalance = int(int(chat.price) * 0.85)
 
@@ -489,8 +493,8 @@ def button(update, context):
 
                             w = User.get(id=int(args[1]))
                             w.points += int(args[3])
-                            if w.workers_orders > 0:
-                                w.rate = round(w.points / w.workers_orders, 1)
+                            if w.rated_orders > 0:
+                                w.rate = round(w.points / w.rated_orders, 1)
                             else:
                                 w.rate = 0
 
@@ -651,8 +655,8 @@ def button(update, context):
                             context.bot.send_message(chat_id=int(args[1]), text=text, parse_mode=telegram.ParseMode.HTML)
 
                         if args[2] == 'withdrawdone':
-                            # print(args)
-                            # user = User.get(id=int(args[1]))
+                            print(args)
+                            user = User.get(user_id=int(args[1]))
                             # # print(user)
                             # # user.balance -= int(args[3])
                             # print(args)
