@@ -381,6 +381,7 @@ def button(update, context):
                             order = Order.get(id=int(chat.order_id))
                             message = update.callback_query.message
                             chat_id = chat.chat_id
+                            text = ''
 
                             if str(user.id) == str(chat.user_id):
                                 if chat.user_yes == 1:
