@@ -476,11 +476,10 @@ def button(update, context):
                                 ch_text = 'Всем спасибо за работу! До новых встреч 👋'
                                 context.bot.send_message(chat_id=chat_id, text=ch_text, reply_markup=telegram.ReplyKeyboardRemove())
 
-                                chat.delete()
-
-                            context.bot.edit_message_text(chat_id=chat_id, message_id=message.message_id,
+                                context.bot.edit_message_text(chat_id=chat_id, message_id=message.message_id,
                                                               text=message.text + text, reply_markup=reply_markup,
                                                               parse_mode=telegram.ParseMode.HTML)
+                                chat.delete()
 
 
                         if args[2] == 'rate':
