@@ -597,6 +597,7 @@ def button(update, context):
                             order = Order.get(id=int(args[1]))
                             order.status = 'Исполнитель выбран'
 
+                            print(order.channel_message)
                             context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
                                                           text=get_order(order.id), reply_markup=None,
                                                           parse_mode=telegram.ParseMode.HTML)
