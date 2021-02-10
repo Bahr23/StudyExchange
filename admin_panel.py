@@ -81,7 +81,7 @@ def message(update, context):
                         user = User.get(id=int(context.args[0]))
                         if user:
                             text = ' '.join(context.args[1:])
-                            chat_id = user.id
+                            chat_id = user.user_id
                         else:
                             text = 'Пользователь с id ' + context.args[0] + ' не найден'
                 context.bot.send_message(chat_id=chat_id, text=text)
