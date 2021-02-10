@@ -598,9 +598,12 @@ def button(update, context):
                             order.status = 'Исполнитель выбран'
 
                             print(order.channel_message)
-                            context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
+                            try:
+                                context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
                                                           text=get_order(order.id), reply_markup=None,
                                                           parse_mode=telegram.ParseMode.HTML)
+                            except Exception as e:
+                                print(e)
 
                             worker_id = args[3]
 
