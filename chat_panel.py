@@ -22,14 +22,8 @@ def chat(update, context):
                     order = Order.get(id=int(context.args[0]))
                     chat = Chat.get(chat_id=update.effective_chat.id)
                     if order and not chat:
-                        # context.bot.set_chat_title(chat_id=update.effective_chat.id, title='None')
-                        # context.bot.set_chat_description(chat_id=update.effective_chat.id, description='None')
-
                         title = "Заказ #" + str(order.id) + ' (' + order.subject + ')'
                         context.bot.set_chat_title(chat_id=update.effective_chat.id, title=title)
-
-                        # description = 'Чат по поводу заказа ' + order.subject + ' [' + str(order.id) + ']'
-                        # context.bot.set_chat_description(chat_id=update.effective_chat.id, description=description)
 
                         chat_permissions = ChatPermissions(
                             can_send_messages=True,
@@ -41,10 +35,8 @@ def chat(update, context):
                             can_invite_users=False,
                             can_pin_messages=False
                         )
-                        context.bot.set_chat_permissions(chat_id=update.effective_chat.id, permissions=chat_permissions)
 
-                        # ftext = 'Установленно имя чата - ' + title + '\nУстановленно опсиание чата - ' + description
-                        # context.bot.send_message(chat_id=update.effective_chat.id, text=ftext, timeout=500)
+                        context.bot.set_chat_permissions(chat_id=update.effective_chat.id, permissions=chat_permissions)
 
                         link = context.bot.export_chat_invite_link(chat_id=update.effective_chat.id)
 
@@ -59,14 +51,20 @@ def chat(update, context):
                         mymenu = Menu()
                         reply_markup = mymenu.get_menu(tag='#chat#0')
 
-                        pintext = 'Команды чата 👇\n/price <i>цена</i> - утвердить цену\n/admin - вызвать менеджера\n/done - завершить заказ'
-                        pinid = context.bot.send_message(chat_id=update.effective_chat.id, text=pintext, timeout=500, reply_markup=reply_markup[0], parse_mode=telegram.ParseMode.HTML,)
+                        pintext = '⚠️ Перед началом работы обязательно ознакомьтесь с инструкцией:\n\n' \
+                                  '1. Обе стороны обговаривают все условия заказа, после чего клиент или исполнитель' \
+                                  ' должен написать "/price [<b>цена</b>]" в общий чат.\n2. Клиент вносит полную предоплату' \
+                                  ' через бота. Бот присылает сообщение об успешной оплате в общий чат. Только после' \
+                                  ' этого исполнитель приступает к работе.\n3. Для завершения работы исполнитель или' \
+                                  ' клиент должен написать "/done" в общий чат.\n\nЗа разрешение спорных ситуаций ' \
+                                  'отвечает менеджер, вызвать которого можно командой "/admin".'
+                        pinid = context.bot.send_message(chat_id=update.effective_chat.id, text=pintext, timeout=500, parse_mode=telegram.ParseMode.HTML,)
                         context.bot.pin_chat_message(chat_id=update.effective_chat.id, message_id=pinid.message_id)
 
-                        chat = Chat(chat_id=update.effective_chat.id, price='0', user_id=str(order.user_id), worker_id=str(order.worker_id), order_id=str(order.id))
-                        # text = 'Чат успешно создан'
-                        # context.bot.send_message(chat_id=update.effective_chat.id, text=text, timeout=500)
+                        # text = 'Команды чата 👇\n/price [<b>цена</b>] - утвердить цену\n/admin - вызвать менеджера\n/done - завершить заказ'
+                        # context.bot.send_message(chat_id=update.effective_chat.id, text=text, timeout=500, reply_markup=reply_markup[0], parse_mode=telegram.ParseMode.HTML,)
 
+                        chat = Chat(chat_id=update.effective_chat.id, price='0', user_id=str(order.user_id), worker_id=str(order.worker_id), order_id=str(order.id))
                     else:
                         text = 'Заказ #' + context.args[0] + ' не найден или чат уже создан.'
                         context.bot.send_message(chat_id=update.effective_chat.id, text=text, timeout=500, parse_mode=telegram.ParseMode.HTML,)
@@ -112,7 +110,8 @@ def price(update, context):
                             if chat.price_msg:
                                 context.bot.delete_message(chat_id=chat.chat_id, message_id=chat.price_msg)
 
-                            text = name + ' предлагает цену - <b>' + context.args[0] + ' руб.</b>\nНажмите на кнопку ниже, если Вы согласны 👇\n'
+                            text = name + ' предлагает цену - <b>' + context.args[0] + ' руб.</b>\n' \
+                                'Если Вы согласны, нажмите на кнопку "Согласен"👇 Действие требуется от обеих сторон!\n'
                             # text += '\nСогласны:\n'
 
                             mymenu = Menu()
@@ -121,16 +120,18 @@ def price(update, context):
                             markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
                             reply_markup = InlineKeyboardMarkup(markup)
 
-                            chat.price_msg = context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup).message_id
+                            chat.price_msg = context.bot.send_message(chat_id=update.effective_chat.id, text=text,
+                                                                      parse_mode=telegram.ParseMode.HTML,
+                                                                      reply_markup=reply_markup).message_id
                         else:
                             text = 'Цена для этого заказа уже утверждена!'
                             context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML,)
                     except Exception as e:
                         print(e)
-                        text = 'Используйте /price <i>цена</i>, где <i>цена</i> - целое число.'
+                        text = 'Используйте /price [<b>цена</b>], где [<b>цена</b>] - целое число.'
                         context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML,)
                 else:
-                    text = 'Используйте /price <i>цена</i>, где <i>цена</i> - целое число.'
+                    text = 'Используйте /price [<b>цена</b>], где [<b>цена</b>] - целое число.'
                     context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML,)
 
 
@@ -153,7 +154,12 @@ def done(update, context):
                         if chat.done_msg:
                             context.bot.delete_message(chat_id=chat.chat_id, message_id=chat.done_msg)
 
-                        text = name + ' предлагает завершить заказ.\nНажмите на кнопку ниже, если Вы согласны 👇\n'
+                        username = get_name(User.get(id=int(chat.user_id)))
+
+                        text = f'{name} предлагает завершить заказ.\nЕсли Вы согласны, нажмите на кнопку «Согласен»👇' \
+                            f' Действие требуется от обеих сторон!\n\n⚠️ {username}, нажимая на кнопку «Согласен»' \
+                            f' Вы подтверждаете, что убедились в корректности предоставленной работы, и не ' \
+                            f'имеете претензий к исполнителю и сервису StudyX.'
                         # text += '\nСогласны:\n'
 
                         mymenu = Menu()

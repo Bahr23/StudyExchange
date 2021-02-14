@@ -194,7 +194,7 @@ class Menu:
                             InlineKeyboardButton("2000-3000 руб.", callback_data="2000-3000 руб."),
                             InlineKeyboardButton("3000-4000 руб.", callback_data="3000-4000 руб."),
                             InlineKeyboardButton("4000-5000 руб.", callback_data="4000-5000 руб."),
-                            InlineKeyboardButton("По договорённости", callback_data="По договорённости")
+                            InlineKeyboardButton("Цена по договорённости", callback_data="Цена по договорённости")
                         ],
                         'header': None,
                         'footer': None,

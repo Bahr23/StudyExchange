@@ -6,8 +6,10 @@ from models import *
 from pay import *
 
 
-CHANNEL_ID = '-1001291038829'
-MEDIA_ID = '-1001412307468'
+# CHANNEL_ID = '-1001291038829' -489614808
+# MEDIA_ID = '-1001412307468' -438856140
+CHANNEL_ID = '-489614808'
+MEDIA_ID = '-438856140'
 BANNED_TEXT = 'К сожалению, Ваш аккаунт был заблокирован 😔'
 
 
@@ -157,7 +159,7 @@ def queue(update, context, user, ans=None):
             text = context.user_data['queue_finish']
             mymenu = Menu()
             reply_markup = mymenu.get_menu(tag='#main#0')
-            context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0])
+            context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0], parse_mode=telegram.ParseMode.HTML,)
 
 
 def current_queue(update, context, user):
@@ -173,7 +175,7 @@ def current_queue(update, context, user):
         reply_markup = None
     if context.user_data['last_queue_message'] == text:
         return
-    context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup, parse_mode=telegram.ParseMode.HTML,)
     context.user_data.update({'last_queue_message': text})
 
 
@@ -301,6 +303,42 @@ def finish_queue(name, answers, update=None, context=None):
                 context.user_data.update({'queue_finish': False})
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
+    if name == "depositsber":
+        try:
+            sum = int(answers[0]['sum'])
+            if sum > 0:
+                text = f'Переведите ровно {sum} рублей на карту СберБанка 👇\n\n<b>5469 5500 4083 4357\nАлексей Олегович К.</b>\n\n⚠️ Комментарий к переводу указывать не надо.'
+                buttons = [
+                    InlineKeyboardButton('Оплатил', callback_data='@' + str(user.id) + '@donedepositsber' + '@' + str(sum))]
+
+                markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
+                                           footer_buttons=None)
+                reply_markup = InlineKeyboardMarkup(markup)
+            else:
+                text = "Сумма пополнения должна быть больше нуля!"
+                reply_markup = None
+        except Exception as e:
+            text = 'Сумма пополнения должна быть числом!'
+        context.bot.send_message(chat_id=update.effective_chat.id, text=text,  parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
+
+    if name == "deposittin":
+        try:
+            sum = int(answers[0]['sum'])
+            if sum > 0:
+                text = f'Переведите ровно {sum} рублей на карту банка Тинькофф 👇\n\n<b>5536 9138 8428 9543\nАлексей Олегович К.</b>\n\n⚠️ Комментарий к переводу указывать не надо.'
+                buttons = [
+                    InlineKeyboardButton('Оплатил', callback_data='@' + str(user.id) + '@donedeposittin' + '@' + str(sum))]
+
+                markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
+                                           footer_buttons=None)
+                reply_markup = InlineKeyboardMarkup(markup)
+            else:
+                text = "Сумма пополнения должна быть больше нуля!"
+                reply_markup = None
+        except Exception as e:
+            text = 'Сумма пополнения должна быть числом!'
+        context.bot.send_message(chat_id=update.effective_chat.id, text=text,  parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
+
     if name == "balance":
         try:
             sum = int(answers[0]['sum'])
@@ -314,11 +352,12 @@ def finish_queue(name, answers, update=None, context=None):
             text = 'Сумма пополнения должна быть числом!'
         context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
-    if name == "withdraw":
+    if name == "withdrawsber":
+        print(answers)
         try:
-            sum = int(answers[0]['sum'])
-            bank = answers[1]['bank']
-            card = answers[2]['card']
+            sum = int(answers[1]['sum'])
+            bank = 'СберБанк'
+            card = answers[0]['card']
             if sum <= int(user.balance):
                 user.balance -= sum
                 sum2 = sum * 0.97
@@ -343,4 +382,102 @@ def finish_queue(name, answers, update=None, context=None):
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
         except Exception as e:
+            print(e)
             text = 'Сумма вывода должна быть числом!'
+
+    if name == "withdrawstin":
+        print(answers)
+        try:
+            sum = int(answers[1]['sum'])
+            bank = 'Тинькофф'
+            card = answers[0]['card']
+            if sum <= int(user.balance):
+                user.balance -= sum
+                sum2 = sum * 0.97
+                text = '<b>Пользователь ' + get_name(user) + '[' + str(user.id) + ']' + ' запрашивает вывод:</b>\n' \
+                                                                                        '1. Сумма без комисси - ' + str(sum) + \
+                       ' руб.\n  - Сумма с учетом комисси - ' + str(sum2) + ' руб\n2. Банк - ' + str(bank) + '\n3. Реквизиты - ' + str(card)
+
+                buttons = [InlineKeyboardButton('Отклонить', callback_data='@' + str(user.user_id) + '@withdrawreject@' + str(sum)),
+                           InlineKeyboardButton('Одобрить', callback_data='@' + str(user.user_id) + '@withdrawconfirm@' + str(sum)),
+                           InlineKeyboardButton('Завершить', callback_data='@' + str(user.user_id) + '@withdrawdone@' + str(sum))]
+
+                markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
+                reply_markup = InlineKeyboardMarkup(markup)
+
+                admins = list(select(u for u in User if u.status == 'admin'))
+                for admin in admins:
+                    context.bot.send_message(chat_id=admin.user_id, text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
+                context.bot.send_message(chat_id=update.effective_chat.id,
+                                         text='Ваша заявка на вывод средств успешно отправлена. Ожидайте решение <a href="https://t.me/alexmustdie">менеджера</a> ⏳', parse_mode=telegram.ParseMode.HTML)
+            else:
+                text = 'Ваша заявка отклонена: на балансе недостаточно средств.'
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+
+        except Exception as e:
+            print(e)
+            text = 'Сумма вывода должна быть числом!'
+
+    if name == "withdrawother":
+        print(answers)
+        try:
+            sum = int(answers[1]['sum'])
+            bank = 'Другой банк'
+            card = answers[0]['card']
+            if sum <= int(user.balance):
+                user.balance -= sum
+                sum2 = sum * 0.97
+                text = '<b>Пользователь ' + get_name(user) + '[' + str(user.id) + ']' + ' запрашивает вывод:</b>\n' \
+                                                                                        '1. Сумма без комисси - ' + str(sum) + \
+                       ' руб.\n  - Сумма с учетом комисси - ' + str(sum2) + ' руб\n2. Банк - ' + str(bank) + '\n3. Реквизиты - ' + str(card)
+
+                buttons = [InlineKeyboardButton('Отклонить', callback_data='@' + str(user.user_id) + '@withdrawreject@' + str(sum)),
+                           InlineKeyboardButton('Одобрить', callback_data='@' + str(user.user_id) + '@withdrawconfirm@' + str(sum)),
+                           InlineKeyboardButton('Завершить', callback_data='@' + str(user.user_id) + '@withdrawdone@' + str(sum))]
+
+                markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
+                reply_markup = InlineKeyboardMarkup(markup)
+
+                admins = list(select(u for u in User if u.status == 'admin'))
+                for admin in admins:
+                    context.bot.send_message(chat_id=admin.user_id, text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
+                context.bot.send_message(chat_id=update.effective_chat.id,
+                                         text='Ваша заявка на вывод средств успешно отправлена. Ожидайте решение <a href="https://t.me/alexmustdie">менеджера</a> ⏳', parse_mode=telegram.ParseMode.HTML)
+            else:
+                text = 'Ваша заявка отклонена: на балансе недостаточно средств.'
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+
+        except Exception as e:
+            print(e)
+            text = 'Сумма вывода должна быть числом!'
+
+    # if name == "withdraw":
+    #     try:
+    #         sum = int(answers[0]['sum'])
+    #         bank = answers[1]['bank']
+    #         card = answers[2]['card']
+    #         if sum <= int(user.balance):
+    #             user.balance -= sum
+    #             sum2 = sum * 0.97
+    #             text = '<b>Пользователь ' + get_name(user) + '[' + str(user.id) + ']' + ' запрашивает вывод:</b>\n' \
+    #                                                                                     '1. Сумма без комисси - ' + str(sum) + \
+    #                    ' руб.\n  - Сумма с учетом комисси - ' + str(sum2) + ' руб\n2. Банк - ' + str(bank) + '\n3. Реквизиты - ' + str(card)
+    #
+    #             buttons = [InlineKeyboardButton('Отклонить', callback_data='@' + str(user.user_id) + '@withdrawreject@' + str(sum)),
+    #                        InlineKeyboardButton('Одобрить', callback_data='@' + str(user.user_id) + '@withdrawconfirm@' + str(sum)),
+    #                        InlineKeyboardButton('Завершить', callback_data='@' + str(user.user_id) + '@withdrawdone@' + str(sum))]
+    #
+    #             markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
+    #             reply_markup = InlineKeyboardMarkup(markup)
+    #
+    #             admins = list(select(u for u in User if u.status == 'admin'))
+    #             for admin in admins:
+    #                 context.bot.send_message(chat_id=admin.user_id, text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
+    #             context.bot.send_message(chat_id=update.effective_chat.id,
+    #                                      text='Ваша заявка на вывод средств успешно отправлена. Ожидайте решение <a href="https://t.me/alexmustdie">менеджера</a> ⏳', parse_mode=telegram.ParseMode.HTML)
+    #         else:
+    #             text = 'Ваша заявка отклонена: на балансе недостаточно средств.'
+    #             context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+    #
+    #     except Exception as e:
+    #         text = 'Сумма вывода должна быть числом!'

@@ -363,8 +363,8 @@ def balance(update, context):
             text = 'Ваш баланс: ' + str(user.balance) + ' руб.'
 
             mymenu = Menu()
-            buttons = [InlineKeyboardButton('Пополнить', callback_data='@' + str(user.id) + '@deposit'),
-                       InlineKeyboardButton('Вывести', callback_data='@' + str(user.id) + '@withdraw'),
+            buttons = [InlineKeyboardButton('Пополнить', callback_data='@' + str(user.id) + '@deposit1'),
+                       InlineKeyboardButton('Вывести', callback_data='@' + str(user.id) + '@withdraw1'),
                        InlineKeyboardButton('История', callback_data='@' + str(user.id) + '@balancehistory')]
 
             markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)

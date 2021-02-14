@@ -351,7 +351,7 @@ def button(update, context):
                                 order.status = 'Ожидает оплаты'
                                 text += '\n<b>Цена утверждена!</b>'
                                 reply_markup = None
-                                user_text = 'Цена по заказу #{} ({}) утверждена. Для оплаты нажмите на кнопку ниже 👇'.format(order.id, order.subject)
+                                user_text = "Цена по заказу #{} ({}) утверждена. Для оплаты нажмите на кнопку «Оплатить» 👇".format(order.id, order.subject)
 
                                 buttons = [
                                     InlineKeyboardButton('Оплатить', callback_data='@' + str(order.id) + '@buyyes'),
@@ -368,10 +368,10 @@ def button(update, context):
                             context.bot.edit_message_text(chat_id=chat.chat_id, message_id=message.message_id,
                                                           text=message.text + text, reply_markup=reply_markup, parse_mode=telegram.ParseMode.HTML)
                             if finish:
-                                text = f"{get_name(u)}, для оплаты заказа перейдите в переписку с " \
-                                    f"<a href='https://t.me/StudyExchangeBot'>ботом</a>.\n" \
-                                    f"{get_name(User.get(id=int(chat.worker_id)))}, не начинайте " \
-                                    f"выполнение заказа до оплаты‼️"
+                                text = f"💸{get_name(u)}, для оплаты заказа перейдите в <a href='https://t.me/StudyExchangeBot'>переписку с " \
+                                    f"ботом</a>.\n" \
+                                    f"⚠️{get_name(User.get(id=int(chat.worker_id)))}, не начинайте " \
+                                    f"выполнение заказа до оплаты."
                                 print(text)
                                 context.bot.send_message(chat_id=chat.chat_id, text=text, parse_mode=telegram.ParseMode.HTML)
 
@@ -445,7 +445,7 @@ def button(update, context):
                                                date=str(datetime.datetime.now())[0:19])
 
                                     wtext = 'Заказ #{} ({}) успешно завершён!\nВаш баланс пополнен' \
-                                            ' на {} руб. 💰'.format(order.id, order.subject, str(rebalance))
+                                            ' на {} руб. 💸'.format(order.id, order.subject, str(rebalance))
                                     context.bot.send_message(chat_id=int(w.user_id), text=wtext)
 
                                     buttons = [
@@ -508,6 +508,88 @@ def button(update, context):
                             text = 'Спасибо за оценку исполнителя!\nЖелаем удачи на экзаменах 👌'
                             context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
+                        if args[2] == 'deposit1':
+                            user = User.get(id=int(args[1]))
+                            mymenu = Menu()
+                            buttons = [
+                                InlineKeyboardButton('СберБанк', callback_data='@' + str(user.id) + '@depositsber'),
+                                InlineKeyboardButton('Тинькофф', callback_data='@' + str(user.id) + '@deposittin'),
+                                InlineKeyboardButton('Другой банк / QIWI',
+                                                     callback_data='@' + str(user.id) + '@deposit')]
+
+                            markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
+                                                       footer_buttons=None)
+                            reply_markup = InlineKeyboardMarkup(markup)
+
+                            text = 'Выберите способо пополнения 👇'
+
+                            context.bot.send_message(chat_id=update.effective_chat.id, text=text,
+                                                     reply_markup=reply_markup)
+
+                        if args[2] == 'depositsber':
+                            user = User.get(id=int(args[1]))
+
+                            queue_list = [
+                                {'sum': 'Укажите сумму пополнения 👇', 'menu': None},
+                            ]
+                            context.user_data.update(
+                                {'queue': True, 'queue_name': 'depositsber', 'queue_finish': None,
+                                 'queue_list': queue_list, 'queue_position': 0, 'queue_answers': [], 'queue_docs': '',
+                                 'last_queue_message': ''})
+
+                            current_queue(update, context, user)
+
+                        if args[2] == "donedepositsber":
+                            print(args)
+                            user = User.get(id=int(args[1]))
+                            message = update.callback_query.message
+                            context.bot.edit_message_text(chat_id=update.effective_chat.id, message_id=message.message_id,
+                                                          text=message.text,
+                                                          parse_mode=telegram.ParseMode.HTML, reply_markup=None)
+
+                            admins = list(select(u for u in User if u.status == 'admin'))
+                            for admin in admins:
+                                text = f'<b>Пополнение</b>\nПользователь - {get_name(user, user.id)}\nСумма - {args[3]}\nБанк - СберБанк'
+                                buttons = [InlineKeyboardButton('Подтвердить', callback_data='@' + str(user.id) + '@ubalance' + '@' + args[3])]
+
+                                markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
+                                                           footer_buttons=None)
+                                reply_markup = InlineKeyboardMarkup(markup)
+                                context.bot.send_message(chat_id=admin.user_id, text=text,
+                                                         parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
+
+                        if args[2] == 'deposittin':
+                            user = User.get(id=int(args[1]))
+
+                            queue_list = [
+                                {'sum': 'Укажите сумму пополнения 👇', 'menu': None},
+                            ]
+                            context.user_data.update(
+                                {'queue': True, 'queue_name': 'deposittin', 'queue_finish': None,
+                                 'queue_list': queue_list, 'queue_position': 0, 'queue_answers': [], 'queue_docs': '',
+                                 'last_queue_message': ''})
+
+                            current_queue(update, context, user)
+
+                        if args[2] == "donedeposittin":
+                            print(args)
+                            user = User.get(id=int(args[1]))
+                            message = update.callback_query.message
+                            context.bot.edit_message_text(chat_id=update.effective_chat.id, message_id=message.message_id,
+                                                          text=message.text,
+                                                          parse_mode=telegram.ParseMode.HTML, reply_markup=None)
+
+                            admins = list(select(u for u in User if u.status == 'admin'))
+                            for admin in admins:
+                                text = f'<b>Пополнение</b>\nПользователь - {get_name(user, user.id)}\nСумма - {args[3]}\nБанк - Тинькофф'
+                                buttons = [InlineKeyboardButton('Подтвердить', callback_data='@' + str(user.id) + '@ubalance' + '@' + args[3])]
+
+                                markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
+                                                           footer_buttons=None)
+                                reply_markup = InlineKeyboardMarkup(markup)
+                                context.bot.send_message(chat_id=admin.user_id, text=text,
+                                                         parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
+
                         if args[2] == 'deposit':
                             user = User.get(id=int(args[1]))
 
@@ -521,20 +603,90 @@ def button(update, context):
 
                             current_queue(update, context, user)
 
-                        if args[2] == 'withdraw':
+                        if args[2] == "ubalance":
                             user = User.get(id=int(args[1]))
+                            message = update.callback_query.message
+                            context.bot.edit_message_text(chat_id=update.effective_chat.id,
+                                                          message_id=message.message_id,
+                                                          text=message.text,
+                                                          parse_mode=telegram.ParseMode.HTML, reply_markup=None)
+                            clickeduser = User.get(user_id=update.effective_chat.id)
+                            if clickeduser.status == 'admin':
+                                user.balance += int(args[3])
+                                t = tr.new(type='Пополнение', bill_id='None', amount=int(args[3]),
+                                           user_id=user.id, date=str(datetime.datetime.now())[0:19])
+                                text = 'Ваш баланс пополнен на ' + args[3] + ' руб. 💸'
+                                context.bot.send_message(chat_id=user.user_id, text=text)
 
+                        if args[2] == 'withdraw1':
+                            user = User.get(id=int(args[1]))
+                            mymenu = Menu()
+                            buttons = [InlineKeyboardButton('СберБанк', callback_data='@' + str(user.id) + '@withdrawsber'),
+                                       InlineKeyboardButton('Тинькофф', callback_data='@' + str(user.id) + '@withdrawtin'),
+                                       InlineKeyboardButton('Другой банк', callback_data='@' + str(user.id) + '@withdrawother')]
+
+                            markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
+                                                       footer_buttons=None)
+                            reply_markup = InlineKeyboardMarkup(markup)
+
+                            text = 'Выберите банк 👇'
+
+                            context.bot.send_message(chat_id=update.effective_chat.id, text=text,
+                                                     reply_markup=reply_markup)
+
+                        if args[2] == 'withdrawsber':
+                            user = User.get(id=int(args[1]))
                             queue_list = [
-                                {'sum': 'Укажите сумму вывода 👇', 'menu': None},
-                                {'bank': 'Выберите банк 👇', 'menu': '#banks#0'},
-                                {'card': 'Укажите номер Вашей карты 👇', 'menu': None}
+                                {'card': "Перевод будет осуществлён через систему быстрых платежей (СБП). <a href='http://l.tinkoff.ru/sbp'>Убедитесь, что Вы подключены к СБП </a>, после чего укажите свой номер телефона👇", 'menu': None},
+                                {'sum': 'Укажите сумму вывода 👇', 'menu': None}
                             ]
                             context.user_data.update(
-                                {'queue': True, 'queue_name': 'withdraw', 'queue_finish': None,
+                                {'queue': True, 'queue_name': 'withdrawsber', 'queue_finish': None,
                                  'queue_list': queue_list, 'queue_position': 0, 'queue_answers': [], 'queue_docs': '',
                                  'last_queue_message': ''})
 
                             current_queue(update, context, user)
+
+                        if args[2] == 'withdrawtin':
+                            user = User.get(id=int(args[1]))
+                            queue_list = [
+                                {'card': "Укажите Ваш номер номер телефона👇", 'menu': None},
+                                {'sum': 'Укажите сумму вывода 👇', 'menu': None}
+                            ]
+                            context.user_data.update(
+                                {'queue': True, 'queue_name': 'withdrawstin', 'queue_finish': None,
+                                 'queue_list': queue_list, 'queue_position': 0, 'queue_answers': [], 'queue_docs': '',
+                                 'last_queue_message': ''})
+
+                            current_queue(update, context, user)
+
+                        if args[2] == 'withdrawother':
+                            user = User.get(id=int(args[1]))
+                            queue_list = [
+                                {'card': "Перевод в другие банки осуществляется с комиссией 2%. Укажите номер Вашей карты👇", 'menu': None},
+                                {'sum': 'Укажите сумму вывода 👇', 'menu': None}
+                            ]
+                            context.user_data.update(
+                                {'queue': True, 'queue_name': 'withdrawother', 'queue_finish': None,
+                                 'queue_list': queue_list, 'queue_position': 0, 'queue_answers': [], 'queue_docs': '',
+                                 'last_queue_message': ''})
+
+                            current_queue(update, context, user)
+
+                        # if args[2] == 'withdraw':
+                        #     user = User.get(id=int(args[1]))
+                        #
+                        #     queue_list = [
+                        #         {'sum': 'Укажите сумму вывода 👇', 'menu': None},
+                        #         {'bank': 'Выберите банк 👇', 'menu': '#banks#0'},
+                        #         {'card': 'Укажите номер Вашей карты 👇', 'menu': None}
+                        #     ]
+                        #     context.user_data.update(
+                        #         {'queue': True, 'queue_name': 'withdraw', 'queue_finish': None,
+                        #          'queue_list': queue_list, 'queue_position': 0, 'queue_answers': [], 'queue_docs': '',
+                        #          'last_queue_message': ''})
+                        #
+                        #     current_queue(update, context, user)
 
                         if args[2] == 'balancehistory':
                             user = User.get(id=int(args[1]))
@@ -543,7 +695,7 @@ def button(update, context):
 
                             text = '' # История Ваших транзакций:\n
                             if transctions:
-                                for t in transctions[0:19]:
+                                for t in transctions[-20:]:
                                     text += transction.get(t.id) + '\n\n'
                             else:
                                 text = 'Тут ничего нет 😔'
