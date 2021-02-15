@@ -128,10 +128,10 @@ def price(update, context):
                             context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML,)
                     except Exception as e:
                         print(e)
-                        text = 'Используйте /price [<b>цена</b>], где [<b>цена</b>] - целое число.'
+                        text = 'Напишите "/price [<b>цена</b>]", где [<b>цена</b>] - целое число.'
                         context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML,)
                 else:
-                    text = 'Используйте /price [<b>цена</b>], где [<b>цена</b>] - целое число.'
+                    text = 'Напишите "/price [<b>цена</b>]", где [<b>цена</b>] - целое число.'
                     context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML,)
 
 

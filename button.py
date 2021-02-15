@@ -779,7 +779,7 @@ def button(update, context):
                             for admin in admins:
                                 context.bot.send_message(chat_id=admin.user_id, text=text + '!', parse_mode=telegram.ParseMode.HTML)
 
-                            text = 'Вас выбрали исполнителем для заказа #{} ({})! Ожидайте создание чата ⏳'.format(order.id, order.subject)
+                            text = 'Вас выбрали исполнителем для заказа #{} ({})! Ожидайте создание общего чата ⏳'.format(order.id, order.subject)
                             context.bot.send_message(chat_id=wort.user_id, text=text, parse_mode=telegram.ParseMode.HTML)
 
                         if args[2] == 'withdrawreject':
