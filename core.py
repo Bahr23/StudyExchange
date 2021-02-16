@@ -6,7 +6,7 @@ from models import *
 from pay import *
 
 
-CHANNEL_ID = '-1001291038829' 
+CHANNEL_ID = '-1001291038829'
 MEDIA_ID = '-1001412307468'
 # CHANNEL_ID = '-489614808'
 # MEDIA_ID = '-438856140'
@@ -307,9 +307,9 @@ def finish_queue(name, answers, update=None, context=None):
         try:
             sum = int(answers[0]['sum'])
             if sum > 0:
-                text = f'Переведите ровно {sum} рублей на карту СберБанка 👇\n\n<b>5469 5500 4083 4357\nАлексей Олегович К.</b>\n\n⚠️ Комментарий к переводу указывать не надо.'
+                text = f'Переведите ровно {sum} руб. на карту СберБанка 👇\n\n<b>5469 5500 4083 4357\nАлексей Олегович К.</b>\n\n⚠️ Комментарий к переводу указывать не надо.'
                 buttons = [
-                    InlineKeyboardButton('Оплатил', callback_data='@' + str(user.id) + '@donedepositsber' + '@' + str(sum))]
+                    InlineKeyboardButton('Оплатил 👍', callback_data='@' + str(user.id) + '@donedepositsber' + '@' + str(sum))]
 
                 markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
                                            footer_buttons=None)
@@ -325,9 +325,9 @@ def finish_queue(name, answers, update=None, context=None):
         try:
             sum = int(answers[0]['sum'])
             if sum > 0:
-                text = f'Переведите ровно {sum} рублей на карту банка Тинькофф 👇\n\n<b>5536 9138 8428 9543\nАлексей Олегович К.</b>\n\n⚠️ Комментарий к переводу указывать не надо.'
+                text = f'Переведите ровно {sum} руб. на карту банка Тинькофф 👇\n\n<b>5536 9138 8428 9543\nАлексей Олегович К.</b>\n\n⚠️ Комментарий к переводу указывать не надо.'
                 buttons = [
-                    InlineKeyboardButton('Оплатил', callback_data='@' + str(user.id) + '@donedeposittin' + '@' + str(sum))]
+                    InlineKeyboardButton('Оплатил 👍', callback_data='@' + str(user.id) + '@donedeposittin' + '@' + str(sum))]
 
                 markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
                                            footer_buttons=None)

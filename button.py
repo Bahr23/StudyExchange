@@ -368,9 +368,9 @@ def button(update, context):
                             context.bot.edit_message_text(chat_id=chat.chat_id, message_id=message.message_id,
                                                           text=message.text + text, reply_markup=reply_markup, parse_mode=telegram.ParseMode.HTML)
                             if finish:
-                                text = f"💸{get_name(u)}, для оплаты заказа перейдите в <a href='https://t.me/StudyExchangeBot'>переписку с " \
+                                text = f"💸 {get_name(u)}, для оплаты заказа перейдите в <a href='https://t.me/StudyExchangeBot'>переписку с " \
                                     f"ботом</a>.\n" \
-                                    f"⚠️{get_name(User.get(id=int(chat.worker_id)))}, не начинайте " \
+                                    f"⚠️ {get_name(User.get(id=int(chat.worker_id)))}, не начинайте " \
                                     f"выполнение заказа до оплаты."
                                 print(text)
                                 context.bot.send_message(chat_id=chat.chat_id, text=text, parse_mode=telegram.ParseMode.HTML)
@@ -408,10 +408,10 @@ def button(update, context):
                                     w.orders_number = str(int(w.orders_number) + 1)
                                     u.last_order = str(datetime.date.today()).replace('-', '.')
                                     w.workers_orders += 1
-                                    if w.rated_orders:
-                                        w.rated_orders += 1
-                                    else:
-                                        w.rated_orders = 1
+                                    # if w.rated_orders:
+                                    #     w.rated_orders += 1
+                                    # else:
+                                    #     w.rated_orders = 1
 
                                     rebalance = int(int(chat.price) * 0.85)
 
@@ -492,13 +492,14 @@ def button(update, context):
                                                           text=message.text,
                                                           parse_mode=telegram.ParseMode.HTML, reply_markup=None)
 
-
                             w = User.get(id=int(args[1]))
                             w.points += int(args[3])
                             if w.rated_orders > 0:
-                                w.rate = round(w.points / w.rated_orders, 1)
+                                w.rated_orders += 1
                             else:
-                                w.rate = 0
+                                w.rated_orders = 1
+
+                            w.rate = round(w.points / w.rated_orders, 1)
 
                             text = 'Клиент поставил Вам оценку ' + args[3] + ' ⭐️' \
                                    + '\nВаш рейтинг: ' + str(w.rate)
@@ -521,7 +522,7 @@ def button(update, context):
                                                        footer_buttons=None)
                             reply_markup = InlineKeyboardMarkup(markup)
 
-                            text = 'Выберите способо пополнения 👇'
+                            text = 'Выберите способ пополнения 👇'
 
                             context.bot.send_message(chat_id=update.effective_chat.id, text=text,
                                                      reply_markup=reply_markup)
@@ -557,6 +558,8 @@ def button(update, context):
                                 reply_markup = InlineKeyboardMarkup(markup)
                                 context.bot.send_message(chat_id=admin.user_id, text=text,
                                                          parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
+                            text = 'Спасибо! Ваш платёж будет обработан в ручном режиме в течение 1-2 часов ⏳'
+                            context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
 
                         if args[2] == 'deposittin':
                             user = User.get(id=int(args[1]))
@@ -589,6 +592,9 @@ def button(update, context):
                                 reply_markup = InlineKeyboardMarkup(markup)
                                 context.bot.send_message(chat_id=admin.user_id, text=text,
                                                          parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
+                            text = 'Спасибо! Ваш платёж будет обработан в ручном режиме в течение 1-2 часов ⏳'
+                            context.bot.send_message(chat_id=update.effective_chat.id, text=text,
+                                                     parse_mode=telegram.ParseMode.HTML)
 
                         if args[2] == 'deposit':
                             user = User.get(id=int(args[1]))
@@ -637,7 +643,7 @@ def button(update, context):
                         if args[2] == 'withdrawsber':
                             user = User.get(id=int(args[1]))
                             queue_list = [
-                                {'card': "Перевод будет осуществлён через систему быстрых платежей (СБП). <a href='http://l.tinkoff.ru/sbp'>Убедитесь, что Вы подключены к СБП </a>, после чего укажите свой номер телефона👇", 'menu': None},
+                                {'card': "Перевод будет осуществлён через систему быстрых платежей (СБП). <a href='http://l.tinkoff.ru/sbp'>Убедитесь, что Вы подключены к СБП</a>, после чего укажите свой номер телефона👇", 'menu': None},
                                 {'sum': 'Укажите сумму вывода 👇', 'menu': None}
                             ]
                             context.user_data.update(
@@ -771,7 +777,7 @@ def button(update, context):
 
                             print(args)
 
-                            text = 'Вы успешно выбрали исполнителя {} для заказа #{} ({})! Ожидайте создание чата ⏳'.format(get_name(wort, True), order.id, order.subject)
+                            text = 'Вы успешно выбрали исполнителя {} для заказа #{} ({})! Ожидайте создание общего чата ⏳'.format(get_name(wort, True), order.id, order.subject)
                             context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
 
                             text = 'Пользователь ' + get_name(user, True) + ' выбрал исполнителя ' + get_name(wort, True) + ' для заказа #' + str(order.id)
