@@ -263,6 +263,7 @@ def button(update, context):
                                     markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
                                                                footer_buttons=None)
                                     reply_markup = InlineKeyboardMarkup(markup)
+                                    reply_markup = InlineKeyboardMarkup(markup)
                                     context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup)
                                 else:
                                     text = 'Вы ещё не утвердили цену с исполнителем или заказ уже оплачен.'
@@ -386,18 +387,24 @@ def button(update, context):
                             chat_id = chat.chat_id
                             text = ''
 
+                            if message.text[-7:-1] == 'StudyX':
+                                text = '\n'
+
+                            print(user.id)
+                            print(chat.user_yes)
+
                             if str(user.id) == str(chat.user_id):
                                 if chat.user_yes == 1:
                                     name = get_name(user)
                                     chat.user_yes = 2
-                                    text = "\nКлиент: " + name
+                                    text += "\nКлиент: " + name
                                     reply_markup = message.reply_markup
 
                             if str(user.id) == str(chat.worker_id):
                                 if chat.worker_yes == 1:
                                     name = get_name(user)
                                     chat.worker_yes = 2
-                                    text = "\nИсполнитель: " + name
+                                    text += "\nИсполнитель: " + name
                                     reply_markup = message.reply_markup
 
                             if chat.user_yes == 2 and chat.worker_yes == 2:
@@ -482,11 +489,14 @@ def button(update, context):
 
                                 print(text)
 
-                                context.bot.edit_message_text(chat_id=chat_id, message_id=message.message_id,
-                                                              text=message.text + text, reply_markup=reply_markup,
-                                                              parse_mode=telegram.ParseMode.HTML)
                                 chat.delete()
 
+                            try:
+                                context.bot.edit_message_text(chat_id=chat_id, message_id=message.message_id,
+                                                      text=message.text + text, reply_markup=reply_markup,
+                                                      parse_mode=telegram.ParseMode.HTML)
+                            except Exception as e:
+                                print(e)
 
                         if args[2] == 'rate':
                             message = update.callback_query.message

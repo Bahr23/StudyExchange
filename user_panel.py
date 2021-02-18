@@ -104,7 +104,9 @@ def get_docs(update, context):
 
                         context.bot.send_message(chat_id=update.effective_chat.id, text=text)
                     else:
-                        queue(update, context, user)
+                        # queue(update, context, user)
+                        text = 'Ожидался текст, попробуйте ещё раз!'
+                        context.bot.send_message(chat_id=update.effective_chat.id, text=text)
                         return
             else:
                 mymenu = Menu()
