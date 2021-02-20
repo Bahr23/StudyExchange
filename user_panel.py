@@ -23,7 +23,7 @@ def start(update, context):
                 if context.user_data['queue']:
                     current_queue(update, context, user)
                     return
-            text = 'Рад снова Вас видеть, ' + user.first_name + '! По всем вопросам пишите Вашему <a href="https://t.me/alexmustdie">персональному менеджеру</a> 👨‍💻'
+            text = 'Рад снова Вас видеть, ' + user.first_name + '! По всем вопросам пишите Вашему <a href="https://t.me/AlexStudyX">персональному менеджеру</a> 👨‍💻'
             context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0], parse_mode=telegram.ParseMode.HTML)
         else:
             user = update.message.from_user
@@ -46,7 +46,7 @@ def start(update, context):
                            last_order=last_order, orders_number=orders_number, workers_orders=workers_orders,
                            rate=rate, points=points, balance=balance)
             context.user_data.update({'queue': False})
-            text = '<b>Поздравляю с успешной регистрацией на StudyX 🎓</b>\nПо всем вопросам пишите Вашему <a href="https://t.me/alexmustdie">персональному менеджеру</a> 👨‍💻'
+            text = '<b>Поздравляю с успешной регистрацией на StudyX 🎓</b>\nПо всем вопросам пишите Вашему <a href="https://t.me/AlexStudyX">персональному менеджеру</a> 👨‍💻'
             context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0], parse_mode=telegram.ParseMode.HTML)
 
 
@@ -402,7 +402,7 @@ def faq(update, context):
                    "биржи, исполнитель не получит к ним доступ до завершения заказа." \
                    "\n6. Когда работа готова, Вы проверяете её и подтверждаете соблюдение оговорённых условий. " \
                    "Теперь исполнитель получит оплату, а Вы сможете оценить его работу." \
-                   '\n\nПо всем вопросам пишите Вашему <a href="https://t.me/alexmustdie">персональному менеджеру</a>.'
+                   '\n\nПо всем вопросам пишите Вашему <a href="https://t.me/AlexStudyX">персональному менеджеру</a>.'
 
             context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
         else:

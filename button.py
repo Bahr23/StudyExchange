@@ -165,11 +165,11 @@ def button(update, context):
                                 for admin in admins:
                                     context.bot.send_message(chat_id=admin.user_id, text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
 
-                                text = 'Вы успешно отправили заявку на роль исполнителя. <a href="https://t.me/alexmustdie">Менеджер</a> рассмотрит её в ближайшее время. ⏳'
+                                text = 'Вы успешно отправили заявку на роль исполнителя. <a href="https://t.me/AlexStudyX">Менеджер</a> рассмотрит её в ближайшее время. ⏳'
                                 user.wanted = True
                                 context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
                             else:
-                                text = 'Вы уже отправили заявку на роль исполнителя. Ожидайте решение решение <a href="https://t.me/alexmustdie">менеджера</a> ⏳'
+                                text = 'Вы уже отправили заявку на роль исполнителя. Ожидайте решение решение <a href="https://t.me/AlexStudyX">менеджера</a> ⏳'
                                 context.bot.send_message(chat_id=update.effective_chat.id, text=text,
                                                          parse_mode=telegram.ParseMode.HTML)
 
@@ -185,7 +185,7 @@ def button(update, context):
                                 context.bot.send_message(chat_id=update.effective_chat.id, text=text,
                                                          reply_markup=reply_markup)
                             else:
-                                text = 'Заказ невозможно удалить 😔 Пожалуйста, свяжитесь с <a href="https://t.me/alexmustdie">менеджером</a> для решения этой проблемы.'
+                                text = 'Заказ невозможно удалить 😔 Пожалуйста, свяжитесь с <a href="https://t.me/AlexStudyX">менеджером</a> для решения этой проблемы.'
                                 context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
 
                         if args[2] == 'del':
@@ -215,7 +215,7 @@ def button(update, context):
                                     text = delete_order(id)
                                     context.bot.send_message(chat_id=update.effective_chat.id, text=text)
                             else:
-                                text = 'Заказ невозможно удалить 😔 Пожалуйста, свяжитесь с <a href="https://t.me/alexmustdie">менеджером</a> для решения этой проблемы.'
+                                text = 'Заказ невозможно удалить 😔 Пожалуйста, свяжитесь с <a href="https://t.me/AlexStudyX">менеджером</a> для решения этой проблемы.'
                                 context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
 
                         if args[2] == 'push':

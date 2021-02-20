@@ -376,7 +376,7 @@ def finish_queue(name, answers, update=None, context=None):
                 for admin in admins:
                     context.bot.send_message(chat_id=admin.user_id, text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
                 context.bot.send_message(chat_id=update.effective_chat.id,
-                                         text='Ваша заявка на вывод средств успешно отправлена. Ожидайте решение <a href="https://t.me/alexmustdie">менеджера</a> ⏳', parse_mode=telegram.ParseMode.HTML)
+                                         text='Ваша заявка на вывод средств успешно отправлена. Ожидайте решение <a href="https://t.me/AlexStudyX">менеджера</a> ⏳', parse_mode=telegram.ParseMode.HTML)
             else:
                 text = 'Ваша заявка отклонена: на балансе недостаточно средств.'
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
@@ -409,7 +409,7 @@ def finish_queue(name, answers, update=None, context=None):
                 for admin in admins:
                     context.bot.send_message(chat_id=admin.user_id, text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
                 context.bot.send_message(chat_id=update.effective_chat.id,
-                                         text='Ваша заявка на вывод средств успешно отправлена. Ожидайте решение <a href="https://t.me/alexmustdie">менеджера</a> ⏳', parse_mode=telegram.ParseMode.HTML)
+                                         text='Ваша заявка на вывод средств успешно отправлена. Ожидайте решение <a href="https://t.me/AlexStudyX">менеджера</a> ⏳', parse_mode=telegram.ParseMode.HTML)
             else:
                 text = 'Ваша заявка отклонена: на балансе недостаточно средств.'
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
@@ -442,7 +442,7 @@ def finish_queue(name, answers, update=None, context=None):
                 for admin in admins:
                     context.bot.send_message(chat_id=admin.user_id, text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
                 context.bot.send_message(chat_id=update.effective_chat.id,
-                                         text='Ваша заявка на вывод средств успешно отправлена. Ожидайте решение <a href="https://t.me/alexmustdie">менеджера</a> ⏳', parse_mode=telegram.ParseMode.HTML)
+                                         text='Ваша заявка на вывод средств успешно отправлена. Ожидайте решение <a href="https://t.me/AlexStudyX">менеджера</a> ⏳', parse_mode=telegram.ParseMode.HTML)
             else:
                 text = 'Ваша заявка отклонена: на балансе недостаточно средств.'
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
@@ -474,7 +474,7 @@ def finish_queue(name, answers, update=None, context=None):
     #             for admin in admins:
     #                 context.bot.send_message(chat_id=admin.user_id, text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
     #             context.bot.send_message(chat_id=update.effective_chat.id,
-    #                                      text='Ваша заявка на вывод средств успешно отправлена. Ожидайте решение <a href="https://t.me/alexmustdie">менеджера</a> ⏳', parse_mode=telegram.ParseMode.HTML)
+    #                                      text='Ваша заявка на вывод средств успешно отправлена. Ожидайте решение <a href="https://t.me/AlexStudyX">менеджера</a> ⏳', parse_mode=telegram.ParseMode.HTML)
     #         else:
     #             text = 'Ваша заявка отклонена: на балансе недостаточно средств.'
     #             context.bot.send_message(chat_id=update.effective_chat.id, text=text)
