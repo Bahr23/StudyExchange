@@ -61,8 +61,8 @@ def chat(update, context):
                         pinid = context.bot.send_message(chat_id=update.effective_chat.id, text=pintext, timeout=500, parse_mode=telegram.ParseMode.HTML,)
                         context.bot.pin_chat_message(chat_id=update.effective_chat.id, message_id=pinid.message_id)
 
-                        # text = 'Команды чата 👇\n/price [<b>цена</b>] - утвердить цену\n/admin - вызвать менеджера\n/done - завершить заказ'
-                        # context.bot.send_message(chat_id=update.effective_chat.id, text=text, timeout=500, reply_markup=reply_markup[0], parse_mode=telegram.ParseMode.HTML,)
+                        text = 'Команды чата 👇\n/price [<b>цена</b>] - утвердить цену\n/admin - вызвать менеджера\n/done - завершить заказ'
+                        context.bot.send_message(chat_id=update.effective_chat.id, text=text, timeout=500, reply_markup=reply_markup[0], parse_mode=telegram.ParseMode.HTML,)
 
                         chat = Chat(chat_id=update.effective_chat.id, price='0', user_id=str(order.user_id), worker_id=str(order.worker_id), order_id=str(order.id))
                     else:
