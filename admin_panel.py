@@ -386,3 +386,34 @@ def delcoupon(update, context):
         else:
             start(update, context)
 
+
+@db_session
+def newprice(update, context):
+    if update.message.chat.id > 0:
+        user = get_user(update.message.from_user.id)
+        if user:
+            if user.status == 'banned':
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
+                return
+            if 'queue' in context.user_data.keys():
+                if context.user_data['queue']:
+                    current_queue(update, context, user)
+                    return
+            if user.status == 'admin':
+                text = 'error'
+                if len(context.args) == 2:
+                    try:
+                        chat = Chat.get(order_id=context.args[0])
+                        chat.price = str(int(context.args[1]))
+                        text = f'Цена заказа #{context.args[0]} изменена на {context.args[1]}р.!'
+                    except:
+                        text = 'Используйте /newprice order_id new_price'
+                else:
+                    text = 'Используйте /newprice order_id new_price'
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+            else:
+                context.bot.send_message(chat_id=update.effective_chat.id, text='Вы не являетесь админом')
+        else:
+            start(update, context)
+
+
