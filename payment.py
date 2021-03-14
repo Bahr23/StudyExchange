@@ -26,9 +26,10 @@ def monitoring():
 
     bot = Bot(token=TOKEN)
 
-    print(bot.username + ' start cheeking Transactions!')
+    print(bot.username + ' start checking Transactions!')
 
     while True:
+        print('Checking Transactions is active!')
         with db_session:
             bills = list(select(u for u in Bills))
             for b in bills:
@@ -50,7 +51,7 @@ def monitoring():
                 else:
                     p2p.reject(bill_id=b.bill_id)
                     b.delete()
-        time.sleep(1)
+        time.sleep(5)
 
 
 monitoring()
