@@ -417,3 +417,70 @@ def newprice(update, context):
             start(update, context)
 
 
+@db_session
+def transfer(update, context):
+    if update.message.chat.id > 0:
+        user = get_user(update.message.from_user.id)
+        if user:
+            if user.status == 'banned':
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
+                return
+            if 'queue' in context.user_data.keys():
+                if context.user_data['queue']:
+                    current_queue(update, context, user)
+                    return
+            if user.status == 'admin':
+                text = 'Используйте /transfer user_id worker_id amount'
+                if context.args:
+                    if len(context.args) >= 3:
+                        try:
+                            user = User.get(id=int(context.args[0]))
+                            if not user:
+                                raise Exception(f'Пользователь с id {context.args[0]} не был найден!')
+
+                            worker = User.get(id=int(context.args[1]))
+                            if not worker:
+                                raise Exception(f'Испольнитель с id {context.args[1]} не был найден!')
+
+                            amount = int(context.args[2])
+
+                            if amount > user.balance:
+                                raise Exception(f'У пользователя с id {context.args[0]} недостаточно средств')
+
+                            user.balance -= amount
+
+                            t = tr.new(type='Трансфер средств',
+                                       bill_id='None', amount=int(amount),
+                                       user_id=user.id,
+                                       date=str(datetime.datetime.now())[0:19])
+
+                            worker.balance += int(amount * 0.9)
+
+                            t = tr.new(type='Пополнение по трансферу средств',
+                                       bill_id='None', amount=int(amount * 0.9),
+                                       user_id=worker.id,
+                                       date=str(datetime.datetime.now())[0:19])
+
+                            partner = User.get(id=Settings.get(key='partner_id').value)
+                            partner.balance += int(amount * 0.025)
+
+                            t = tr.new(type='Партнерская выплата за трансфер средств',
+                                       bill_id='None', amount=int(amount * 0.025),
+                                       user_id=partner.id,
+                                       date=str(datetime.datetime.now())[0:19])
+
+                            text = 'Трансфер прошел успешно!'
+
+                        except Exception as e:
+                            text = e.args[0]
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+
+
+            else:
+                context.bot.send_message(chat_id=update.effective_chat.id, text='Вы не являетесь админом')
+        else:
+            start(update, context)
+
+
+
+
