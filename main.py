@@ -1,16 +1,9 @@
-from pprint import pprint
-
-from telegram import Bot, BotCommand, ParseMode
 from telegram.ext import Updater, Defaults
 import logging
 
 from command_handler import command_handler
 from user_panel import *
 
-with db_session:
-    TOKEN = Settings.get(key='tg_token').value
-
-bot = Bot(token=TOKEN)
 
 commands = []
 

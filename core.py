@@ -1,5 +1,5 @@
 import telegram
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, Bot
 
 from menu import Menu
 from models import *
@@ -11,6 +11,12 @@ MEDIA_ID = '-1001412307468'
 # CHANNEL_ID = '-489614808'
 # MEDIA_ID = '-438856140'
 BANNED_TEXT = 'К сожалению, Ваш аккаунт был заблокирован 😔'
+
+
+with db_session:
+    TOKEN = Settings.get(key='tg_token').value
+
+bot = Bot(token=TOKEN)
 
 
 @db_session
