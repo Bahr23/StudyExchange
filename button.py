@@ -439,7 +439,7 @@ def button(update, context):
                                         price = chat.price
 
                                     profit = int(price) - rebalance
-                                    partner_profit = int(profit * 0.25)
+                                    partner_profit = int(profit * 0.33)
                                     partner = User.get(id=Settings.get(key='partner_id').value)
                                     partner.balance += partner_profit
 
@@ -710,9 +710,9 @@ def button(update, context):
                         if args[2] == 'balancehistory':
                             user = User.get(id=int(args[1]))
 
-                            transctions = list(select(t for t in Transactions if t.user_id == user.id))
+                            transctions = list(select(t for t in Transactions if t.user_id == user.id).order_by(desc(Transactions.id)))
 
-                            text = '' # История Ваших транзакций:\n
+                            text = ''
                             if transctions:
                                 for t in transctions[-20:]:
                                     text += transction.get(t.id) + '\n\n'

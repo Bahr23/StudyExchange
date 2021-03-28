@@ -506,10 +506,10 @@ def transfer(update, context):
                                        date=str(datetime.datetime.now())[0:19])
 
                             partner = User.get(id=Settings.get(key='partner_id').value)
-                            partner.balance += int(amount * 0.025)
+                            partner.balance += int(amount * 0.033)
 
                             t = tr.new(type='Партнерская выплата за трансфер средств',
-                                       bill_id='None', amount=int(amount * 0.025),
+                                       bill_id='None', amount=int(amount * 0.033),
                                        user_id=partner.id,
                                        date=str(datetime.datetime.now())[0:19])
 
