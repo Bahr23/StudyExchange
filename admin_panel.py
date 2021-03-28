@@ -314,6 +314,50 @@ def setstatus(update, context):
 
 
 @db_session
+def orderstatus(update, context):
+    if update.message.chat.id > 0:
+        user = get_user(update.message.from_user.id)
+        if user:
+            if user.status == 'banned':
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
+                return
+            if 'queue' in context.user_data.keys():
+                if context.user_data['queue']:
+                    current_queue(update, context, user)
+                    return
+            if user.status == 'admin':
+                text = 'Используйте /orderstatus order_id status'
+                if context.args:
+                    if len(context.args) >= 2:
+                        order = Order.get(id=int(context.args[0]))
+                        if order:
+                            status = ' '.join(context.args[1:])
+                            if status in ['На проверке', 'Поиск исполнителя', 'Исполнитель выбран', 'Ожидает оплаты',
+                                          'Оплачен']:
+                                order.status = status
+                                try:
+                                    context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
+                                                                  text=get_order(order.id), reply_markup=None,
+                                                                  parse_mode=telegram.ParseMode.HTML)
+                                except Exception as e:
+                                    pass
+                                chat = Chat.get(order_id=context.args[0])
+                                text = f'Статус заказа с id {context.args[0]} изменен на {status}'
+                            else:
+                                text = "status должен принимать одно из значений \n\nНа проверке\nПоиск исполнителя" \
+                                       "\nИсполнитель выбран\nОжидает оплаты\nОплачен" \
+                                       "\n\nЗавершение заказа происходит вручную!"
+                        else:
+                            text = f'Заказ с id {context.args[0]} не найден!'
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+
+            else:
+                context.bot.send_message(chat_id=update.effective_chat.id, text='Вы не являетесь админом')
+        else:
+            start(update, context)
+
+
+@db_session
 def coupon(update, context):
     if update.message.chat.id > 0:
         user = get_user(update.message.from_user.id)
