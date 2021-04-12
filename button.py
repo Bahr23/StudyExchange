@@ -714,7 +714,7 @@ def button(update, context):
 
                             text = ''
                             if transctions:
-                                for t in transctions[-20:]:
+                                for t in transctions[:20]:
                                     text += transction.get(t.id) + '\n\n'
                             else:
                                 text = 'Тут ничего нет 😔'
