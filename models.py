@@ -33,6 +33,7 @@ class User(db.Entity):
     rated_orders = Optional(int)
     balance = Required(int)
     wanted = Optional(bool)
+    requisites = Optional(str)
 
 
 class Order(db.Entity):

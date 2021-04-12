@@ -1,15 +1,15 @@
 import telegram
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, Bot
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, Bot, ReplyKeyboardMarkup
 
 from menu import Menu
 from models import *
 from pay import *
 
 
-CHANNEL_ID = '-1001291038829'
-MEDIA_ID = '-1001412307468'
-# CHANNEL_ID = '-489614808'
-# MEDIA_ID = '-438856140'
+# CHANNEL_ID = '-1001291038829'
+# MEDIA_ID = '-1001412307468'
+CHANNEL_ID = '-489614808'
+MEDIA_ID = '-438856140'
 BANNED_TEXT = 'К сожалению, Ваш аккаунт был заблокирован 😔'
 
 
@@ -136,6 +136,18 @@ def get_order(id):
 
 
 @db_session
+def get_requisites(user_id, req):
+    requisites = User.get(id=user_id).requisites
+    if requisites:
+        requisites = requisites.split(',')[req]
+        if requisites:
+            return requisites
+        else:
+            return None
+    else:
+        return None
+
+@db_session
 def delete_order(o_id):
     order = Order.get(id=o_id)
     if order:
@@ -175,8 +187,22 @@ def current_queue(update, context, user):
     qmenu = context.user_data['queue_list'][context.user_data['queue_position']]['menu']
 
     if qmenu:
-        mymenu = Menu()
-        reply_markup = mymenu.get_menu(tag=qmenu)[0]
+        if qmenu == 'clear':
+            reply_markup = telegram.ReplyKeyboardRemove()
+        else:
+            if qmenu[0] == 'r':
+                print(qmenu)
+                req = qmenu.split('_')
+                btn_text = get_requisites(req[0][1:], int(req[1]))
+                mymenu = Menu()
+                if btn_text:
+                    custom_keyboard = [[btn_text]]
+                    reply_markup = telegram.ReplyKeyboardMarkup(keyboard=custom_keyboard, resize_keyboard=True)
+                else:
+                    reply_markup = mymenu.get_menu(tag='#main#0')[0]
+            else:
+                mymenu = Menu()
+                reply_markup = mymenu.get_menu(tag=qmenu)[0]
     else:
         reply_markup = None
     if context.user_data['last_queue_message'] == text:
@@ -371,6 +397,13 @@ def finish_queue(name, answers, update=None, context=None):
                                                                                         '1. Сумма без комисси - ' + str(sum) + \
                        ' руб.\n  - Сумма с учетом комисси - ' + str(sum2) + ' руб\n2. Банк - ' + str(bank) + '\n3. Реквизиты - ' + str(card)
 
+                if user.requisites is None:
+                    user.requisites = f'{card},,'
+                else:
+                    requisites = user.requisites.split(',')
+                    requisites[0] = card
+                    user.requisites = f'{requisites[0]},{requisites[1]},{requisites[2]}'
+
                 buttons = [InlineKeyboardButton('Отклонить', callback_data='@' + str(user.user_id) + '@withdrawreject@' + str(sum)),
                            InlineKeyboardButton('Одобрить', callback_data='@' + str(user.user_id) + '@withdrawconfirm@' + str(sum)),
                            InlineKeyboardButton('Завершить', callback_data='@' + str(user.user_id) + '@withdrawdone@' + str(sum))]
@@ -390,6 +423,7 @@ def finish_queue(name, answers, update=None, context=None):
         except Exception as e:
             print(e)
             text = 'Сумма вывода должна быть числом!'
+            context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
     if name == "withdrawstin":
         print(answers)
@@ -404,6 +438,13 @@ def finish_queue(name, answers, update=None, context=None):
                                                                                         '1. Сумма без комисси - ' + str(sum) + \
                        ' руб.\n  - Сумма с учетом комисси - ' + str(sum2) + ' руб\n2. Банк - ' + str(bank) + '\n3. Реквизиты - ' + str(card)
 
+                if user.requisites is None:
+                    user.requisites = f',{card},'
+                else:
+                    requisites = user.requisites.split(',')
+                    requisites[1] = card
+                    user.requisites = f'{requisites[0]},{requisites[1]},{requisites[2]}'
+
                 buttons = [InlineKeyboardButton('Отклонить', callback_data='@' + str(user.user_id) + '@withdrawreject@' + str(sum)),
                            InlineKeyboardButton('Одобрить', callback_data='@' + str(user.user_id) + '@withdrawconfirm@' + str(sum)),
                            InlineKeyboardButton('Завершить', callback_data='@' + str(user.user_id) + '@withdrawdone@' + str(sum))]
@@ -423,6 +464,7 @@ def finish_queue(name, answers, update=None, context=None):
         except Exception as e:
             print(e)
             text = 'Сумма вывода должна быть числом!'
+            context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
     if name == "withdrawother":
         print(answers)
@@ -437,6 +479,13 @@ def finish_queue(name, answers, update=None, context=None):
                                                                                         '1. Сумма без комисси - ' + str(sum) + \
                        ' руб.\n  - Сумма с учетом комисси - ' + str(sum2) + ' руб\n2. Банк - ' + str(bank) + '\n3. Реквизиты - ' + str(card)
 
+                if user.requisites is None:
+                    user.requisites = f',,{card}'
+                else:
+                    requisites = user.requisites.split(',')
+                    requisites[2] = card
+                    user.requisites = f'{requisites[0]},{requisites[1]},{requisites[2]}'
+
                 buttons = [InlineKeyboardButton('Отклонить', callback_data='@' + str(user.user_id) + '@withdrawreject@' + str(sum)),
                            InlineKeyboardButton('Одобрить', callback_data='@' + str(user.user_id) + '@withdrawconfirm@' + str(sum)),
                            InlineKeyboardButton('Завершить', callback_data='@' + str(user.user_id) + '@withdrawdone@' + str(sum))]
@@ -456,6 +505,7 @@ def finish_queue(name, answers, update=None, context=None):
         except Exception as e:
             print(e)
             text = 'Сумма вывода должна быть числом!'
+            context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
     # if name == "withdraw":
     #     try:
