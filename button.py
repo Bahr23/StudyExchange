@@ -507,7 +507,7 @@ def button(update, context):
 
                             w = User.get(id=int(args[1]))
                             w.points += int(args[3])
-                            if w.rated_orders > 0:
+                            if w.rated_orders is not None:
                                 w.rated_orders += 1
                             else:
                                 w.rated_orders = 1
