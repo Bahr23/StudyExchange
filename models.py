@@ -6,11 +6,11 @@ from pony.orm import *
 
 db = Database()
 
-# db.bind(provider='postgres', user='postgres', password='', host='localhost', database='')
+db.bind(provider='postgres', user='postgres', password='Tiraspol_2003', host='localhost', database='studybot')
 
-db_url = urlparse(os.environ['DATABASE_URL'])
-args = re.split('[:@]', db_url.netloc)
-db.bind(provider=db_url.scheme, user=args[0], password=args[1], host=args[2], port=args[3], database=db_url.path[1:])
+# db_url = urlparse(os.environ['DATABASE_URL'])
+# args = re.split('[:@]', db_url.netloc)
+# db.bind(provider=db_url.scheme, user=args[0], password=args[1], host=args[2], port=args[3], database=db_url.path[1:])
 
 
 class User(db.Entity):
@@ -52,6 +52,7 @@ class Order(db.Entity):
     docs = Optional(str)
     promo = Optional(str)
     channel_message = Optional(int)
+    final_price = Optional(int)
 
 
 class Settings(db.Entity):
@@ -71,6 +72,7 @@ class Chat(db.Entity):
     user_yes = Optional(int)
     price_msg = Optional(int)
     done_msg = Optional(int)
+    chat_link = Optional(str)
 
 
 class Bills(db.Entity):

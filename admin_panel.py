@@ -203,6 +203,12 @@ def getorder(update, context):
                             ctext = f'Купон: None'
                         text += '\n' + ctext
 
+                        if order.final_price:
+                            ctext = f'Цена: {order.final_price}р.'
+                        else:
+                            ctext = f'Цена: None'
+                        text += '\n' + ctext
+
                         if ',' in order.worker_id:
                             workers = order.worker_id.split(',')[:-1]
                         else:
@@ -220,9 +226,10 @@ def getorder(update, context):
                         text += '\n' + wtext
 
                         mymenu = Menu()
-                        buttons = [InlineKeyboardButton('Одобрить', callback_data='@' + str(id) + '@push'),
-                                   InlineKeyboardButton('Редактировать', callback_data='@' + str(id) + '@edit@list'),
-                                    InlineKeyboardButton('Удалить', callback_data='@' + str(id) + '@del')]
+                        if order.status != 'Завершен':
+                            buttons = [InlineKeyboardButton('Одобрить', callback_data='@' + str(id) + '@push'),
+                                       InlineKeyboardButton('Редактировать', callback_data='@' + str(id) + '@edit@list'),
+                                        InlineKeyboardButton('Удалить', callback_data='@' + str(id) + '@del')]
 
                         markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
                         reply_markup = InlineKeyboardMarkup(markup)
@@ -526,5 +533,60 @@ def transfer(update, context):
             start(update, context)
 
 
+@db_session
+def activeorders(update, context):
+    if update.message.chat.id > 0:
+        user = get_user(update.message.from_user.id)
+        if user:
+            if user.status == 'banned':
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
+                return
+            if 'queue' in context.user_data.keys():
+                if context.user_data['queue']:
+                    current_queue(update, context, user)
+                    return
+            if user.status == 'admin':
+                text = '1'
 
+                payed_orders = list(select(o for o in Order if o.status == 'Оплачен'))
+                wait_for_pay_orders =  list(select(o for o in Order if o.status == 'Ожидает оплаты'))
+                wait_for_chat_orders =  list(select(o for o in Order if o.status == 'Исполнитель выбран'))
+                wait_for_worker_orders =  list(select(o for o in Order if o.status == 'Поиск исполнителя'))
+
+                count = len(payed_orders) + len(wait_for_pay_orders) + len(wait_for_chat_orders) + len(wait_for_worker_orders)
+                price = 0
+
+                for o in payed_orders + wait_for_pay_orders:
+                    try:
+                        price += o.finall_price
+                    except:
+                        pass
+
+                text = f'<b>Активные заказы</b>\nВсего заказов: {count}\nОбщая сумма: {price}р.\n'
+
+                text += f'\n<i>Оплачен</i>'
+                for o in payed_orders:
+                    if o:
+                        text += f'<code>\n{o.subject} #{o.id} ({o.deadline}) - {o.final_price}р.</code>'
+
+                text += f'\n\n<i>Ожидает оплаты</i>'
+                for o in wait_for_pay_orders:
+                    if o:
+                        text += f'<code>\n{o.subject} #{o.id} ({o.deadline}) - {o.final_price}р.</code>'
+
+                text += f'\n\n<i>Исполнитель выбран</i>'
+                for o in wait_for_chat_orders:
+                    if o:
+                        text += f'<code>\n{o.subject} #{o.id} ({o.deadline}) - {o.final_price}р.</code>'
+
+                text += f'\n\n<i>Поиск исполнителя</i>'
+                for o in wait_for_worker_orders:
+                    if o:
+                        text += f'<code>\n{o.subject} #{o.id} ({o.deadline}) - {o.final_price}р.</code>'
+
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
+            else:
+                context.bot.send_message(chat_id=update.effective_chat.id, text='Вы не являетесь админом')
+        else:
+            start(update, context)
 
