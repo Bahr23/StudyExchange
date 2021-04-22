@@ -29,11 +29,11 @@ def adminhelp(update, context):
                        '\nУправление пользователями\n' \
                        '<code>/user</code> - информация о пользователе\n' \
                        '<code>/ubalance</code> - изменить баланс пользователя\n' \
-                       '<code>/transfer</code> - трансфер средств от пользователя к пользователя\n' \
+                       '<code>/transfer</code> - трансфер средств от пользователя к пользователю\n' \
                        '<code>/setstatus</code> - изменить статус пользователя\n' \
                        '\nУправление заказами\n' \
                        '<code>/getorder</code> - информация о заказе\n' \
-                       '<code>/newprice</code> - изменить цены заказ\n' \
+                       '<code>/newprice</code> - изменить цену заказ\n' \
                        '<code>/orderstatus</code> - изменить статус заказа\n' \
                        '<code>/activeorders</code> - информация об активных заказах\n' \
                        '<code>/orders</code> - все заказы\n' \
