@@ -41,7 +41,7 @@ def adminhelp(update, context):
                        '<code>/adminhelp</code> - справка по командам админ панели\n' \
                        '<code>/adminpanel</code> - вход (так же выход) в админ панель\n' \
                        '<code>/message</code> - отправить сообщение от имени бота пользователю\n' \
-                       '<code>/channel</code> - отправить сообщение от имени бота в канал с постами\n' \
+                       '<code>/channel</code> - отправить сообщение от имени бота в канал\n' \
                        '<code>/coupon</code> - создать купон или получить информацию о купоне\n' \
                        '<code>/delcoupon</code> - удалить купон\n'
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text,
