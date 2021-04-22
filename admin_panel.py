@@ -232,7 +232,7 @@ def getorder(update, context):
                         text += '\n' + wtext
 
                         mymenu = Menu()
-                        if order.status != 'Завершен':
+                        if order.status != 'Завершён':
                             buttons = [InlineKeyboardButton('Одобрить', callback_data='@' + str(id) + '@push'),
                                        InlineKeyboardButton('Редактировать', callback_data='@' + str(id) + '@edit@list'),
                                         InlineKeyboardButton('Удалить', callback_data='@' + str(id) + '@del')]
