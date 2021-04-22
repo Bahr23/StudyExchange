@@ -34,6 +34,7 @@ def command_handler(dispatcher):
     dispatcher.add_handler(MessageHandler(Filters.regex("Мои заказы"), my_orders))
 
     dispatcher.add_handler(CommandHandler("faq", faq))
+    dispatcher.add_handler(CommandHandler("help", faq))
     dispatcher.add_handler(MessageHandler(Filters.regex("Как это работает?"), faq))
 
     dispatcher.add_handler(CommandHandler("delorder", del_order))
@@ -65,6 +66,7 @@ def command_handler(dispatcher):
     dispatcher.add_handler(CommandHandler("delcoupon", delcoupon))
     dispatcher.add_handler(CommandHandler("newprice", newprice))
     dispatcher.add_handler(CommandHandler("activeorders", activeorders))
+    dispatcher.add_handler(CommandHandler("adminhelp", adminhelp))
 
     # Utils
     dispatcher.add_handler(MessageHandler(Filters.text, all_messages))
