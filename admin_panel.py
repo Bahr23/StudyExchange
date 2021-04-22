@@ -558,7 +558,7 @@ def activeorders(update, context):
 
                 for o in payed_orders + wait_for_pay_orders:
                     try:
-                        price += o.finall_price
+                        price += o.final_price
                     except:
                         pass
 
@@ -577,12 +577,12 @@ def activeorders(update, context):
                 text += f'\n\n<i>Исполнитель выбран</i>'
                 for o in wait_for_chat_orders:
                     if o:
-                        text += f'<code>\n{o.subject} #{o.id} ({o.deadline}) - {o.final_price}р.</code>'
+                        text += f'<code>\n{o.subject} #{o.id} ({o.deadline})</code>'
 
                 text += f'\n\n<i>Поиск исполнителя</i>'
                 for o in wait_for_worker_orders:
                     if o:
-                        text += f'<code>\n{o.subject} #{o.id} ({o.deadline}) - {o.final_price}р.</code>'
+                        text += f'<code>\n{o.subject} #{o.id} ({o.deadline})</code>'
 
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
             else:
