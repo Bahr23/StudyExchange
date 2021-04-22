@@ -209,6 +209,12 @@ def getorder(update, context):
                             ctext = f'Цена: None'
                         text += '\n' + ctext
 
+                        chat = Chat.get(order_id=order.id)
+                        if chat:
+                            text += f'\nЧат: {chat.chat_link}'
+                        else:
+                            text += '\nЧат: None'
+
                         if ',' in order.worker_id:
                             workers = order.worker_id.split(',')[:-1]
                         else:
