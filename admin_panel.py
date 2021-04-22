@@ -13,6 +13,45 @@ from user_panel import *
 tr = Transaction
 
 
+def adminhelp(update, context):
+    if update.message.chat.id > 0:
+        user = get_user(update.message.from_user.id)
+        if user:
+            if user.status == 'banned':
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
+                return
+            if 'queue' in context.user_data.keys():
+                if context.user_data['queue']:
+                    current_queue(update, context, user)
+                    return
+            if user.status == 'admin':
+                text = '<b>Команды админ панели</b>\n' \
+                       '\nУправление пользователями\n' \
+                       '<code>/user</code> - информация о пользователе\n' \
+                       '<code>/ubalance</code> - изменить баланс пользователя\n' \
+                       '<code>/transfer</code> - трансфер средств от пользователя к пользователя\n' \
+                       '<code>/setstatus</code> - изменить статус пользователя\n' \
+                       '\nУправление заказами\n' \
+                       '<code>/getorder</code> - информация о заказе\n' \
+                       '<code>/newprice</code> - изменить цены заказ\n' \
+                       '<code>/orderstatus</code> - изменить статус заказа\n' \
+                       '<code>/activeorders</code> - информация об активных заказах\n' \
+                       '<code>/orders</code> - все заказы\n' \
+                       '\nТех. команды\n' \
+                       '<code>/adminhelp</code> - справка по командам админ панели\n' \
+                       '<code>/adminpanel</code> - вход (так же выход) в админ панель\n' \
+                       '<code>/message</code> - отправить сообщение от имени бота пользователю\n' \
+                       '<code>/channel</code> - отправить сообщение от имени бота в канал с постами\n' \
+                       '<code>/coupon</code> - создать купон или получить информацию о купоне\n' \
+                       '<code>/delcoupon</code> - удалить купон\n'
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text,
+                                         parse_mode=telegram.ParseMode.HTML)
+            else:
+                context.bot.send_message(chat_id=update.effective_chat.id, text='Вы не являетесь админом')
+        else:
+            start(update, context)
+
+
 @db_session
 def adminpanel(update, context):
     if update.message.chat.id > 0:
@@ -130,6 +169,7 @@ def ubalance(update, context):
                 context.bot.send_message(chat_id=update.effective_chat.id, text='Вы не являетесь админом')
         else:
             start(update, context)
+
 
 @db_session
 def user(update, context):
@@ -559,7 +599,8 @@ def activeorders(update, context):
                 wait_for_chat_orders =  list(select(o for o in Order if o.status == 'Исполнитель выбран'))
                 wait_for_worker_orders =  list(select(o for o in Order if o.status == 'Поиск исполнителя'))
 
-                count = len(payed_orders) + len(wait_for_pay_orders) + len(wait_for_chat_orders) + len(wait_for_worker_orders)
+                count = len(payed_orders) + len(wait_for_pay_orders) + len(wait_for_chat_orders) \
+                        + len(wait_for_worker_orders)
                 price = 0
 
                 for o in payed_orders + wait_for_pay_orders:
@@ -590,7 +631,8 @@ def activeorders(update, context):
                     if o:
                         text += f'<code>\n{o.subject} #{o.id} ({o.deadline})</code>'
 
-                context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=telegram.ParseMode.HTML)
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text,
+                                         parse_mode=telegram.ParseMode.HTML)
             else:
                 context.bot.send_message(chat_id=update.effective_chat.id, text='Вы не являетесь админом')
         else:
