@@ -1,4 +1,5 @@
 from telegram.ext import CommandHandler, MessageHandler, Filters, CallbackQueryHandler
+
 from user_panel import *
 from admin_panel import *
 from chat_panel import *
@@ -40,7 +41,7 @@ def command_handler(dispatcher):
     dispatcher.add_handler(CommandHandler("delorder", del_order))
 
     # Chat
-    dispatcher.add_handler(CommandHandler("chat", chat))
+    dispatcher.add_handler(CommandHandler("create_chat", create_chat))
 
     dispatcher.add_handler(CommandHandler("admin", admin))
     dispatcher.add_handler(MessageHandler(Filters.regex("Вызвать менеджера"), admin))

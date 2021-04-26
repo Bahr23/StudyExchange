@@ -9,6 +9,8 @@ commands = []
 
 bot.set_my_commands(commands)
 
+print(bot)
+
 # defaults = Defaults(parse_mode=ParseMode.HTML)
 
 updater = Updater(token=TOKEN, use_context=True)
@@ -19,4 +21,4 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 command_handler(dispatcher)
 
 updater.start_polling()
-os.system('python payment.py')
+os.system('python check.py')

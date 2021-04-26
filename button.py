@@ -353,6 +353,7 @@ def button(update, context):
                                 finish = True
                                 chat.price = args[3]
                                 order.status = 'Ожидает оплаты'
+                                order.final_price = int(args[3])
                                 text += '\n<b>Цена утверждена!</b>'
                                 reply_markup = None
                                 user_text = "Цена по заказу #{} ({}) утверждена. Для оплаты нажмите на кнопку «Оплатить» 👇".format(order.id, order.subject)
@@ -471,6 +472,7 @@ def button(update, context):
                                     reply_markup = InlineKeyboardMarkup(markup)
 
                                 order.status = "Завершён"
+                                order.final_price = int(price)
 
                                 try:
                                     context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
@@ -800,6 +802,8 @@ def button(update, context):
 
                             text = 'Вас выбрали исполнителем для заказа #{} ({})! Ожидайте создание общего чата ⏳'.format(order.id, order.subject)
                             context.bot.send_message(chat_id=wort.user_id, text=text, parse_mode=telegram.ParseMode.HTML)
+
+                            os.system('python create_chat.py ' + str(order.id))
 
                         if args[2] == 'withdrawreject':
                             # user = User.get(id=int(args[1]))

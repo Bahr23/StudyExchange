@@ -73,6 +73,7 @@ class Chat(db.Entity):
     price_msg = Optional(int)
     done_msg = Optional(int)
     chat_link = Optional(str)
+    status = Optional(str)
 
 
 class Bills(db.Entity):
