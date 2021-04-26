@@ -30,7 +30,6 @@ pydantic==1.6.1
 pyQiwiP2P==1.0a6
 python-telegram-bot==12.8
 pytz==2020.1
-pywin32==228
 requests==2.24.0
 rsa==4.7.2
 SimpleQIWI==0.7
