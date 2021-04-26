@@ -1,6 +1,7 @@
 import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, InputMediaPhoto, \
     InputMediaDocument, ChatPermissions
+from telegram.ext import Handler
 
 from menu import Menu
 from models import *
@@ -11,8 +12,13 @@ CHANNEL_ID = '-1001361464885'
 MEDIA_ID = '-1001412307468'
 
 
+def new_member(update, context):
+    print('ok')
+    print(update)
+
+
 @db_session
-def chat(update, context):
+def create_chat(update, context):
     if update.message.chat.id < 0:
         user = get_user(update.message.from_user.id)
         if user:
@@ -48,21 +54,12 @@ def chat(update, context):
                         text = 'Чат с клиентом по заказу #{} ({}) успешно создан 👉 {}'.format(order.id, order.subject, link)
                         context.bot.send_message(chat_id=worker.user_id, text=text, parse_mode=telegram.ParseMode.HTML,)
 
-                        mymenu = Menu()
-                        reply_markup = mymenu.get_menu(tag='#chat#0')
-
-                        pintext = '⚠️ Перед началом работы обязательно ознакомьтесь с инструкцией:\n\n' \
-                                  '1. Обе стороны обговаривают все условия заказа, после чего клиент или исполнитель' \
-                                  ' должен написать "/price [<b>цена</b>]" в общий чат.\n2. Клиент вносит полную предоплату' \
-                                  ' через бота. Бот присылает сообщение об успешной оплате в общий чат. Только после' \
-                                  ' этого исполнитель приступает к работе.\n3. Для завершения работы исполнитель или' \
-                                  ' клиент должен написать "/done" в общий чат.\n\nЗа разрешение спорных ситуаций ' \
-                                  'отвечает менеджер, вызвать которого можно командой "/admin".'
-                        pinid = context.bot.send_message(chat_id=update.effective_chat.id, text=pintext, timeout=500, parse_mode=telegram.ParseMode.HTML,)
-                        context.bot.pin_chat_message(chat_id=update.effective_chat.id, message_id=pinid.message_id)
+                        context.bot.send_message(chat_id=update.effective_chat.id,
+                                                 text='Ожидайте всех участников сделки.',)
 
                         chat = Chat(chat_id=update.effective_chat.id, price='0', user_id=str(order.user_id),
-                                    worker_id=str(order.worker_id), order_id=str(order.id), chat_link=link)
+                                    worker_id=str(order.worker_id), order_id=str(order.id), chat_link=link,
+                                    status='wait')
                     else:
                         text = 'Заказ #' + context.args[0] + ' не найден или чат уже создан.'
                         context.bot.send_message(chat_id=update.effective_chat.id, text=text, timeout=500, parse_mode=telegram.ParseMode.HTML,)
