@@ -62,7 +62,7 @@ def check_chats():
         for c in chats:
             if c.status == 'wait':
                 chat_members_count = bot.get_chat_members_count(chat_id=int(c.chat_id))
-                if chat_members_count >= 2:
+                if chat_members_count >= 4:
                     pintext = '⚠️ Перед началом работы обязательно ознакомьтесь с инструкцией:\n\n' \
                               '1. Обе стороны обговаривают все условия заказа, после чего клиент или исполнитель' \
                               ' должен написать "/price [<b>цена</b>]" в общий чат.\n2. Клиент вносит полную предоплату' \
