@@ -301,6 +301,7 @@ def button(update, context):
                                         t = tr.new(type='Оплата заказа ' + f'#{str(order.id)} ({order.subject})', bill_id='None', amount=-int(chat.price), user_id=user.id,
                                                    date=str(datetime.datetime.now())[0:19])
                                         order.status = 'Оплачен'
+                                        order.final_price = int(chat.price)
 
                                         # context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
                                         #                   text=get_order(order.id), reply_markup=None, parse_mode=telegram.ParseMode.HTML)
