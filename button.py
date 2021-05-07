@@ -122,7 +122,6 @@ def button(update, context):
                                 context.bot.send_message(chat_id=update.effective_chat.id, text=text,
                                                          parse_mode=telegram.ParseMode.HTML)
 
-
                         if args[2] == 'workers':
                             myorder = Order.get(id=int(args[1]))
                             workers = myorder.worker_id.split(',')[:-1]
@@ -144,6 +143,40 @@ def button(update, context):
                                 text = 'Пока никто не отправил заявку на выполнение этого заказа.'
                                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
+                        if args[2] == 'ref':
+                            print(args)
+                            coupon = Coupons.get(name=f'REF{args[1]}')
+                            text = '⚠️ При оформлении заказа клиент может применить Ваш промокод. ' \
+                                   'Тогда 5% от суммы заказа вернётся на его баланс и ещё 5% на Ваш.\n\n'
+                            if coupon:
+                                text += f'Ваш реферальный промокод: <code>{coupon.name}</code>'
+                                reply_markup = None
+                            else:
+                                buttons = [InlineKeyboardButton('Создать промокод', callback_data='@' + args[1] + '@makeref'),]
+                                markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
+                                                           footer_buttons=None)
+                                reply_markup = InlineKeyboardMarkup(markup)
+
+                            context.bot.send_message(chat_id=update.effective_chat.id, text=text,
+                                                     reply_markup=reply_markup, parse_mode=telegram.ParseMode.HTML)
+
+                        if args[2] == 'makeref':
+                            print(args)
+                            coupon = Coupons.get(name=f'REF{args[1]}')
+                            user = User.get(id=int(args[1]))
+                            text = 'Ошибка'
+                            if not coupon:
+                                if user:
+                                    if int(user.orders_number) > 0:
+                                        с = Coupons(name=f'REF{args[1]}', amount=5, count=9999)
+                                        text = f'Вы успешно создали реферальный промокод!\n' \
+                                               f'Ваш реферальный промокод: <code>REF{args[1]}</code>'
+                                    else:
+                                        text = 'Чтобы выпустить свой реферальный промокод, Вы должны завершить ' \
+                                               'хотя бы один заказ!'
+                            context.bot.send_message(chat_id=update.effective_chat.id, text=text,
+                                                     parse_mode=telegram.ParseMode.HTML)
+
                         if args[2] == 'want':
                             if not user.wanted:
                                 user = User.get(id=int(args[1]))
@@ -154,8 +187,7 @@ def button(update, context):
 
                                 label = name + ' (id' + str(user.id) + ')\n'
                                 buttons = [InlineKeyboardButton('Профиль ' + label,
-                                                                callback_data='@' + str(user.id) + '@showprofile'),
-                                           ]
+                                                                callback_data='@' + str(user.id) + '@showprofile'),]
                                 markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
                                                            footer_buttons=None)
 
@@ -251,12 +283,12 @@ def button(update, context):
                             text = 'Error'
                             if chat:
                                 if chat.price != '0' and order.status == 'Ожидает оплаты':
-                                    if order.promo != '0':
-                                        promo = 1 - float(Coupons.get(name=order.promo).amount) / 100
-                                        price = int(int(chat.price) * promo)
-                                    else:
-                                        price = chat.price
-
+                                    # if order.promo != '0':
+                                    #     promo = 1 - float(Coupons.get(name=order.promo).amount) / 100
+                                    #     price = int(int(chat.price) * promo)
+                                    # else:
+                                    #     price = chat.price
+                                    price = chat.price
                                     text = f'Вы уверены, что хотите оплатить заказ #{str(order.id)} ({order.subject}) на сумму {str(price)} руб.?'
                                     buttons = [
                                         InlineKeyboardButton('Да', callback_data='@' + str(order.id) + '@buyyes')]
@@ -279,32 +311,31 @@ def button(update, context):
                                 if chat.price != '0' and order.status == 'Ожидает оплаты':
                                     if int(chat.price) <= user.balance:
 
-                                        if order.promo != '0':
-                                            coup = Coupons.get(name=order.promo)
-                                            if coup.count > 0:
-                                                promo = 1 - float(coup.amount) / 100
-                                                coup.count -= 1
-                                                price = int(int(chat.price) * promo)
-                                            else:
-                                                price = chat.price
-                                        else:
-                                            price = chat.price
-
+                                        # if order.promo != '0':
+                                        #     coup = Coupons.get(name=order.promo)
+                                        #     if coup.count > 0:
+                                        #         promo = 1 - float(coup.amount) / 100
+                                        #         coup.count -= 1
+                                        #         price = int(int(chat.price) * promo)
+                                        #     else:
+                                        #         price = chat.price
+                                        # else:
+                                        #     price = chat.price
+                                        price = chat.price
                                         user.balance -= int(price)
 
                                         message = update.callback_query.message
                                         context.bot.edit_message_text(chat_id=update.effective_chat.id,
                                                                       message_id=message.message_id,
-                                                                      text=message.text + '\nОПЛАЧЕНО 👍', reply_markup=None,
+                                                                      text=message.text + '\nОПЛАЧЕНО 👍',
+                                                                      reply_markup=None,
                                                                       parse_mode=telegram.ParseMode.HTML)
 
-                                        t = tr.new(type='Оплата заказа ' + f'#{str(order.id)} ({order.subject})', bill_id='None', amount=-int(chat.price), user_id=user.id,
+                                        t = tr.new(type='Оплата заказа ' + f'#{str(order.id)} ({order.subject})',
+                                                   bill_id='None', amount=-int(price), user_id=user.id,
                                                    date=str(datetime.datetime.now())[0:19])
                                         order.status = 'Оплачен'
                                         order.final_price = int(chat.price)
-
-                                        # context.bot.edit_message_text(chat_id=CHANNEL_ID, message_id=order.channel_message,
-                                        #                   text=get_order(order.id), reply_markup=None, parse_mode=telegram.ParseMode.HTML)
 
                                         name = get_name(user, True)
                                         w = User.get(id=int(chat.worker_id))
@@ -420,27 +451,53 @@ def button(update, context):
                                     w.orders_number = str(int(w.orders_number) + 1)
                                     u.last_order = str(datetime.date.today()).replace('-', '.')
                                     w.workers_orders += 1
-                                    # if w.rated_orders:
-                                    #     w.rated_orders += 1
-                                    # else:
-                                    #     w.rated_orders = 1
+
+                                    cashback = 0
+                                    if order.promo != '0':
+                                        coup = Coupons.get(name=order.promo)
+                                        if coup.count > 0:
+                                            promo = float(coup.amount) / 100
+                                            coup.count -= 1
+                                            cashback = int(int(chat.price) * promo)
+
+                                    u.balance += cashback
+                                    t = tr.new(type=f'Кэшбек с заказа #{order.id}',
+                                               bill_id='None', amount=int(cashback),
+                                               user_id=u.id,
+                                               date=str(datetime.datetime.now())[0:19])
+
+                                    context.bot.send_message(chat_id=int(u.user_id),
+                                                             text=f"Вам пришел кэшбек с заказа #{order.id} "
+                                                             f"({order.subject}), ваш баланс пополнен на"
+                                                             f" {cashback} руб. 💸")
 
                                     rebalance = int(int(chat.price) * 0.85)
 
                                     w.balance += rebalance
 
+                                    ref_profit = 0
+                                    price = chat.price
                                     if order.promo != '0':
                                         coup = Coupons.get(name=order.promo)
                                         if coup.count > 0:
                                             promo = 1 - float(coup.amount) / 100
                                             coup.count -= 1
                                             price = int(int(chat.price) * promo)
-                                        else:
-                                            price = chat.price
-                                    else:
-                                        price = chat.price
+                                            if coup.name[:3] == 'REF':
+                                                ref_parent = User.get(id=int(coup.name[3:]))
+                                                if u.id != ref_parent.id:
+                                                    ref_profit = int(int(chat.price) * float(coup.amount) / 100)
+                                                    ref_parent.balance += ref_profit
+                                                    t = tr.new(type=f'Реферальная выплата с пользователя id{u.id} '
+                                                                    f'за заказ #{order.id}',
+                                                               bill_id='None', amount=int(ref_profit),
+                                                               user_id=ref_parent.id,
+                                                               date=str(datetime.datetime.now())[0:19])
+                                                    context.bot.send_message(chat_id=int(ref_parent.user_id),
+                                                                             text=f'Реферальная выплата с пользователя id{u.id} за заказ #{order.id}. Ваш баланс пополнен на {ref_profit} руб. 💸')
 
-                                    profit = int(price) - rebalance
+                                    profit = int(price) - rebalance - ref_profit
+
                                     partner_profit = int(profit * 0.33)
                                     partner = User.get(id=Settings.get(key='partner_id').value)
                                     partner.balance += partner_profit

@@ -9,6 +9,7 @@ from models import *
 from core import *
 from menu import *
 
+
 @db_session
 def start(update, context):
     if update.message.chat.id > 0:
@@ -24,7 +25,11 @@ def start(update, context):
                     current_queue(update, context, user)
                     return
             text = 'Рад снова Вас видеть, ' + user.first_name + '! По всем вопросам пишите Вашему <a href="https://t.me/AlexStudyX">персональному менеджеру</a> 👨‍💻'
-            context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0], parse_mode=telegram.ParseMode.HTML)
+
+            print(reply_markup)
+
+            context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=reply_markup[0],
+                                     parse_mode=telegram.ParseMode.HTML)
         else:
             user = update.message.from_user
             first_name = user.first_name.capitalize() if user.first_name else 'не указано'
@@ -167,7 +172,8 @@ def myprofile(update, context):
             text = get_profile(user.id)
 
             mymenu = Menu()
-            buttons = [InlineKeyboardButton('Редактировать', callback_data='@' + str(user.id) + '@profile@list')]
+            buttons = [InlineKeyboardButton('Редактировать', callback_data='@' + str(user.id) + '@profile@list'),
+                       InlineKeyboardButton('Реферальная система', callback_data='@' + str(user.id) + '@ref')]
 
             if not user.wanted:
                 buttons.append(InlineKeyboardButton('Хочу стать исполнителем 👋', callback_data='@' + str(user.id) + '@want'))
@@ -263,7 +269,7 @@ def my_orders(update, context):
                     return
             orders = select(o for o in Order if o.user_id == user.id).order_by(lambda: o.id)
             if len(orders):
-                text = '' # Ваши заказы:\n
+                text = ''  # Ваши заказы:\n
                 buttons = []
                 for order in list(orders):
                     text += '#' + str(order.id) + ' - ' + order.subject + ' (' + order.status + ')\n'

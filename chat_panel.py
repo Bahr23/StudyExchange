@@ -8,14 +8,6 @@ from models import *
 from core import *
 from menu import *
 
-CHANNEL_ID = '-1001361464885'
-MEDIA_ID = '-1001412307468'
-
-
-def new_member(update, context):
-    print('ok')
-    print(update)
-
 
 @db_session
 def create_chat(update, context):
