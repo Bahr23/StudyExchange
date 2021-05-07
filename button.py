@@ -459,17 +459,22 @@ def button(update, context):
                                             promo = float(coup.amount) / 100
                                             coup.count -= 1
                                             cashback = int(int(chat.price) * promo)
+                                            if coup.name[:3] == 'REF':
+                                                ref_parent_id = int(coup.name[3:])
+                                                if u.id == ref_parent_id:
+                                                    cashback = 0
 
-                                    u.balance += cashback
-                                    t = tr.new(type=f'Кэшбек с заказа #{order.id}',
-                                               bill_id='None', amount=int(cashback),
-                                               user_id=u.id,
-                                               date=str(datetime.datetime.now())[0:19])
+                                    if cashback > 0:
+                                        u.balance += cashback
+                                        t = tr.new(type=f'Кэшбек с заказа #{order.id}',
+                                                   bill_id='None', amount=int(cashback),
+                                                   user_id=u.id,
+                                                   date=str(datetime.datetime.now())[0:19])
 
-                                    context.bot.send_message(chat_id=int(u.user_id),
-                                                             text=f"Вам пришел кэшбек с заказа #{order.id} "
-                                                             f"({order.subject}), ваш баланс пополнен на"
-                                                             f" {cashback} руб. 💸")
+                                        context.bot.send_message(chat_id=int(u.user_id),
+                                                                 text=f"Вам пришел кэшбек с заказа #{order.id} "
+                                                                 f"({order.subject}), ваш баланс пополнен на"
+                                                                 f" {cashback} руб. 💸")
 
                                     rebalance = int(int(chat.price) * 0.85)
 
