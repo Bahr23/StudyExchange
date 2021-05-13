@@ -146,12 +146,13 @@ def button(update, context):
                         if args[2] == 'ref':
                             print(args)
                             coupon = Coupons.get(name=f'REF{args[1]}')
-                            text = '⚠️ При оформлении заказа клиент может применить Ваш промокод. ' \
+                            posttext = 'ℹ️ При оформлении заказа клиент может применить Ваш промокод. ' \
                                    'Тогда 5% от суммы заказа вернётся на его баланс и ещё 5% на Ваш.\n\n'
                             if coupon:
-                                text += f'Ваш реферальный промокод: <code>{coupon.name}</code>'
+                                text = f'Ваш реферальный промокод\n👉 <code>{coupon.name}</code>\n\n' + posttext
                                 reply_markup = None
                             else:
+                                text = posttext
                                 buttons = [InlineKeyboardButton('Создать промокод', callback_data='@' + args[1] + '@makeref'),]
                                 markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None,
                                                            footer_buttons=None)
@@ -169,8 +170,7 @@ def button(update, context):
                                 if user:
                                     if int(user.orders_number) > 0:
                                         с = Coupons(name=f'REF{args[1]}', amount=5, count=9999)
-                                        text = f'Вы успешно создали реферальный промокод!\n' \
-                                               f'Ваш реферальный промокод: <code>REF{args[1]}</code>'
+                                        text = f'Ваш реферальный промокод успешно создан 👉 <code>REF{args[1]}</code>'
                                     else:
                                         text = 'Чтобы выпустить свой реферальный промокод, Вы должны завершить ' \
                                                'хотя бы один заказ!'
@@ -472,9 +472,9 @@ def button(update, context):
                                                    date=str(datetime.datetime.now())[0:19])
 
                                         context.bot.send_message(chat_id=int(u.user_id),
-                                                                 text=f"Вам пришел кэшбек с заказа #{order.id} "
-                                                                 f"({order.subject}), ваш баланс пополнен на"
-                                                                 f" {cashback} руб. 💸")
+                                                                 text=f"Вы получили кэшбек за оплату"
+                                                                 f" заказа #{order.id}  🎉 "
+                                                                 f"{cashback}руб. вернулись на Ваш баланс 💸")
 
                                     rebalance = int(int(chat.price) * 0.85)
 
@@ -498,8 +498,10 @@ def button(update, context):
                                                                bill_id='None', amount=int(ref_profit),
                                                                user_id=ref_parent.id,
                                                                date=str(datetime.datetime.now())[0:19])
-                                                    context.bot.send_message(chat_id=int(ref_parent.user_id),
-                                                                             text=f'Реферальная выплата с пользователя id{u.id} за заказ #{order.id}. Ваш баланс пополнен на {ref_profit} руб. 💸')
+                                                    rtext = f"Клиент id{u.id} оплатил заказ с " \
+                                                            f"использованием Вашего реферального промокода 🎉\n" \
+                                                            f" Ваш баланс пополнен на {ref_profit} руб. 💸"
+                                                    context.bot.send_message(chat_id=int(ref_parent.user_id), text=rtext)
 
                                     profit = int(price) - rebalance - ref_profit
 

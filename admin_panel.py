@@ -551,12 +551,18 @@ def transfer(update, context):
                                        user_id=user.id,
                                        date=str(datetime.datetime.now())[0:19])
 
+                            context.bot.send_message(chat_id=user.user_id,
+                                                     text=f'Трансфер средств. Ваш баланс уменьшен на {amount}р.')
+
                             worker.balance += int(amount * 0.9)
 
                             t = tr.new(type='Пополнение по трансферу средств',
                                        bill_id='None', amount=int(amount * 0.9),
                                        user_id=worker.id,
                                        date=str(datetime.datetime.now())[0:19])
+
+                            context.bot.send_message(chat_id=worker.user_id,
+                                                     text=f'Трансфер средств. Ваш баланс пополнен на {amount}р.')
 
                             partner = User.get(id=Settings.get(key='partner_id').value)
                             partner.balance += int(amount * 0.033)

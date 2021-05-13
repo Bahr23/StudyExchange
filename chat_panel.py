@@ -46,6 +46,11 @@ def create_chat(update, context):
                         text = 'Чат с клиентом по заказу #{} ({}) успешно создан 👉 {}'.format(order.id, order.subject, link)
                         context.bot.send_message(chat_id=worker.user_id, text=text, parse_mode=telegram.ParseMode.HTML,)
 
+                        order_text = get_order(id=order.id) +\
+                                     f"\nКлиент: {get_name(client, id=True)}\nИсполнитель: {get_name(worker, id=True)}"
+                        context.bot.send_message(chat_id=update.effective_chat.id, text=order_text,
+                                                 parse_mode=telegram.ParseMode.HTML,)
+
                         context.bot.send_message(chat_id=update.effective_chat.id,
                                                  text='Ожидайте всех участников сделки.',)
 
