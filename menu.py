@@ -278,8 +278,6 @@ class Menu:
 
     @db_session
     def order_buttons(self, id, workers=None):
-
-
         if id:
             order = Order.get(id=int(id))
             buttons = []
@@ -329,6 +327,7 @@ class Menu:
             InlineKeyboardButton('Изменить образование', callback_data='@' + str(id) + '@profile@education'),
             InlineKeyboardButton('Изменить город', callback_data='@' + str(id) + '@profile@city'),
             InlineKeyboardButton('Изменить возраст', callback_data='@' + str(id) + '@profile@age'),
+            InlineKeyboardButton('Изменить описание ', callback_data='@' + str(id) + '@profile@about'),
         ]
 
         markup = self.build_menu(buttons=buttons, n_cols=1, header_buttons=None,

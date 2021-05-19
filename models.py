@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 from pony.orm import *
 
 db = Database()
-#
+
 # db.bind(provider='postgres', user='postgres', password='', host='localhost', database='')
 
 db_url = urlparse(os.environ['DATABASE_URL'])
@@ -34,6 +34,7 @@ class User(db.Entity):
     balance = Required(int)
     wanted = Optional(bool)
     requisites = Optional(str)
+    about = Optional(str)
 
 
 class Order(db.Entity):

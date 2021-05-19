@@ -74,16 +74,20 @@ def get_profile(id):
         else:
             last_order = ''
 
+        about = user.about
+        if not about:
+            about = 'не указано'
+
         reg = user.registration_date.split('.')
         reg = reg[2] + '.' + reg[1] + '.' + reg[0]
 
         text = '<b>{name} (id{id})</b>\n\nСтатус: {status}\nДата регистрации: ' \
                '{registration_date}\n\nОбразование: {education}\nГород: {city}\nВозраст: ' \
-               '{age}\n\nЗавершённые заказы: {orders_number}{last_order}\n{rate}' \
+               '{age}\n\nО себе: {about}\n\nЗавершённые заказы: {orders_number}{last_order}\n{rate}' \
                '\n'.format(name=name, id=user.id, status=status, registration_date=reg,
                                                                 education=user.education, city=user.city, age=user.age,
                                                                 orders_number=user.orders_number,
-                                                                last_order=last_order, rate=rate)
+                                                                last_order=last_order, rate=rate, about=about)
         return text
     else:
         return False
@@ -335,6 +339,18 @@ def finish_queue(name, answers, update=None, context=None):
                 context.user_data.update({'queue_finish': False})
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
+        if key == 'about':
+            try:
+                about = str(value)
+                if len(about) >= 120:
+                    raise
+                exec('user.' + key + " = '" + value + "'")
+
+            except Exception as e:
+                text = 'Поле "О себе" должно содержать не более 120 символов!'
+                context.user_data.update({'queue_finish': False})
+                context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+
     if name == "depositsber":
         try:
             sum = int(answers[0]['sum'])
@@ -495,9 +511,12 @@ def finish_queue(name, answers, update=None, context=None):
 
                 admins = list(select(u for u in User if u.status == 'admin'))
                 for admin in admins:
-                    context.bot.send_message(chat_id=admin.user_id, text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
+                    context.bot.send_message(chat_id=admin.user_id, text=text, parse_mode=telegram.ParseMode.HTML,
+                                             reply_markup=reply_markup)
                 context.bot.send_message(chat_id=update.effective_chat.id,
-                                         text='Ваша заявка на вывод средств успешно отправлена. Ожидайте решение <a href="https://t.me/AlexStudyX">менеджера</a> ⏳', parse_mode=telegram.ParseMode.HTML)
+                                         text='Ваша заявка на вывод средств успешно отправлена. '
+                                              'Ожидайте решение <a href="https://t.me/AlexStudyX">менеджера</a> ⏳',
+                                         parse_mode=telegram.ParseMode.HTML)
             else:
                 text = 'Ваша заявка отклонена: на балансе недостаточно средств.'
                 context.bot.send_message(chat_id=update.effective_chat.id, text=text)
@@ -506,34 +525,3 @@ def finish_queue(name, answers, update=None, context=None):
             print(e)
             text = 'Сумма вывода должна быть числом!'
             context.bot.send_message(chat_id=update.effective_chat.id, text=text)
-
-    # if name == "withdraw":
-    #     try:
-    #         sum = int(answers[0]['sum'])
-    #         bank = answers[1]['bank']
-    #         card = answers[2]['card']
-    #         if sum <= int(user.balance):
-    #             user.balance -= sum
-    #             sum2 = sum * 0.97
-    #             text = '<b>Пользователь ' + get_name(user) + '[' + str(user.id) + ']' + ' запрашивает вывод:</b>\n' \
-    #                                                                                     '1. Сумма без комисси - ' + str(sum) + \
-    #                    ' руб.\n  - Сумма с учетом комисси - ' + str(sum2) + ' руб\n2. Банк - ' + str(bank) + '\n3. Реквизиты - ' + str(card)
-    #
-    #             buttons = [InlineKeyboardButton('Отклонить', callback_data='@' + str(user.user_id) + '@withdrawreject@' + str(sum)),
-    #                        InlineKeyboardButton('Одобрить', callback_data='@' + str(user.user_id) + '@withdrawconfirm@' + str(sum)),
-    #                        InlineKeyboardButton('Завершить', callback_data='@' + str(user.user_id) + '@withdrawdone@' + str(sum))]
-    #
-    #             markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
-    #             reply_markup = InlineKeyboardMarkup(markup)
-    #
-    #             admins = list(select(u for u in User if u.status == 'admin'))
-    #             for admin in admins:
-    #                 context.bot.send_message(chat_id=admin.user_id, text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=reply_markup)
-    #             context.bot.send_message(chat_id=update.effective_chat.id,
-    #                                      text='Ваша заявка на вывод средств успешно отправлена. Ожидайте решение <a href="https://t.me/AlexStudyX">менеджера</a> ⏳', parse_mode=telegram.ParseMode.HTML)
-    #         else:
-    #             text = 'Ваша заявка отклонена: на балансе недостаточно средств.'
-    #             context.bot.send_message(chat_id=update.effective_chat.id, text=text)
-    #
-    #     except Exception as e:
-    #         text = 'Сумма вывода должна быть числом!'
