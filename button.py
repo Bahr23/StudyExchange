@@ -400,10 +400,9 @@ def button(update, context):
                                 u = User.get(id=chat.user_id)
                                 context.bot.send_message(chat_id=u.user_id, text=user_text, reply_markup=markup)
 
-
-
                             context.bot.edit_message_text(chat_id=chat.chat_id, message_id=message.message_id,
-                                                          text=message.text + text, reply_markup=reply_markup, parse_mode=telegram.ParseMode.HTML)
+                                                          text=message.text + text, reply_markup=reply_markup,
+                                                          parse_mode=telegram.ParseMode.HTML)
                             if finish:
                                 text = f"💸 {get_name(u)}, для оплаты заказа перейдите в <a href='https://t.me/StudyExchangeBot'>переписку с " \
                                     f"ботом</a>.\n" \
@@ -476,7 +475,7 @@ def button(update, context):
                                                                  f" заказа #{order.id}  🎉 "
                                                                  f"{cashback}руб. вернулись на Ваш баланс 💸")
 
-                                    rebalance = int(int(chat.price) * 0.85)
+                                    rebalance = int(int(chat.price) * 0.80)
 
                                     w.balance += rebalance
 

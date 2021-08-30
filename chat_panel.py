@@ -11,14 +11,16 @@ from menu import *
 
 @db_session
 def create_chat(update, context):
+    print(1)
     if update.message.chat.id < 0:
         user = get_user(update.message.from_user.id)
         if user:
             if user.status == 'admin':
-                text = 'Используйте /chat order_id'
+                text = 'Используйте /create_chat order_id'
                 if context.args:
                     order = Order.get(id=int(context.args[0]))
                     chat = Chat.get(chat_id=update.effective_chat.id)
+                    print(order, chat)
                     if order and not chat:
                         title = "Заказ #" + str(order.id) + ' (' + order.subject + ')'
                         context.bot.set_chat_title(chat_id=update.effective_chat.id, title=title)
