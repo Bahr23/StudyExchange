@@ -554,7 +554,7 @@ def transfer(update, context):
                             context.bot.send_message(chat_id=user.user_id,
                                                      text=f'Трансфер средств. Ваш баланс уменьшен на {amount}р.')
 
-                            worker.balance += int(amount * 0.9)
+                            worker.balance += int(amount * 0.85)
 
                             t = tr.new(type='Пополнение по трансферу средств',
                                        bill_id='None', amount=int(amount * 0.9),
@@ -565,7 +565,7 @@ def transfer(update, context):
                                                      text=f'Трансфер средств. Ваш баланс пополнен на {amount}р.')
 
                             partner = User.get(id=Settings.get(key='partner_id').value)
-                            partner.balance += int(amount * 0.033)
+                            partner.balance += int(amount * 0.05)
 
                             t = tr.new(type='Партнерская выплата за трансфер средств',
                                        bill_id='None', amount=int(amount * 0.033),
