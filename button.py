@@ -844,11 +844,11 @@ def button(update, context):
 
                             worker_id = args[3]
 
-                            for w in order.worker_id.split(','):
-                                if w != worker_id and w != '':
-                                    wr = User.get(id=int(w))
-                                    text = 'К сожалению, по заказу #{} ({}) был выбран другой исполнитель или заказ был удалён 😔'.format(order.id, order.subject)
-                                    context.bot.send_message(chat_id=wr.user_id, text=text, parse_mode=telegram.ParseMode.HTML)
+                            # for w in order.worker_id.split(','):
+                            #     if w != worker_id and w != '':
+                            #         wr = User.get(id=int(w))
+                            #         text = 'К сожалению, по заказу #{} ({}) был выбран другой исполнитель или заказ был удалён 😔'.format(order.id, order.subject)
+                            #         context.bot.send_message(chat_id=wr.user_id, text=text, parse_mode=telegram.ParseMode.HTML)
 
                             order.worker_id = args[3]
 
@@ -867,7 +867,10 @@ def button(update, context):
                             text = 'Вас выбрали исполнителем для заказа #{} ({})! Ожидайте создание общего чата ⏳'.format(order.id, order.subject)
                             context.bot.send_message(chat_id=wort.user_id, text=text, parse_mode=telegram.ParseMode.HTML)
 
-                            os.system('python create_chat.py ' + str(order.id))
+                            chat = Chat.get(order_id=str(order.id))
+
+                            if not chat:
+                                os.system('python create_chat.py ' + str(order.id))
 
                         if args[2] == 'withdrawreject':
                             # user = User.get(id=int(args[1]))
