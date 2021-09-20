@@ -35,6 +35,7 @@ def adminhelp(update, context):
                        '<code>/getorder</code> - информация о заказе\n' \
                        '<code>/newprice</code> - изменить цену заказ\n' \
                        '<code>/orderstatus</code> - изменить статус заказа\n' \
+                       '<code>/reorder</code> - опубликовать заказ занаво\n' \
                        '<code>/activeorders</code> - информация об активных заказах\n' \
                        '<code>/orders</code> - все заказы\n' \
                        '\nТех. команды\n' \
@@ -641,6 +642,65 @@ def activeorders(update, context):
                                          parse_mode=telegram.ParseMode.HTML)
             else:
                 context.bot.send_message(chat_id=update.effective_chat.id, text='Вы не являетесь админом')
+        else:
+            start(update, context)
+
+
+@db_session
+def reorder(update, context):
+    if update.message.chat.id > 0:
+        user = get_user(update.message.from_user.id)
+        if user:
+            if user.status == 'banned':
+                context.bot.send_message(chat_id=user.user_id, text=BANNED_TEXT)
+                return
+            if 'queue' in context.user_data.keys():
+                if context.user_data['queue']:
+                    current_queue(update, context, user)
+                    return
+            markup = ''
+            if user.status == 'admin':
+                if len(context.args) == 1:
+                    text = 'ok'
+                    order = Order.get(id=int(context.args[0]))
+                    if order:
+                        order.status = 'Поиск исполнителя'
+                        chat = Chat.get(order_id=str(order.id))
+                        if chat:
+                            chat.delete()
+                        try:
+                            context.bot.delete_message(chat_id=CHANNEL_ID, message_id=order.channel_message)
+                        except Exception as e:
+                            print(e)
+                        mymenu = Menu()
+                        text = get_order(order.id)
+                        buttons = [InlineKeyboardButton('Взять заказ 👍', callback_data='@' + str(order.id) + '@take')]
+                        markup = mymenu.build_menu(buttons=buttons, n_cols=1, header_buttons=None, footer_buttons=None)
+
+
+                        usert = User.get(id=int(order.user_id))
+
+                        post = context.bot.send_message(chat_id=CHANNEL_ID, text=text,
+                                                        reply_markup=InlineKeyboardMarkup(markup),
+                                                        parse_mode=telegram.ParseMode.HTML)
+                        post_link = 'https://t.me/StudyExchangeSPbPU/' + str(post.message_id)
+
+                        order.channel_message = post.message_id
+
+                        text = 'Заказ #{} ({}) успешно одобрен!'.format(order.id, order.subject)
+                        context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+
+                        text = 'Ваш заказ #{} ({}) одобрен и <a href="{}">опубликован</a> на канале!'.format(order.id,
+                                                                                                             order.subject,
+                                                                                                             post_link)
+                        context.bot.send_message(chat_id=usert.user_id, text=text, parse_mode=telegram.ParseMode.HTML)
+                    else:
+                        text = f'Заказ №{context.args[0]} не найден!'
+                else:
+                    text = 'Используйте /reorder order_id'
+            else:
+                text = 'Вы не являетесь админом'
+            context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=InlineKeyboardMarkup(markup))
         else:
             start(update, context)
 
